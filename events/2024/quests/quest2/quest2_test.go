@@ -64,5 +64,23 @@ func Test2(t *testing.T) {
 	if got != want {
 		t.Errorf("got %d, wanted %d", got, want)
 	}
+}
 
+func Test3(t *testing.T) {
+	data := []string{
+		"WORDS:THE,OWE,MES,ROD,RODEO",
+		"",
+		"HELWORLT",
+		"ENIGWDXL",
+		"TRODEOAL",
+	}
+
+	words, phrase := parse_data(data)
+
+	got := scales(words, phrase)
+	want := 10
+
+	if got != want {
+		t.Errorf("got %d, wanted %d", got, want)
+	}
 }

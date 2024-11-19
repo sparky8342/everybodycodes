@@ -38,7 +38,6 @@ func reverse_words(words []string) []string {
 
 func runic_symbols(words []string, phrase string) int {
 	words = append(words, reverse_words(words)...)
-
 	symbols := make([]bool, len(phrase))
 
 	for _, word := range words {
@@ -58,21 +57,77 @@ func runic_symbols(words []string, phrase string) int {
 		}
 	}
 
-	/*
-		fmt.Println(phrase)
-		for i := 0; i < len(phrase); i++ {
-			if symbols[i] {
-				fmt.Print(string(phrase[i]))
-			} else {
-				fmt.Print(strings.ToLower(string(phrase[i])))
-			}
-		}
-		fmt.Println()
-	*/
-
 	count := 0
 	for _, symbol := range symbols {
 		if symbol {
+			count++
+		}
+	}
+	return count
+}
+
+func add_wrap(n int, inc int, limit int) int {
+	n += inc
+	if n == limit {
+		return 0
+	} else if n == -1 {
+		return limit - 1
+	} else {
+		return n
+	}
+}
+
+func scales(words []string, phrase string) int {
+	scales := make([]bool, len(phrase))
+
+	grid := strings.Split(phrase, "\n")
+	height := len(grid)
+	width := len(grid[0])
+
+	dirs := [][]int{
+		[]int{1, 0},
+		[]int{-1, 0},
+		[]int{0, 1},
+		[]int{0, -1},
+	}
+
+	for _, word := range words {
+		for y := 0; y < height; y++ {
+			for x := 0; x < width; x++ {
+			dir_loop:
+				for _, dir := range dirs {
+					if grid[y][x] == word[0] {
+
+						search_x := x
+						search_y := y
+						for i := 1; i < len(word); i++ {
+							search_y += dir[1]
+							if search_y == -1 || search_y == height {
+								continue dir_loop
+							}
+							search_x = add_wrap(search_x, dir[0], width)
+
+							if grid[search_y][search_x] != word[i] {
+								continue dir_loop
+							}
+						}
+
+						search_x = x
+						search_y = y
+						for i := 0; i < len(word); i++ {
+							scales[search_y*width+search_x] = true
+							search_y += dir[1]
+							search_x = add_wrap(search_x, dir[0], width)
+						}
+					}
+				}
+			}
+		}
+	}
+
+	count := 0
+	for _, scale := range scales {
+		if scale {
 			count++
 		}
 	}
@@ -91,5 +146,10 @@ func Run() {
 	words, phrase = parse_data(data)
 	part2 := runic_symbols(words, phrase)
 
-	fmt.Printf("%d %d\n", part1, part2)
+	loader.Part = 3
+	data = loader.GetStrings()
+	words, phrase = parse_data(data)
+	part3 := scales(words, phrase)
+
+	fmt.Printf("%d %d %d\n", part1, part2, part3)
 }
