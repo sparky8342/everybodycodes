@@ -1,4 +1,4 @@
-package day1
+package quest1
 
 import (
 	"fmt"
@@ -66,13 +66,15 @@ func Run() {
 	loader.Event, loader.Quest, loader.Part = "2024", 1, 1
 
 	data := loader.GetOneLine()
-	fmt.Println(calculate_potions(data))
+	part1 := calculate_potions(data)
 
 	loader.Part = 2
 	data = loader.GetOneLine()
-	fmt.Println(calculate_potions_pairs(data))
+	part2 := calculate_potions_pairs(data)
 
 	loader.Part = 3
 	data = loader.GetOneLine()
-	fmt.Println(calculate_potions_triples(data))
+	part3 := calculate_potions_triples(data)
+
+	fmt.Printf("%d %d %d\n", part1, part2, part3)
 }
