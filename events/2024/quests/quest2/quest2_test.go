@@ -43,5 +43,26 @@ func Test1(t *testing.T) {
 	if got != want {
 		t.Errorf("got %d, wanted %d", got, want)
 	}
+}
+
+func Test2(t *testing.T) {
+	data := []string{
+		"WORDS:THE,OWE,MES,ROD,HER,QAQ",
+		"",
+		"AWAKEN THE POWE ADORNED WITH THE FLAMES BRIGHT IRE",
+		"THE FLAME SHIELDED THE HEART OF THE KINGS",
+		"POWE PO WER P OWE R",
+		"THERE IS THE END",
+		"QAQAQ",
+	}
+
+	words, phrase := parse_data(data)
+
+	got := runic_symbols(words, phrase)
+	want := 42
+
+	if got != want {
+		t.Errorf("got %d, wanted %d", got, want)
+	}
 
 }
