@@ -81,8 +81,19 @@ func steps(nums [][]int, amount int) int {
 	return n
 }
 
+func no_digits(n int) int {
+	count := 0
+	for n != 0 {
+		n /= 10
+		count++
+	}
+	return count
+}
+
 func find_repeat(nums [][]int, repeat int) int {
-	seen := map[string]int{}
+	digits := no_digits(nums[0][0])
+
+	seen := map[int]int{}
 
 	col_pos := 0
 	round := 0
@@ -94,14 +105,16 @@ func find_repeat(nums [][]int, repeat int) int {
 		}
 		round++
 
-		result := make([]string, len(nums))
+		n := 0
 		for i := 0; i < len(nums); i++ {
-			result[i] = strconv.Itoa(nums[i][0])
+			for j := 0; j < digits; j++ {
+				n *= 10
+			}
+			n += nums[i][0]
 		}
-		n_str := strings.Join(result, "")
-		seen[n_str]++
-		if seen[n_str] == repeat {
-			n, _ := strconv.Atoi(n_str)
+
+		seen[n]++
+		if seen[n] == repeat {
 			return round * n
 		}
 	}
