@@ -5,7 +5,7 @@ import (
 	"loader"
 )
 
-func dig(data []string) int {
+func _dig(data []string, diag bool) int {
 	height := len(data)
 	width := len(data[0])
 
@@ -28,24 +28,37 @@ func dig(data []string) int {
 		[]int{1, 0},
 		[]int{-1, 0},
 	}
+	if diag {
+		dirs = append(dirs, [][]int{
+			[]int{1, 1},
+			[]int{1, -1},
+			[]int{-1, 1},
+			[]int{-1, -1}}...)
+	}
 
 	var num byte = '1'
 	last_blocks := 0
 	for blocks > last_blocks {
 		last_blocks = blocks
 		for y := 0; y < height; y++ {
+		loop:
 			for x := 0; x < width; x++ {
 				if grid[y][x] == num {
-					neighbours := 0
 					for _, dir := range dirs {
-						if grid[y+dir[1]][x+dir[0]] >= num {
-							neighbours++
+						check_y := y + dir[1]
+						if check_y < 0 || check_y == height {
+							continue loop
+						}
+						check_x := x + dir[0]
+						if check_x < 0 || check_x == width {
+							continue loop
+						}
+						if grid[check_y][check_x] < num {
+							continue loop
 						}
 					}
-					if neighbours == 4 {
-						grid[y][x]++
-						blocks++
-					}
+					grid[y][x]++
+					blocks++
 				}
 			}
 		}
@@ -53,6 +66,14 @@ func dig(data []string) int {
 	}
 
 	return blocks
+}
+
+func dig(data []string) int {
+	return _dig(data, false)
+}
+
+func dig_diag(data []string) int {
+	return _dig(data, true)
 }
 
 func Run() {
@@ -65,5 +86,9 @@ func Run() {
 	data = loader.GetStrings()
 	part2 := dig(data)
 
-	fmt.Printf("%d %d %d\n", part1, part2, -1)
+	loader.Part = 3
+	data = loader.GetStrings()
+	part3 := dig_diag(data)
+
+	fmt.Printf("%d %d %d\n", part1, part2, part3)
 }
