@@ -14,3 +14,14 @@ func Test1(t *testing.T) {
 		t.Errorf("got %d, wanted %d", got, want)
 	}
 }
+
+func Test2(t *testing.T) {
+	nums := []int{2, 4, 5, 6, 8}
+
+	got := hammer_up_and_down(nums)
+	want := 8
+
+	if got != want {
+		t.Errorf("got %d, wanted %d", got, want)
+	}
+}

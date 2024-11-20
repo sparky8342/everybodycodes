@@ -3,7 +3,16 @@ package quest4
 import (
 	"fmt"
 	"loader"
+	"sort"
 )
+
+func abs(n int) int {
+	if n < 0 {
+		return n * -1
+	} else {
+		return n
+	}
+}
 
 func hammer(nums []int) int {
 	min := nums[0]
@@ -19,6 +28,22 @@ func hammer(nums []int) int {
 	return strikes
 }
 
+func hammer_up_and_down(nums []int) int {
+	sort.Ints(nums)
+	l := len(nums)
+	var median int
+	if l%2 == 0 {
+		median = (nums[l/2-1] + nums[l/2]) / 2
+	} else {
+		median = nums[l/2]
+	}
+	strikes := 0
+	for _, num := range nums {
+		strikes += abs(num - median)
+	}
+	return strikes
+}
+
 func Run() {
 	loader.Event, loader.Quest, loader.Part = "2024", 4, 1
 
@@ -29,6 +54,9 @@ func Run() {
 	nums = loader.GetInts()
 	part2 := hammer(nums)
 
-	part3 := -1
+	loader.Part = 3
+	nums = loader.GetInts()
+	part3 := hammer_up_and_down(nums)
+
 	fmt.Printf("%d %d %d\n", part1, part2, part3)
 }
