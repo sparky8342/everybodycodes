@@ -5,6 +5,7 @@ import (
 	"events/2024/quests/quest2"
 	"events/2024/quests/quest3"
 	"events/2024/quests/quest4"
+	"events/2024/quests/quest5"
 	"fmt"
 )
 
@@ -17,4 +18,6 @@ func main() {
 	quest3.Run()
 	fmt.Println("Quest 4")
 	quest4.Run()
+	fmt.Println("Quest 5")
+	quest5.Run()
 }
