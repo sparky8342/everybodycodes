@@ -16,7 +16,7 @@ func Test1(t *testing.T) {
 
 func Test2(t *testing.T) {
 	data := []byte("AxBCDDCAxD")
-	got := calculate_potions_pairs(data)
+	got := calculate_pairs(data)
 	want := 28
 
 	if got != want {
@@ -26,7 +26,7 @@ func Test2(t *testing.T) {
 
 func Test3(t *testing.T) {
 	data := []byte("xBxAAABCDxCC")
-	got := calculate_potions_triples(data)
+	got := calculate_triples(data)
 	want := 30
 
 	if got != want {
