@@ -66,6 +66,7 @@ func step(nums [][]int, col_pos int) {
 }
 
 func steps(nums [][]int, amount int) int {
+	digits := no_digits(nums[0][0])
 	col_pos := 0
 	for i := 0; i < amount; i++ {
 		step(nums, col_pos)
@@ -74,11 +75,7 @@ func steps(nums [][]int, amount int) int {
 			col_pos = 0
 		}
 	}
-	n := 0
-	for i := 0; i < len(nums); i++ {
-		n = n*10 + nums[i][0]
-	}
-	return n
+	return top_row(nums, digits)
 }
 
 func no_digits(n int) int {
@@ -88,6 +85,17 @@ func no_digits(n int) int {
 		count++
 	}
 	return count
+}
+
+func top_row(nums [][]int, digits int) int {
+	n := 0
+	for i := 0; i < len(nums); i++ {
+		for j := 0; j < digits; j++ {
+			n *= 10
+		}
+		n += nums[i][0]
+	}
+	return n
 }
 
 func find_repeat(nums [][]int, repeat int) int {
@@ -105,13 +113,7 @@ func find_repeat(nums [][]int, repeat int) int {
 		}
 		round++
 
-		n := 0
-		for i := 0; i < len(nums); i++ {
-			for j := 0; j < digits; j++ {
-				n *= 10
-			}
-			n += nums[i][0]
-		}
+		n := top_row(nums, digits)
 
 		seen[n]++
 		if seen[n] == repeat {
@@ -135,13 +137,7 @@ func highest_top_number(nums [][]int) int {
 			col_pos = 0
 		}
 
-		n := 0
-		for i := 0; i < len(nums); i++ {
-			for j := 0; j < digits; j++ {
-				n *= 10
-			}
-			n += nums[i][0]
-		}
+		n := top_row(nums, digits)
 
 		if n > max {
 			max = n
