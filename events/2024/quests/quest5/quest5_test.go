@@ -37,3 +37,19 @@ func Test2(t *testing.T) {
 		t.Errorf("got %d, wanted %d", got, want)
 	}
 }
+
+func Test3(t *testing.T) {
+	data := []string{
+		"2 3 4 5",
+		"6 7 8 9",
+	}
+
+	nums := parse_data(data)
+	got := highest_top_number(nums)
+
+	want := 6584
+
+	if got != want {
+		t.Errorf("got %d, wanted %d", got, want)
+	}
+}

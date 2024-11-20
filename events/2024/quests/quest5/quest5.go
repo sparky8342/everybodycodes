@@ -120,6 +120,40 @@ func find_repeat(nums [][]int, repeat int) int {
 	}
 }
 
+func highest_top_number(nums [][]int) int {
+	digits := no_digits(nums[0][0])
+
+	seen := map[[2]int]struct{}{}
+
+	col_pos := 0
+	max := 0
+
+	for {
+		step(nums, col_pos)
+		col_pos++
+		if col_pos == len(nums) {
+			col_pos = 0
+		}
+
+		n := 0
+		for i := 0; i < len(nums); i++ {
+			for j := 0; j < digits; j++ {
+				n *= 10
+			}
+			n += nums[i][0]
+		}
+
+		if n > max {
+			max = n
+		}
+
+		if _, ok := seen[[2]int{n, col_pos}]; ok {
+			return max
+		}
+		seen[[2]int{n, col_pos}] = struct{}{}
+	}
+}
+
 func Run() {
 	loader.Event, loader.Quest, loader.Part = "2024", 5, 1
 
@@ -132,6 +166,10 @@ func Run() {
 	nums = parse_data(data)
 	part2 := find_repeat(nums, 2024)
 
-	part3 := -1
+	loader.Part = 3
+	data = loader.GetStrings()
+	nums = parse_data(data)
+	part3 := highest_top_number(nums)
+
 	fmt.Printf("%d %d %d\n", part1, part2, part3)
 }
