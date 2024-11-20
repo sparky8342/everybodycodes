@@ -9,7 +9,7 @@ import (
 )
 
 func parse_data(data []string) [][]int {
-	cols := len(strings.Replace(data[0], " ", "", -1))
+	cols := len(strings.Split(data[0], " "))
 	nums := make([][]int, cols)
 
 	for _, line := range data {
@@ -57,8 +57,12 @@ func step(nums [][]int, col_pos int) {
 	if !moving_down {
 		clapper_pos++
 	}
-	nums[col_pos] = append(nums[col_pos][:clapper_pos+1], nums[col_pos][clapper_pos:]...)
-	nums[col_pos][clapper_pos] = clapper
+	if clapper_pos == len(nums[col_pos]) {
+		nums[col_pos] = append(nums[col_pos], clapper)
+	} else {
+		nums[col_pos] = append(nums[col_pos][:clapper_pos+1], nums[col_pos][clapper_pos:]...)
+		nums[col_pos][clapper_pos] = clapper
+	}
 }
 
 func steps(nums [][]int, amount int) int {
@@ -77,16 +81,44 @@ func steps(nums [][]int, amount int) int {
 	return n
 }
 
+func find_repeat(nums [][]int, repeat int) int {
+	seen := map[string]int{}
+
+	col_pos := 0
+	round := 0
+	for {
+		step(nums, col_pos)
+		col_pos++
+		if col_pos == len(nums) {
+			col_pos = 0
+		}
+		round++
+
+		result := make([]string, len(nums))
+		for i := 0; i < len(nums); i++ {
+			result[i] = strconv.Itoa(nums[i][0])
+		}
+		n_str := strings.Join(result, "")
+		seen[n_str]++
+		if seen[n_str] == repeat {
+			n, _ := strconv.Atoi(n_str)
+			return round * n
+		}
+	}
+}
+
 func Run() {
 	loader.Event, loader.Quest, loader.Part = "2024", 5, 1
 
 	data := loader.GetStrings()
 	nums := parse_data(data)
-	fmt.Println(nums)
-	steps(nums, 10)
+	part1 := steps(nums, 10)
 
-	part1 := -1
+	loader.Part = 2
+	data = loader.GetStrings()
+	nums = parse_data(data)
+	part2 := find_repeat(nums, 2024)
 
-	part2, part3 := -1, -1
+	part3 := -1
 	fmt.Printf("%d %d %d\n", part1, part2, part3)
 }

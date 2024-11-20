@@ -21,3 +21,19 @@ func Test1(t *testing.T) {
 		t.Errorf("got %d, wanted %d", got, want)
 	}
 }
+
+func Test2(t *testing.T) {
+	data := []string{
+		"2 3 4 5",
+		"6 7 8 9",
+	}
+
+	nums := parse_data(data)
+	got := find_repeat(nums, 2024)
+
+	want := 50877075
+
+	if got != want {
+		t.Errorf("got %d, wanted %d", got, want)
+	}
+}
