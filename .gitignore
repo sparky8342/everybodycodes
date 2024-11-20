@@ -1,1 +1,4 @@
-inputs/
+everybody*.txt
+*~
+*.swp
+*.swo
