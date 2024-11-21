@@ -18,29 +18,29 @@ func parse_data(data []string) *Node {
 	for _, line := range data {
 		parts := strings.Split(line, ":")
 		parent := parts[0]
-		children := strings.Split(parts[1], ",")
 
 		if parent == "BUG" || parent == "ANT" {
 			continue
 		}
 
-		for _, name := range append([]string{parent}, children...) {
-			if name == "@" || name == "BUG" || name == "ANT" {
+		if _, ok := nodes[parent]; !ok {
+			nodes[parent] = &Node{name: parent}
+		}
+
+		children := strings.Split(parts[1], ",")
+
+		for _, name := range children {
+			if name == "BUG" || name == "ANT" {
+				continue
+			}
+			if name == "@" {
+				nodes[parent].apple = true
 				continue
 			}
 			if _, ok := nodes[name]; !ok {
 				nodes[name] = &Node{name: name}
 			}
-		}
-
-		for _, child := range children {
-			if child == "@" {
-				nodes[parent].apple = true
-				continue
-			} else if child == "BUG" || child == "ANT" {
-				continue
-			}
-			nodes[parent].children = append(nodes[parent].children, nodes[child])
+			nodes[parent].children = append(nodes[parent].children, nodes[name])
 		}
 	}
 
