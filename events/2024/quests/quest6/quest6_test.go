@@ -18,7 +18,7 @@ func Test1(t *testing.T) {
 	}
 
 	root := parse_data(data)
-	got := find_path(root)
+	got := find_path(root, false)
 
 	want := "RRB@"
 
