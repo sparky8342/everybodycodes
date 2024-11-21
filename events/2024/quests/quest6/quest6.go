@@ -8,7 +8,6 @@ import (
 
 type Node struct {
 	name     string
-	parent   *Node
 	children []*Node
 	apple    bool
 }
@@ -26,7 +25,7 @@ func parse_data(data []string) *Node {
 		}
 
 		for _, name := range append([]string{parent}, children...) {
-			if name == "@" {
+			if name == "@" || name == "BUG" || name == "ANT" {
 				continue
 			}
 			if _, ok := nodes[name]; !ok {
@@ -41,7 +40,6 @@ func parse_data(data []string) *Node {
 			} else if child == "BUG" || child == "ANT" {
 				continue
 			}
-			nodes[child].parent = nodes[parent]
 			nodes[parent].children = append(nodes[parent].children, nodes[child])
 		}
 	}
