@@ -43,8 +43,14 @@ func parse_data(data []string) []*Chariot {
 	return chariots
 }
 
-func (c *Chariot) move() {
-	c.power += c.changes[c.change_no]
+func (c *Chariot) move(override byte) {
+	if override == '+' {
+		c.power++
+	} else if override == '-' {
+		c.power--
+	} else {
+		c.power += c.changes[c.change_no]
+	}
 	if c.power < 0 {
 		c.power = 0
 	}
@@ -59,7 +65,28 @@ func (c *Chariot) move() {
 func race(chariots []*Chariot, turns int) string {
 	for i := 0; i < turns; i++ {
 		for _, chariot := range chariots {
-			chariot.move()
+			chariot.move('=')
+		}
+	}
+
+	sort.Slice(chariots, func(i, j int) bool {
+		return chariots[i].essence > chariots[j].essence
+	})
+
+	order := make([]string, len(chariots))
+	for i, chariot := range chariots {
+		order[i] = chariot.name
+	}
+
+	return strings.Join(order, "")
+}
+
+func race_track(chariots []*Chariot, track string, loops int) string {
+	for _, chariot := range chariots {
+		for i := 0; i < loops; i++ {
+			for j := 0; j < len(track); j++ {
+				chariot.move(track[j])
+			}
 		}
 	}
 
@@ -82,6 +109,12 @@ func Run() {
 	chariots := parse_data(data)
 	part1 := race(chariots, 10)
 
-	part2, part3 := "", ""
+	loader.Part = 2
+	data = loader.GetStrings()
+	chariots = parse_data(data)
+	track := "-=++=-==++=++=-=+=-=+=+=--=-=++=-==++=-+=-=+=-=+=+=++=-+==++=++=-=-=---=++==--+++==++=+=--==++==+++=++=+++=--=+=-=+=-+=-+=-+-=+=-=+=-+++=+==++++==---=+=+=-S"
+	part2 := race_track(chariots, track, 10)
+
+	part3 := ""
 	fmt.Printf("%s %s %s\n", part1, part2, part3)
 }
