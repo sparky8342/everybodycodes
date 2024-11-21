@@ -30,9 +30,14 @@ func Test2(t *testing.T) {
 		"D:=,=,=,+",
 	}
 
-	track := "+===++-=+=-S"
+	grid := []string{
+		"S+===",
+		"-   +",
+		"=+=-+",
+	}
 
 	chariots := parse_data(data)
+	track := parse_grid(grid)
 	got := race_track(chariots, track, 10)
 
 	want := "DCBA"

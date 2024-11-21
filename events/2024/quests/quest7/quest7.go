@@ -43,6 +43,36 @@ func parse_data(data []string) []*Chariot {
 	return chariots
 }
 
+func parse_grid(grid []string) string {
+	height := len(grid)
+	width := len(grid[0])
+
+	track := []byte{}
+	x, y := 1, 0
+	dir := 'R'
+
+	for grid[y][x] != 'S' {
+		track = append(track, grid[y][x])
+
+		if dir != 'D' && y > 0 && grid[y-1][x] != ' ' {
+			y--
+			dir = 'U'
+		} else if dir != 'U' && y < height-1 && grid[y+1][x] != ' ' {
+			y++
+			dir = 'D'
+		} else if dir != 'L' && x < width-1 && grid[y][x+1] != ' ' {
+			x++
+			dir = 'R'
+		} else if dir != 'R' && x > 0 && grid[y][x-1] != ' ' {
+			x--
+			dir = 'L'
+		}
+	}
+
+	track = append(track, 'S')
+	return string(track)
+}
+
 func (c *Chariot) move(override byte) {
 	if override == '+' {
 		c.power++
@@ -102,6 +132,65 @@ func race_track(chariots []*Chariot, track string, loops int) string {
 	return strings.Join(order, "")
 }
 
+// Knuth, Donald (2011), "Section 7.2.1.2: Generating All Permutations",
+// The Art of Computer Programming, volume 4A.
+func next_permutation(x sort.Interface) bool {
+	n := x.Len() - 1
+	if n < 1 {
+		return false
+	}
+	j := n - 1
+	for ; !x.Less(j, j+1); j-- {
+		if j == 0 {
+			return false
+		}
+	}
+	l := n
+	for !x.Less(j, l) {
+		l--
+	}
+	x.Swap(j, l)
+	for k, l := j+1, n; k < l; {
+		x.Swap(k, l)
+		k++
+		l--
+	}
+	return true
+}
+
+func try_plan(plan []int, track string, loops int, score_to_beat int) bool {
+	chariot := &Chariot{power: 10, changes: plan}
+
+	for i := 0; i < loops; i++ {
+		for j := 0; j < len(track); j++ {
+			chariot.move(track[j])
+		}
+	}
+
+	if chariot.essence > score_to_beat {
+		return true
+	} else {
+		return false
+	}
+}
+
+func try_all_plans(track string, loops int, score_to_beat int) int {
+	winning_plans := 0
+
+	plan := []int{-1, -1, -1, 0, 0, 0, 1, 1, 1, 1, 1}
+	if try_plan(plan, track, loops, score_to_beat) {
+		winning_plans++
+	}
+
+	for i := 1; next_permutation(sort.IntSlice(plan)); i++ {
+		if try_plan(plan, track, loops, score_to_beat) {
+			winning_plans++
+		}
+	}
+
+	return winning_plans
+}
+
 func Run() {
 	loader.Event, loader.Quest, loader.Part = "2024", 7, 1
 
@@ -112,9 +201,39 @@ func Run() {
 	loader.Part = 2
 	data = loader.GetStrings()
 	chariots = parse_data(data)
-	track := "-=++=-==++=++=-=+=-=+=+=--=-=++=-==++=-+=-=+=-=+=+=++=-+==++=++=-=-=---=++==--+++==++=+=--==++==+++=++=+++=--=+=-=+=-+=-+=-+-=+=-=+=-+++=+==++++==---=+=+=-S"
+	grid := []string{
+		"S-=++=-==++=++=-=+=-=+=+=--=-=++=-==++=-+=-=+=-=+=+=++=-+==++=++=-=-=--",
+		"-                                                                     -",
+		"=                                                                     =",
+		"+                                                                     +",
+		"=                                                                     +",
+		"+                                                                     =",
+		"=                                                                     =",
+		"-                                                                     -",
+		"--==++++==+=+++-=+=-=+=-+-=+-=+-=+=-=+=--=+++=++=+++==++==--=+=++==+++-",
+	}
+	track := parse_grid(grid)
 	part2 := race_track(chariots, track, 10)
 
-	part3 := ""
-	fmt.Printf("%s %s %s\n", part1, part2, part3)
+	loader.Part = 3
+	data = loader.GetStrings()
+	chariots = parse_data(data)
+	grid = []string{
+		"S+= +=-== +=++=     =+=+=--=    =-= ++=     +=-  =+=++=-+==+ =++=-=-=--",
+		"- + +   + =   =     =      =   == = - -     - =  =         =-=        -",
+		"= + + +-- =-= ==-==-= --++ +  == == = +     - =  =    ==++=    =++=-=++",
+		"+ + + =     +         =  + + == == ++ =     = =  ==   =   = =++=       ",
+		"= = + + +== +==     =++ == =+=  =  +  +==-=++ =   =++ --= + =          ",
+		"+ ==- = + =   = =+= =   =       ++--          +     =   = = =--= ==++==",
+		"=     ==- ==+-- = = = ++= +=--      ==+ ==--= +--+=-= ==- ==   =+=    =",
+		"-               = = = =   +  +  ==+ = = +   =        ++    =          -",
+		"-               = + + =   +  -  = + = = +   =        +     =          -",
+		"--==++++==+=+++-= =-= =-+-=  =+-= =-= =--   +=++=+++==     -=+=++==+++-",
+	}
+	track = parse_grid(grid)
+	race_track(chariots, track, 2024)
+	rival := chariots[0].essence
+	part3 := try_all_plans(track, 2024, rival)
+
+	fmt.Printf("%s %s %d\n", part1, part2, part3)
 }
