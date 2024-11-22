@@ -7,11 +7,13 @@ import (
 
 var dots_part1 []int
 var dots_part2 []int
+var dots_part3 []int
 var available []int
 
 func init() {
 	dots_part1 = []int{1, 3, 5, 10}
 	dots_part2 = []int{1, 3, 5, 10, 15, 16, 20, 24, 25, 30}
+	dots_part3 = []int{1, 3, 5, 10, 15, 16, 20, 24, 25, 30, 37, 38, 49, 50, 74, 75, 100, 101}
 }
 
 func min(a int, b int) int {
@@ -32,7 +34,7 @@ func max(nums []int) int {
 	return m
 }
 
-func calc_beatles(sparks []int) int {
+func create_dp_slice(sparks []int) []int {
 	dp := make([]int, max(sparks)+1)
 
 	for _, dot := range available {
@@ -54,11 +56,45 @@ func calc_beatles(sparks []int) int {
 			}
 		}
 	}
+	return dp
+}
+
+func calc_beatles(sparks []int) int {
+	dp := create_dp_slice(sparks)
 
 	count := 0
 	for _, spark := range sparks {
 		count += dp[spark]
 	}
+	return count
+}
+
+func calc_beatles_split(sparks []int) int {
+	dp := create_dp_slice(sparks)
+
+	count := 0
+	for _, spark := range sparks {
+		low := spark / 2
+		high := low
+		if spark%2 == 1 {
+			high++
+		}
+
+		smallest := dp[low] + dp[high]
+		for {
+			low--
+			high++
+			if high-low > 100 {
+				break
+			}
+			beatles := dp[low] + dp[high]
+			if beatles < smallest {
+				smallest = beatles
+			}
+		}
+		count += smallest
+	}
+
 	return count
 }
 
@@ -74,13 +110,10 @@ func Run() {
 	available = dots_part2
 	part2 := calc_beatles(sparks)
 
-	part3 := -1
+	loader.Part = 3
+	sparks = loader.GetInts()
+	available = dots_part3
+	part3 := calc_beatles_split(sparks)
+
 	fmt.Printf("%d %d %d\n", part1, part2, part3)
 }
-
-/*
-1, 3, 5, 10, 15, 16, 20, 24, 25, 30
-
-1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30
-1 2 1 2 1 2        1  2           1  1           1  2        1  1              1
-*/

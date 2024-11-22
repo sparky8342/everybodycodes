@@ -27,3 +27,15 @@ func Test2(t *testing.T) {
 		t.Errorf("got %d, wanted %d", got, want)
 	}
 }
+
+func Test3(t *testing.T) {
+	sparks := []int{156488, 352486, 546212}
+
+	available = dots_part3
+	got := calc_beatles_split(sparks)
+	want := 10449
+
+	if got != want {
+		t.Errorf("got %d, wanted %d", got, want)
+	}
+}
