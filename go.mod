@@ -17,3 +17,5 @@ require events/2024/quests/quest6 v1.0.0
 replace events/2024/quests/quest6 v1.0.0 => ./events/2024/quests/quest6
 require events/2024/quests/quest7 v1.0.0
 replace events/2024/quests/quest7 v1.0.0 => ./events/2024/quests/quest7
+require events/2024/quests/quest8 v1.0.0
+replace events/2024/quests/quest8 v1.0.0 => ./events/2024/quests/quest8

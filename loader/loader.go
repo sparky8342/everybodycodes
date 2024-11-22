@@ -40,6 +40,23 @@ func GetStrings() []string {
 	return strings.Split(string(data), "\n")
 }
 
+func GetOneInt() int {
+	data, err := ioutil.ReadFile(get_filename())
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "error %v\n", err)
+		os.Exit(1)
+	}
+	if data[len(data)-1] == '\n' {
+		data = data[:len(data)-1]
+	}
+	n, err := strconv.Atoi(string(data))
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "error %v\n", err)
+		os.Exit(1)
+	}
+	return n
+}
+
 func GetInts() []int {
 	data, err := ioutil.ReadFile(get_filename())
 	if err != nil {
