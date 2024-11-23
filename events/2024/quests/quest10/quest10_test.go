@@ -34,3 +34,29 @@ func Test2(t *testing.T) {
 		t.Errorf("got %d, wanted %d", got, want)
 	}
 }
+
+func Test3(t *testing.T) {
+	data := []string{
+		"**XFZB**DCST**",
+		"**LWQK**GQJH**",
+		"?G....WL....DQ",
+		"BS....H?....CN",
+		"P?....KJ....TV",
+		"NM....Z?....SG",
+		"**NSHM**VKWZ**",
+		"**PJGV**XFNL**",
+		"WQ....?L....YS",
+		"FX....DJ....HV",
+		"?Y....WM....?J",
+		"TJ....YK....LP",
+		"**XRTK**BMSP**",
+		"**DWZN**GCJV**",
+	}
+
+	got := solve_multi_grid(data)
+	want := 3889
+
+	if got != want {
+		t.Errorf("got %d, wanted %d", got, want)
+	}
+}
