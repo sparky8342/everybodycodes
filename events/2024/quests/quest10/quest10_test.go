@@ -23,3 +23,14 @@ func Test1(t *testing.T) {
 		t.Errorf("got %s, wanted %s", got, want)
 	}
 }
+
+func Test2(t *testing.T) {
+	word := "PTBVRCZHFLJWGMNS"
+
+	got := power(word)
+	want := 1851
+
+	if got != want {
+		t.Errorf("got %d, wanted %d", got, want)
+	}
+}
