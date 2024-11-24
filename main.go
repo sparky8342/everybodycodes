@@ -2,6 +2,9 @@ package main
 
 import (
 	"events/2024/quests/quest1"
+	"events/2024/quests/quest10"
+	"events/2024/quests/quest11"
+	"events/2024/quests/quest12"
 	"events/2024/quests/quest2"
 	"events/2024/quests/quest3"
 	"events/2024/quests/quest4"
@@ -10,8 +13,6 @@ import (
 	"events/2024/quests/quest7"
 	"events/2024/quests/quest8"
 	"events/2024/quests/quest9"
-	"events/2024/quests/quest10"
-	"events/2024/quests/quest11"
 	"fmt"
 	"os"
 	"strconv"
@@ -47,6 +48,8 @@ func main() {
 			quest10.Run()
 		case 11:
 			quest11.Run()
+		case 12:
+			quest12.Run()
 		}
 	} else {
 		fmt.Println("Quest 1")
@@ -71,5 +74,7 @@ func main() {
 		quest10.Run()
 		fmt.Println("Quest 11")
 		quest11.Run()
+		fmt.Println("Quest 12")
+		quest12.Run()
 	}
 }
