@@ -11,14 +11,13 @@ func parse_data(data []string) map[string][]string {
 	rules := map[string][]string{}
 	for _, line := range data {
 		parts := strings.Split(line, ":")
-		source := parts[0]
-		rules[source] = strings.Split(parts[1], ",")
+		rules[parts[0]] = strings.Split(parts[1], ",")
 	}
 	return rules
 }
 
-func day(rules map[string][]string, population map[string]uint) map[string]uint {
-	next := map[string]uint{}
+func day(rules map[string][]string, population map[string]uint64) map[string]uint64 {
+	next := map[string]uint64{}
 	for typ, amount := range population {
 		for _, dest := range rules[typ] {
 			next[dest] += amount
@@ -27,22 +26,22 @@ func day(rules map[string][]string, population map[string]uint) map[string]uint 
 	return next
 }
 
-func days(rules map[string][]string, start string, amount int) uint {
-	population := map[string]uint{}
+func days(rules map[string][]string, start string, amount int) uint64 {
+	population := map[string]uint64{}
 	population[start] = 1
 	for i := 0; i < amount; i++ {
 		population = day(rules, population)
 	}
-	var count uint = 0
+	var count uint64 = 0
 	for _, n := range population {
 		count += n
 	}
 	return count
 }
 
-func all_starts(rules map[string][]string) uint {
-	var min uint = math.MaxInt64
-	var max uint = 0
+func all_starts(rules map[string][]string) uint64 {
+	var min uint64 = math.MaxInt64
+	var max uint64 = 0
 	for source := range rules {
 		count := days(rules, source, 20)
 		if count < min {
