@@ -10,12 +10,18 @@ type Pos struct {
 	y int
 }
 
-func find_things(grid []string) (map[byte]Pos, []Pos) {
+type Target struct {
+	x        int
+	y        int
+	strength int
+}
+
+func find_things(grid []string) (map[byte]Pos, []Target) {
 	height := len(grid)
 	width := len(grid[0])
 
 	cannons := map[byte]Pos{}
-	targets := []Pos{}
+	targets := []Target{}
 
 	for y := 0; y < height; y++ {
 		for x := 0; x < width; x++ {
@@ -23,7 +29,9 @@ func find_things(grid []string) (map[byte]Pos, []Pos) {
 			if space >= 'A' && space <= 'C' {
 				cannons[space] = Pos{x: x, y: y}
 			} else if space == 'T' {
-				targets = append(targets, Pos{x: x, y: y})
+				targets = append(targets, Target{x: x, y: y, strength: 1})
+			} else if space == 'H' {
+				targets = append(targets, Target{x: x, y: y, strength: 2})
 			}
 		}
 	}
@@ -31,7 +39,7 @@ func find_things(grid []string) (map[byte]Pos, []Pos) {
 	return cannons, targets
 }
 
-func fire(cannons map[byte]Pos, target Pos) int {
+func fire(cannons map[byte]Pos, target Target) int {
 	for i, name := range []byte{'C', 'B', 'A'} {
 		cannon := cannons[name]
 		for power := 1; ; power++ {
@@ -43,7 +51,7 @@ func fire(cannons map[byte]Pos, target Pos) int {
 				ball.x++
 			}
 			if ball.x == target.x {
-				return (3 - i) * power
+				return (3 - i) * power * target.strength
 			} else if ball.x > target.x {
 				break
 			}
@@ -52,7 +60,7 @@ func fire(cannons map[byte]Pos, target Pos) int {
 	return -1
 }
 
-func fire_cannons(grid []string, cannons map[byte]Pos, targets []Pos) int {
+func fire_cannons(grid []string, cannons map[byte]Pos, targets []Target) int {
 	power := 0
 	for _, target := range targets {
 		power += fire(cannons, target)
@@ -67,6 +75,11 @@ func Run() {
 	cannons, targets := find_things(grid)
 	part1 := fire_cannons(grid, cannons, targets)
 
-	part2, part3 := -1, -1
+	loader.Part = 2
+	grid = loader.GetStrings()
+	cannons, targets = find_things(grid)
+	part2 := fire_cannons(grid, cannons, targets)
+
+	part3 := -1
 	fmt.Printf("%d %d %d\n", part1, part2, part3)
 }
