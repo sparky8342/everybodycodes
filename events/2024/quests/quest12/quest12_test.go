@@ -39,3 +39,19 @@ func Test2(t *testing.T) {
 		t.Errorf("got %d, wanted %d", got, want)
 	}
 }
+
+func Test3(t *testing.T) {
+	data := []string{
+		"6 5",
+		"6 7",
+		"10 5",
+	}
+
+	meteors := parse_meteors(data)
+	got := shoot_meteors(meteors)
+	want := 11
+
+	if got != want {
+		t.Errorf("got %d, wanted %d", got, want)
+	}
+}

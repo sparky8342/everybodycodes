@@ -3,6 +3,9 @@ package quest12
 import (
 	"fmt"
 	"loader"
+	"os"
+	"strconv"
+	"strings"
 )
 
 type Pos struct {
@@ -46,10 +49,7 @@ func fire(cannons map[byte]Pos, target Target) int {
 			ball := cannon
 			ball.x += power * 2
 			ball.y -= power
-			for ball.y < target.y {
-				ball.y++
-				ball.x++
-			}
+			ball.x += target.y - ball.y
 			if ball.x == target.x {
 				return (3 - i) * power * target.strength
 			} else if ball.x > target.x {
@@ -68,6 +68,53 @@ func fire_cannons(grid []string, cannons map[byte]Pos, targets []Target) int {
 	return power
 }
 
+func parse_meteors(data []string) []Pos {
+	meteors := make([]Pos, len(data))
+	for i, line := range data {
+		parts := strings.Split(line, " ")
+		x, err := strconv.Atoi(parts[0])
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "error %v\n", err)
+			os.Exit(1)
+		}
+		y, err := strconv.Atoi(parts[1])
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "error %v\n", err)
+			os.Exit(1)
+		}
+		meteors[i] = Pos{x: x, y: y}
+	}
+	return meteors
+}
+
+func get_power(x int, y int) int {
+	for base := 0; base < 3; base++ {
+		y := y - base
+		horizontal := x + y
+
+		if x < y {
+			continue
+		}
+
+		if x <= 2*y {
+			return (base + 1) * y
+		}
+
+		if horizontal%3 == 0 {
+			return (base + 1) * (horizontal / 3)
+		}
+	}
+	return -1
+}
+
+func shoot_meteors(meteors []Pos) int {
+	total := 0
+	for _, meteor := range meteors {
+		total += get_power(meteor.x/2, meteor.y-meteor.x/2-meteor.x%2)
+	}
+	return total
+}
+
 func Run() {
 	loader.Event, loader.Quest, loader.Part = "2024", 12, 1
 
@@ -80,6 +127,10 @@ func Run() {
 	cannons, targets = find_things(grid)
 	part2 := fire_cannons(grid, cannons, targets)
 
-	part3 := -1
+	loader.Part = 3
+	data := loader.GetStrings()
+	meteors := parse_meteors(data)
+	part3 := shoot_meteors(meteors)
+
 	fmt.Printf("%d %d %d\n", part1, part2, part3)
 }
