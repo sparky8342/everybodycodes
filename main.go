@@ -5,6 +5,7 @@ import (
 	"events/2024/quests/quest10"
 	"events/2024/quests/quest11"
 	"events/2024/quests/quest12"
+	"events/2024/quests/quest13"
 	"events/2024/quests/quest2"
 	"events/2024/quests/quest3"
 	"events/2024/quests/quest4"
@@ -50,6 +51,8 @@ func main() {
 			quest11.Run()
 		case 12:
 			quest12.Run()
+		case 13:
+			quest13.Run()
 		}
 	} else {
 		fmt.Println("Quest 1")
@@ -76,5 +79,7 @@ func main() {
 		quest11.Run()
 		fmt.Println("Quest 12")
 		quest12.Run()
+		fmt.Println("Quest 13")
+		quest13.Run()
 	}
 }
