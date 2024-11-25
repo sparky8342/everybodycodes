@@ -49,23 +49,20 @@ func get_dist(grid []string, a Pos, b Pos) int {
 	return dist + 1
 }
 
-func find_path(grid []string) int {
+func find_path(grid []string, start_b byte, end_b byte) int {
 	height := len(grid)
 	width := len(grid[0])
 
 	nodes := map[Pos]int{}
-	var start, end Pos
+	var start Pos
 
 	for y := 0; y < height; y++ {
 		for x := 0; x < width; x++ {
 			space := grid[y][x]
-			if space == 'S' {
+			if space == start_b {
 				start = Pos{x: x, y: y}
 				nodes[start] = 0
-			} else if space == 'E' {
-				end = Pos{x: x, y: y}
-				nodes[end] = math.MaxInt32
-			} else if space >= '0' && space <= '9' {
+			} else if space == end_b || (space >= '0' && space <= '9') {
 				nodes[Pos{x: x, y: y}] = math.MaxInt32
 			}
 		}
@@ -82,7 +79,7 @@ func find_path(grid []string) int {
 			}
 		}
 
-		if node.x == end.x && node.y == end.y {
+		if grid[node.y][node.x] == end_b {
 			return smallest_distance
 		}
 
@@ -108,13 +105,15 @@ func Run() {
 	loader.Event, loader.Quest, loader.Part = "2024", 13, 1
 
 	grid := loader.GetStrings()
-	part1 := find_path(grid)
+	part1 := find_path(grid, 'S', 'E')
 
 	loader.Part = 2
-
 	grid = loader.GetStrings()
-	part2 := find_path(grid)
+	part2 := find_path(grid, 'S', 'E')
 
-	part3 := -1
+	loader.Part = 3
+	grid = loader.GetStrings()
+	part3 := find_path(grid, 'E', 'S')
+
 	fmt.Printf("%d %d %d\n", part1, part2, part3)
 }
