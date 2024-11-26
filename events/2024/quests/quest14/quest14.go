@@ -3,6 +3,7 @@ package quest14
 import (
 	"fmt"
 	"loader"
+	"math"
 	"os"
 	"strconv"
 	"strings"
@@ -12,6 +13,19 @@ type Segment struct {
 	x int
 	y int
 	z int
+}
+
+type Node struct {
+	segment  Segment
+	distance int
+}
+
+func abs(n int) int {
+	if n < 0 {
+		return n * -1
+	} else {
+		return n
+	}
 }
 
 func max_height(data []byte) int {
@@ -75,6 +89,105 @@ func unique_segments(data []string) int {
 	return len(segments)
 }
 
+func path(segments map[Segment]struct{}, start Segment, end Segment) int {
+	start_node := Node{segment: start}
+	queue := []Node{start_node}
+	visited := map[Segment]struct{}{}
+	visited[start] = struct{}{}
+
+	for len(queue) > 0 {
+		node := queue[0]
+		queue = queue[1:]
+
+		segment := node.segment
+		if segment == end {
+			return node.distance
+		}
+
+		neighbours := []Segment{
+			Segment{x: segment.x + 1, y: segment.y, z: segment.z},
+			Segment{x: segment.x - 1, y: segment.y, z: segment.z},
+			Segment{x: segment.x, y: segment.y + 1, z: segment.z},
+			Segment{x: segment.x, y: segment.y - 1, z: segment.z},
+			Segment{x: segment.x, y: segment.y, z: segment.z + 1},
+			Segment{x: segment.x, y: segment.y, z: segment.z - 1},
+		}
+
+		for _, neighbour := range neighbours {
+			if _, ok := segments[neighbour]; !ok {
+				continue
+			}
+			if _, ok := visited[neighbour]; ok {
+				continue
+			}
+			queue = append(queue, Node{segment: neighbour, distance: node.distance + 1})
+			visited[neighbour] = struct{}{}
+		}
+	}
+
+	return -1
+}
+
+func murkiness(data []string) int {
+	leaves := map[Segment]struct{}{}
+	segments := map[Segment]struct{}{}
+	height := 0
+
+	for _, line := range data {
+		segment := Segment{}
+
+		for _, step := range strings.Split(line, ",") {
+			dir := step[0]
+			n, err := strconv.Atoi(step[1:])
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "error %v\n", err)
+				os.Exit(1)
+			}
+
+			for i := 0; i < n; i++ {
+				switch dir {
+				case 'U':
+					segment.y++
+				case 'D':
+					segment.y--
+				case 'R':
+					segment.x++
+				case 'L':
+					segment.x--
+				case 'F':
+					segment.z++
+				case 'B':
+					segment.z--
+				}
+
+				segments[segment] = struct{}{}
+
+				if segment.x == 0 && segment.z == 0 {
+					if segment.y > height {
+						height = segment.y
+					}
+				}
+			}
+
+		}
+		leaves[segment] = struct{}{}
+	}
+
+	min_dist := math.MaxInt32
+	trunk := Segment{}
+	for trunk.y = 0; trunk.y <= height; trunk.y++ {
+		dist := 0
+		for leaf := range leaves {
+			dist += path(segments, trunk, leaf)
+		}
+		if dist < min_dist {
+			min_dist = dist
+		}
+	}
+
+	return min_dist
+}
+
 func Run() {
 	loader.Event, loader.Quest, loader.Part = "2024", 14, 1
 
@@ -85,6 +198,9 @@ func Run() {
 	data2 := loader.GetStrings()
 	part2 := unique_segments(data2)
 
-	part3 := -1
+	loader.Part = 3
+	data3 := loader.GetStrings()
+	part3 := murkiness(data3)
+
 	fmt.Printf("%d %d %d\n", part1, part2, part3)
 }
