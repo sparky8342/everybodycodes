@@ -89,19 +89,20 @@ func unique_segments(data []string) int {
 	return len(segments)
 }
 
-func path(segments map[Segment]struct{}, start Segment, end Segment) int {
+func path(segments map[Segment]struct{}, start Segment, leaves map[Segment]struct{}) int {
 	start_node := Node{segment: start}
 	queue := []Node{start_node}
 	visited := map[Segment]struct{}{}
 	visited[start] = struct{}{}
 
+	distance := 0
 	for len(queue) > 0 {
 		node := queue[0]
 		queue = queue[1:]
 
 		segment := node.segment
-		if segment == end {
-			return node.distance
+		if _, ok := leaves[segment]; ok {
+			distance += node.distance
 		}
 
 		neighbours := []Segment{
@@ -125,7 +126,7 @@ func path(segments map[Segment]struct{}, start Segment, end Segment) int {
 		}
 	}
 
-	return -1
+	return distance
 }
 
 func murkiness(data []string) int {
@@ -176,10 +177,7 @@ func murkiness(data []string) int {
 	min_dist := math.MaxInt32
 	trunk := Segment{}
 	for trunk.y = 0; trunk.y <= height; trunk.y++ {
-		dist := 0
-		for leaf := range leaves {
-			dist += path(segments, trunk, leaf)
-		}
+		dist := path(segments, trunk, leaves)
 		if dist < min_dist {
 			min_dist = dist
 		}
