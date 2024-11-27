@@ -6,37 +6,44 @@ import (
 )
 
 type Pos struct {
-	x int
-	y int
+	x uint8
+	y uint8
 }
 
 type Node struct {
 	pos           Pos
-	letters_found [26]bool
-	found_count   int
-	distance      int
+	letters_found int32
+	found_count   uint8
+	distance      uint16
 }
 
 type State struct {
 	pos     Pos
-	letters [26]bool
+	letters int32
 }
 
-func find_path(grid []string) int {
-	x := 0
-	for grid[0][x] != '.' {
-		x++
+func parse_data(data []string) [][]byte {
+	grid := make([][]byte, len(data))
+	for i, line := range data {
+		grid[i] = []byte(line)
 	}
+	return grid
+}
 
-	letters := make([]bool, 26)
-	letter_count := 0
-	for y := 0; y < len(grid); y++ {
+func find_path(grid [][]byte, start_pos Pos) uint16 {
+	height := uint8(len(grid))
+	width := uint8(len(grid[0]))
+
+	var letters int32 = 0
+	var letter_count uint8 = 0
+	for y := uint8(0); y < uint8(len(grid)); y++ {
 		for x := 0; x < len(grid[0]); x++ {
 			space := grid[y][x]
 			if space >= 'A' && space <= 'Z' {
 				n := space - 'A'
-				if letters[n] == false {
-					letters[n] = true
+				var bit int32 = 1 << n
+				if bit&letters == 0 {
+					letters |= bit
 					letter_count++
 				}
 			}
@@ -44,16 +51,9 @@ func find_path(grid []string) int {
 	}
 
 	visited := map[State]struct{}{}
-	visited[State{pos: Pos{x: x, y: 0}, letters: [26]bool{}}] = struct{}{}
+	visited[State{pos: start_pos}] = struct{}{}
 
-	start_pos := Pos{x: x, y: 1}
-	visited[State{pos: start_pos, letters: [26]bool{}}] = struct{}{}
-
-	start_node := Node{
-		pos:           start_pos,
-		letters_found: [26]bool{},
-		distance:      1,
-	}
+	start_node := Node{pos: start_pos}
 	queue := []Node{start_node}
 
 	for len(queue) > 0 {
@@ -66,13 +66,14 @@ func find_path(grid []string) int {
 		space := grid[pos.y][pos.x]
 		if space >= 'A' && space <= 'Z' {
 			n := space - 'A'
-			if letters_found[n] == false {
-				letters_found[n] = true
+			var bit int32 = 1 << n
+			if bit&letters == bit && bit&letters_found == 0 {
+				letters_found |= bit
 				found_count++
 			}
 		}
 		if found_count == letter_count && pos == start_pos {
-			return node.distance + 1
+			return node.distance
 		}
 
 		neighbours := []Pos{
@@ -83,7 +84,10 @@ func find_path(grid []string) int {
 		}
 
 		for _, neighbour := range neighbours {
-			if neighbour.y == -1 || grid[neighbour.y][neighbour.x] == '#' || grid[neighbour.y][neighbour.x] == '~' {
+			if neighbour.x == 255 || neighbour.x == width || neighbour.y == 255 || neighbour.y == height {
+				continue
+			}
+			if grid[neighbour.y][neighbour.x] == '#' || grid[neighbour.y][neighbour.x] == '~' {
 				continue
 			}
 			state := State{pos: neighbour, letters: letters_found}
@@ -100,19 +104,57 @@ func find_path(grid []string) int {
 		}
 	}
 
-	return -1
+	return 0
+}
+
+func simple_solve(grid [][]byte) uint16 {
+	var x uint8 = 0
+	for grid[0][x] != '.' {
+		x++
+	}
+	start_pos := Pos{x: x, y: 0}
+	return find_path(grid, start_pos)
+}
+
+func part3_solve(grid [][]byte) uint16 {
+	//input specific solution
+
+	grids := make([][][]byte, 3)
+	for i := 0; i < 3; i++ {
+		grids[i] = make([][]byte, len(grid))
+	}
+
+	for i, row := range grid {
+		grids[0][i] = row[0:86]
+		grids[1][i] = row[86:169]
+		grids[2][i] = row[169:]
+	}
+
+	// force both K's to be found
+	grids[1][75][0] = 'X'
+
+	dist0 := find_path(grids[0], Pos{x: 85, y: 75})
+	dist1 := find_path(grids[1], Pos{x: 41, y: 0})
+	dist2 := find_path(grids[2], Pos{x: 0, y: 75})
+
+	return dist0 + dist1 + dist2 + 4
 }
 
 func Run() {
 	loader.Event, loader.Quest, loader.Part = "2024", 15, 1
 
-	grid := loader.GetStrings()
-	part1 := find_path(grid)
+	data := loader.GetStrings()
+	part1 := simple_solve(parse_data(data))
 
 	loader.Part = 2
-	grid = loader.GetStrings()
-	part2 := find_path(grid)
+	data = loader.GetStrings()
+	part2 := simple_solve(parse_data(data))
 
-	part3 := -1
+	loader.Part = 3
+	data = loader.GetStrings()
+	part3 := part3_solve(parse_data(data))
+	//part3 := -1
+	fmt.Println(part3)
+
 	fmt.Printf("%d %d %d\n", part1, part2, part3)
 }

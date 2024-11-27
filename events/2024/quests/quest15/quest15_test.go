@@ -5,7 +5,7 @@ import (
 )
 
 func Test1(t *testing.T) {
-	grid := []string{
+	data := []string{
 		"#####.#####",
 		"#.........#",
 		"#.######.##",
@@ -14,8 +14,8 @@ func Test1(t *testing.T) {
 		"#H.......H#",
 		"###########",
 	}
-	got := find_path(grid)
-	want := 26
+	got := simple_solve(parse_data(data))
+	var want uint16 = 26
 
 	if got != want {
 		t.Errorf("got %d, wanted %d", got, want)
@@ -23,7 +23,7 @@ func Test1(t *testing.T) {
 }
 
 func Test2(t *testing.T) {
-	grid := []string{
+	data := []string{
 		"##########.##########",
 		"#...................#",
 		"#.###.##.###.##.#.#.#",
@@ -36,8 +36,8 @@ func Test2(t *testing.T) {
 		"#####################",
 	}
 
-	got := find_path(grid)
-	want := 38
+	got := simple_solve(parse_data(data))
+	var want uint16 = 38
 
 	if got != want {
 		t.Errorf("got %d, wanted %d", got, want)
