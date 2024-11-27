@@ -33,3 +33,5 @@ require events/2024/quests/quest14 v1.0.0
 replace events/2024/quests/quest14 v1.0.0 => ./events/2024/quests/quest14
 require events/2024/quests/quest15 v1.0.0
 replace events/2024/quests/quest15 v1.0.0 => ./events/2024/quests/quest15
+require events/2024/quests/quest16 v1.0.0
+replace events/2024/quests/quest16 v1.0.0 => ./events/2024/quests/quest16
