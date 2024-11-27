@@ -153,8 +153,6 @@ func Run() {
 	loader.Part = 3
 	data = loader.GetStrings()
 	part3 := part3_solve(parse_data(data))
-	//part3 := -1
-	fmt.Println(part3)
 
 	fmt.Printf("%d %d %d\n", part1, part2, part3)
 }
