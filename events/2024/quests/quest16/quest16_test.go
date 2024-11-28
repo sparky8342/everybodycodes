@@ -67,3 +67,29 @@ func Test2(t *testing.T) {
 	}
 
 }
+
+func Test3(t *testing.T) {
+	data := []string{
+		"1,2,3",
+		"",
+		"^_^ -.- ^,-",
+		">.- ^_^ >.<",
+		"-_- -.- ^.^",
+		"    -.^ >.<",
+		"    >.>",
+	}
+
+	machine := parse_data(data)
+
+	got_min, got_max := machine.minmax(100)
+	want_min := 50
+	want_max := 246
+
+	if got_min != want_min {
+		t.Errorf("got %d, wanted %d", got_min, want_min)
+	}
+
+	if got_max != want_max {
+		t.Errorf("got %d, wanted %d", got_max, want_max)
+	}
+}

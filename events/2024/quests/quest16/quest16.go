@@ -14,6 +14,32 @@ type Machine struct {
 	positions []int
 }
 
+type Node struct {
+	positions []int
+	score     int
+	pulls     int
+}
+
+func min(nums [3]int) int {
+	n := nums[0]
+	for i := 1; i < len(nums); i++ {
+		if nums[i] < n {
+			n = nums[i]
+		}
+	}
+	return n
+}
+
+func max(nums [3]int) int {
+	n := nums[0]
+	for i := 1; i < len(nums); i++ {
+		if nums[i] > n {
+			n = nums[i]
+		}
+	}
+	return n
+}
+
 func parse_data(data []string) Machine {
 	machine := Machine{}
 
@@ -127,6 +153,82 @@ func (m *Machine) display() string {
 	return strings.Join(cats, " ")
 }
 
+func (m *Machine) cache_key(pulls int, score int) int {
+	n := 0
+	for _, p := range m.positions {
+		n = n*100 + p
+	}
+	n = n*1000 + pulls
+	n = n*1000 + score
+	return n
+}
+
+func (m *Machine) left_spin_up() {
+	for i := 0; i < len(m.positions); i++ {
+		m.positions[i] = (m.positions[i] - 1) % len(m.wheels[i])
+	}
+}
+
+func (m *Machine) left_spin_down() {
+	for i := 0; i < len(m.positions); i++ {
+		m.positions[i] = (m.positions[i] + 1) % len(m.wheels[i])
+	}
+}
+
+func (m *Machine) dfs(pulls int, score int, cache map[int]int, min_mode bool) int {
+	key := m.cache_key(pulls, score)
+
+	if pulls == 0 {
+		return score
+	}
+
+	if val, ok := cache[key]; ok {
+		return val
+	}
+
+	positions := make([]int, len(m.positions))
+	copy(positions, m.positions)
+
+	vals := [3]int{}
+
+	// no left spin
+	m.spin(1)
+	vals[0] = m.dfs(pulls-1, score+m.score(), cache, min_mode)
+
+	// left spin up
+	copy(m.positions, positions)
+	m.left_spin_up()
+	m.spin(1)
+	vals[1] = m.dfs(pulls-1, score+m.score(), cache, min_mode)
+
+	//left spin down
+	copy(m.positions, positions)
+	m.left_spin_down()
+	m.spin(1)
+	vals[2] = m.dfs(pulls-1, score+m.score(), cache, min_mode)
+
+	var val int
+	if min_mode {
+		val = min(vals)
+	} else {
+		val = max(vals)
+	}
+
+	cache[key] = val
+	return val
+}
+
+func (m *Machine) minmax(pulls int) (int, int) {
+	cache := map[int]int{}
+	min := m.dfs(pulls, 0, cache, true)
+
+	m.reset()
+	cache = map[int]int{}
+	max := m.dfs(pulls, 0, cache, false)
+
+	return min, max
+}
+
 func Run() {
 	loader.Event, loader.Quest, loader.Part = "2024", 16, 1
 
@@ -140,6 +242,10 @@ func Run() {
 	machine = parse_data(data)
 	part2 := machine.spin_with_score(202420242024)
 
-	part3 := -1
-	fmt.Printf("%s %d %d\n", part1, part2, part3)
+	loader.Part = 3
+	data = loader.GetStrings()
+	machine = parse_data(data)
+	min, max := machine.minmax(256)
+
+	fmt.Printf("%s\n%d\n%d %d\n", part1, part2, max, min)
 }
