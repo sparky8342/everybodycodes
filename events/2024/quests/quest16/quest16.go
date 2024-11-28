@@ -14,12 +14,6 @@ type Machine struct {
 	positions []int
 }
 
-type Node struct {
-	positions []int
-	score     int
-	pulls     int
-}
-
 func min(nums [3]int) int {
 	n := nums[0]
 	for i := 1; i < len(nums); i++ {
