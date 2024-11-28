@@ -100,7 +100,7 @@ func (m *Machine) score() int {
 
 func (m *Machine) spin_with_score(amount int) int {
 	total := 0
-	sequences := map[string][]int{}
+	sequences := map[int][]int{}
 
 	for i := 0; i < amount; i++ {
 		for j := 0; j < len(m.positions); j++ {
@@ -120,11 +120,10 @@ func (m *Machine) spin_with_score(amount int) int {
 		}
 		total += score
 
-		pos := make([]string, len(m.positions))
-		for i, position := range m.positions {
-			pos[i] = strconv.Itoa(position)
+		state := 0
+		for _, p := range m.positions {
+			state = state*100 + p
 		}
-		state := strings.Join(pos, "")
 
 		if last, ok := sequences[state]; ok {
 			diff := total - last[1]
@@ -135,7 +134,7 @@ func (m *Machine) spin_with_score(amount int) int {
 
 			total += diff * steps
 			i += steps * step
-			sequences = map[string][]int{}
+			sequences = map[int][]int{}
 		} else {
 			sequences[state] = []int{i, total}
 		}
