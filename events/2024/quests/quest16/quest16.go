@@ -11,7 +11,7 @@ import (
 type Machine struct {
 	wheels    [][]string
 	rotations []int
-	positions []int
+	positions [10]int
 }
 
 func min(nums [3]int) int {
@@ -60,8 +60,6 @@ func parse_data(data []string) Machine {
 		}
 	}
 
-	machine.positions = make([]int, len(rot))
-
 	return machine
 }
 
@@ -72,7 +70,7 @@ func (m *Machine) reset() {
 }
 
 func (m *Machine) spin(amount int) {
-	for i := 0; i < len(m.positions); i++ {
+	for i := 0; i < len(m.wheels); i++ {
 		m.positions[i] = (m.positions[i] + m.rotations[i]*amount) % len(m.wheels[i])
 	}
 }
@@ -97,7 +95,7 @@ func (m *Machine) spin_with_score(amount int) int {
 	sequences := map[int][]int{}
 
 	for i := 0; i < amount; i++ {
-		for j := 0; j < len(m.positions); j++ {
+		for j := 0; j < len(m.wheels); j++ {
 			m.positions[j] = (m.positions[j] + m.rotations[j]) % len(m.wheels[j])
 		}
 
@@ -115,8 +113,8 @@ func (m *Machine) spin_with_score(amount int) int {
 		total += score
 
 		state := 0
-		for _, p := range m.positions {
-			state = state*100 + p
+		for i := 0; i < len(m.wheels); i++ {
+			state = state*100 + m.positions[i]
 		}
 
 		if last, ok := sequences[state]; ok {
@@ -157,13 +155,13 @@ func (m *Machine) cache_key(pulls int, score int) int {
 }
 
 func (m *Machine) left_spin_up() {
-	for i := 0; i < len(m.positions); i++ {
+	for i := 0; i < len(m.wheels); i++ {
 		m.positions[i] = (m.positions[i] - 1) % len(m.wheels[i])
 	}
 }
 
 func (m *Machine) left_spin_down() {
-	for i := 0; i < len(m.positions); i++ {
+	for i := 0; i < len(m.wheels); i++ {
 		m.positions[i] = (m.positions[i] + 1) % len(m.wheels[i])
 	}
 }
@@ -179,8 +177,7 @@ func (m *Machine) dfs(pulls int, score int, cache map[int]int, min_mode bool) in
 		return val
 	}
 
-	positions := make([]int, len(m.positions))
-	copy(positions, m.positions)
+	positions := m.positions
 
 	vals := [3]int{}
 
@@ -189,13 +186,13 @@ func (m *Machine) dfs(pulls int, score int, cache map[int]int, min_mode bool) in
 	vals[0] = m.dfs(pulls-1, score+m.score(), cache, min_mode)
 
 	// left spin up
-	copy(m.positions, positions)
+	m.positions = positions
 	m.left_spin_up()
 	m.spin(1)
 	vals[1] = m.dfs(pulls-1, score+m.score(), cache, min_mode)
 
 	//left spin down
-	copy(m.positions, positions)
+	m.positions = positions
 	m.left_spin_down()
 	m.spin(1)
 	vals[2] = m.dfs(pulls-1, score+m.score(), cache, min_mode)
