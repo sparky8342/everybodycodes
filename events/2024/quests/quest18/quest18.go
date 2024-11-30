@@ -3,6 +3,7 @@ package quest18
 import (
 	"fmt"
 	"loader"
+	"math"
 )
 
 type Pos struct {
@@ -35,6 +36,13 @@ func fill(grid []string) int {
 		}
 	}
 
+	time, _ := bfs(grid, starts, palms, math.MaxInt32)
+	return time
+}
+
+func bfs(grid []string, starts []Pos, palms int, max_palms_time int) (int, int) {
+	width := len(grid[0])
+
 	queue := []State{}
 	visited := map[Pos]struct{}{}
 	for _, start := range starts {
@@ -42,6 +50,7 @@ func fill(grid []string) int {
 		visited[start] = struct{}{}
 	}
 	palms_reached := 0
+	palms_time := 0
 
 	for len(queue) > 0 {
 		state := queue[0]
@@ -50,8 +59,12 @@ func fill(grid []string) int {
 
 		if grid[pos.y][pos.x] == 'P' {
 			palms_reached++
+			palms_time += state.time
 			if palms_reached == palms {
-				return state.time
+				return state.time, palms_time
+			}
+			if palms_time >= max_palms_time {
+				return -1, math.MaxInt32
 			}
 		}
 
@@ -74,7 +87,38 @@ func fill(grid []string) int {
 		}
 	}
 
-	return -1
+	return -1, -1
+}
+
+func find_start(grid []string) int {
+	// just brute force all starting points
+
+	height := len(grid)
+	width := len(grid[0])
+
+	palms := 0
+	for y := 0; y < height; y++ {
+		for x := 0; x < width; x++ {
+			if grid[y][x] == 'P' {
+				palms++
+			}
+		}
+	}
+
+	min := math.MaxInt32
+	for y := 0; y < height; y++ {
+		for x := 0; x < width; x++ {
+			if grid[y][x] == '.' {
+				start := Pos{x: x, y: y}
+				_, time := bfs(grid, []Pos{start}, palms, min)
+				if time < min {
+					min = time
+				}
+			}
+		}
+	}
+
+	return min
 }
 
 func Run() {
@@ -87,6 +131,9 @@ func Run() {
 	grid = loader.GetStrings()
 	part2 := fill(grid)
 
-	part3 := -1
+	loader.Part = 3
+	grid = loader.GetStrings()
+	part3 := find_start(grid)
+
 	fmt.Printf("%d %d %d\n", part1, part2, part3)
 }

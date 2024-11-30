@@ -41,3 +41,20 @@ func Test2(t *testing.T) {
 		t.Errorf("got %d, wanted %d", got, want)
 	}
 }
+
+func Test3(t *testing.T) {
+	grid := []string{
+		"##########",
+		"#.#......#",
+		"#.P.####P#",
+		"#.#...P#.#",
+		"##########",
+	}
+
+	got := find_start(grid)
+	want := 12
+
+	if got != want {
+		t.Errorf("got %d, wanted %d", got, want)
+	}
+}
