@@ -45,6 +45,8 @@ func decode(data []string, rounds int) string {
 	height := len(grid)
 	width := len(grid[0])
 
+	seen := map[string]int{}
+
 	for i := 0; i < rounds; i++ {
 		key_pos := 0
 		for y := 1; y < height-1; y++ {
@@ -59,6 +61,17 @@ func decode(data []string, rounds int) string {
 					key_pos = 0
 				}
 			}
+		}
+
+		top_line := string(grid[0])
+		if val, ok := seen[top_line]; ok {
+			left := rounds - i
+			step := i - val
+			steps := left / step
+			i += steps * step
+			seen = map[string]int{}
+		} else {
+			seen[top_line] = i
 		}
 	}
 
@@ -89,6 +102,9 @@ func Run() {
 	data = loader.GetStrings()
 	part2 := decode(data, 100)
 
-	part3 := ""
+	loader.Part = 3
+	data = loader.GetStrings()
+	part3 := decode(data, 1048576000)
+
 	fmt.Printf("%s %s %s\n", part1, part2, part3)
 }
