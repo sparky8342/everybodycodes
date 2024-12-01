@@ -39,23 +39,25 @@ func rotate_right(grid [][]byte, x int, y int) {
 	grid[y-1][x] = tmp
 }
 
-func decode(data []string) string {
+func decode(data []string, rounds int) string {
 	key, grid := parse_data(data)
 
 	height := len(grid)
 	width := len(grid[0])
 
-	key_pos := 0
-	for y := 1; y < height-1; y++ {
-		for x := 1; x < width-1; x++ {
-			if key[key_pos] == 'L' {
-				rotate_left(grid, x, y)
-			} else if key[key_pos] == 'R' {
-				rotate_right(grid, x, y)
-			}
-			key_pos++
-			if key_pos == len(key) {
-				key_pos = 0
+	for i := 0; i < rounds; i++ {
+		key_pos := 0
+		for y := 1; y < height-1; y++ {
+			for x := 1; x < width-1; x++ {
+				if key[key_pos] == 'L' {
+					rotate_left(grid, x, y)
+				} else if key[key_pos] == 'R' {
+					rotate_right(grid, x, y)
+				}
+				key_pos++
+				if key_pos == len(key) {
+					key_pos = 0
+				}
 			}
 		}
 	}
@@ -81,8 +83,12 @@ func Run() {
 	loader.Event, loader.Quest, loader.Part = "2024", 19, 1
 
 	data := loader.GetStrings()
-	part1 := decode(data)
+	part1 := decode(data, 1)
 
-	part2, part3 := "", ""
+	loader.Part = 2
+	data = loader.GetStrings()
+	part2 := decode(data, 100)
+
+	part3 := ""
 	fmt.Printf("%s %s %s\n", part1, part2, part3)
 }
