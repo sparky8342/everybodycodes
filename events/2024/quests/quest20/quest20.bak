@@ -1,0 +1,129 @@
+package quest20
+
+import (
+	//"container/heap"
+	"fmt"
+	"loader"
+)
+
+/*
+type PriorityQueue []*Glider
+
+func (pq PriorityQueue) Len() int { return len(pq) }
+
+func (pq PriorityQueue) Less(i, j int) bool {
+	return pq[i].altitude > pq[j].altitude
+}
+
+func (pq PriorityQueue) Swap(i, j int) {
+	pq[i], pq[j] = pq[j], pq[i]
+}
+
+func (pq *PriorityQueue) Push(x interface{}) {
+	item := x.(*Glider)
+	*pq = append(*pq, item)
+}
+
+func (pq *PriorityQueue) Pop() interface{} {
+	old := *pq
+	n := len(old)
+	item := old[n-1]
+	old[n-1] = nil // avoid memory leak
+	*pq = old[0 : n-1]
+	return item
+}
+*/
+
+type Glider struct {
+	x        int
+	y        int
+	dir      byte
+	altitude int
+	time     int
+}
+
+func highest_altitude(grid []string) int {
+	height := len(grid)
+	width := len(grid[0])
+
+	start_x := width / 2
+
+	queue := make(PriorityQueue, 0)
+	heap.Init(&queue)
+	heap.Push(&queue, &Glider{x: start_x, y: 0, dir: 'L', altitude: 1000, time: 0})
+	heap.Push(&queue, &Glider{x: start_x, y: 0, dir: 'R', altitude: 1000, time: 0})
+	heap.Push(&queue, &Glider{x: start_x, y: 0, dir: 'D', altitude: 1000, time: 0})
+
+	for queue.Len() > 0 {
+		glider := heap.Pop(&queue).(*Glider)
+
+		if glider.time == 100 {
+			return glider.altitude
+		}
+
+		var directions []byte
+		switch glider.dir {
+		case 'U':
+			directions = []byte{'U', 'L', 'R'}
+		case 'D':
+			directions = []byte{'D', 'L', 'R'}
+		case 'L':
+			directions = []byte{'L', 'U', 'D'}
+		case 'R':
+			directions = []byte{'R', 'U', 'D'}
+		}
+
+		for _, dir := range directions {
+			new_x := glider.x
+			new_y := glider.y
+
+			switch dir {
+			case 'U':
+				new_y--
+			case 'D':
+				new_y++
+			case 'L':
+				new_x--
+			case 'R':
+				new_x++
+			}
+
+			if new_x < 0 || new_x == width || new_y < 0 || new_y == height {
+				continue
+			}
+			if grid[new_y][new_x] == '#' {
+				continue
+			}
+
+			altitude := glider.altitude
+			switch grid[new_y][new_x] {
+			case '.':
+				altitude--
+			case '-':
+				altitude -= 2
+			case '+':
+				altitude++
+			}
+
+			heap.Push(&queue, &Glider{
+				x:        new_x,
+				y:        new_y,
+				dir:      dir,
+				altitude: altitude,
+				time:     glider.time + 1,
+			})
+		}
+	}
+
+	return -1
+}
+
+func Run() {
+	loader.Event, loader.Quest, loader.Part = "2024", 20, 1
+
+	grid := loader.GetStrings()
+	part1 := highest_altitude(grid)
+
+	part2, part3 := -1, -1
+	fmt.Printf("%d %d %d\n", part1, part2, part3)
+}
