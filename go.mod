@@ -7,7 +7,7 @@ require utils v1.0.0
 replace utils v1.0.0 => ./utils
 
 require 2024/quest1 v1.0.0
-replace 2024/quest1 v1.0.0 => ./2024/quest1
+replace 2024/quest1 v1.0.0 => ./2024/quest1/
 require 2024/quest2 v1.0.0
 replace 2024/quest2 v1.0.0 => ./2024/quest2
 require 2024/quest3 v1.0.0
