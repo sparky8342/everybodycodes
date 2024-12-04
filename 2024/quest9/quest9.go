@@ -3,6 +3,7 @@ package quest9
 import (
 	"fmt"
 	"loader"
+	"utils"
 )
 
 var dots_part1 []int
@@ -16,26 +17,8 @@ func init() {
 	dots_part3 = []int{1, 3, 5, 10, 15, 16, 20, 24, 25, 30, 37, 38, 49, 50, 74, 75, 100, 101}
 }
 
-func min(a int, b int) int {
-	if a < b {
-		return a
-	} else {
-		return b
-	}
-}
-
-func max(nums []int) int {
-	m := 0
-	for _, n := range nums {
-		if n > m {
-			m = n
-		}
-	}
-	return m
-}
-
 func create_dp_slice(sparks []int) []int {
-	dp := make([]int, max(sparks)+1)
+	dp := make([]int, utils.Max(sparks)+1)
 
 	for _, dot := range available {
 		dp[dot] = 1
@@ -52,7 +35,7 @@ func create_dp_slice(sparks []int) []int {
 			if dp[i+dot] == 0 {
 				dp[i+dot] = dp[i] + 1
 			} else {
-				dp[i+dot] = min(dp[i+dot], dp[i]+1)
+				dp[i+dot] = utils.Min([]int{dp[i+dot], dp[i] + 1})
 			}
 		}
 	}

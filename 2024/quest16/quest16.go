@@ -6,32 +6,13 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"utils"
 )
 
 type Machine struct {
 	wheels    [][]string
 	rotations []int
 	positions [10]int
-}
-
-func min(nums [3]int) int {
-	n := nums[0]
-	for i := 1; i < len(nums); i++ {
-		if nums[i] < n {
-			n = nums[i]
-		}
-	}
-	return n
-}
-
-func max(nums [3]int) int {
-	n := nums[0]
-	for i := 1; i < len(nums); i++ {
-		if nums[i] > n {
-			n = nums[i]
-		}
-	}
-	return n
 }
 
 func parse_data(data []string) Machine {
@@ -179,29 +160,29 @@ func (m *Machine) dfs(pulls int, score int, cache map[int]int, min_mode bool) in
 
 	positions := m.positions
 
-	vals := [3]int{}
+	vals := []int{}
 
 	// no left spin
 	m.spin(1)
-	vals[0] = m.dfs(pulls-1, score+m.score(), cache, min_mode)
+	vals = append(vals, m.dfs(pulls-1, score+m.score(), cache, min_mode))
 
 	// left spin up
 	m.positions = positions
 	m.left_spin_up()
 	m.spin(1)
-	vals[1] = m.dfs(pulls-1, score+m.score(), cache, min_mode)
+	vals = append(vals, m.dfs(pulls-1, score+m.score(), cache, min_mode))
 
 	//left spin down
 	m.positions = positions
 	m.left_spin_down()
 	m.spin(1)
-	vals[2] = m.dfs(pulls-1, score+m.score(), cache, min_mode)
+	vals = append(vals, m.dfs(pulls-1, score+m.score(), cache, min_mode))
 
 	var val int
 	if min_mode {
-		val = min(vals)
+		val = utils.Min(vals)
 	} else {
-		val = max(vals)
+		val = utils.Max(vals)
 	}
 
 	cache[key] = val

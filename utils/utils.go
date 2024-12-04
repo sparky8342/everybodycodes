@@ -7,3 +7,23 @@ func Abs(n int) int {
 		return n
 	}
 }
+
+func Min(nums []int) int {
+	n := nums[0]
+	for i := 1; i < len(nums); i++ {
+		if nums[i] < n {
+			n = nums[i]
+		}
+	}
+	return n
+}
+
+func Max(nums []int) int {
+	n := nums[0]
+	for i := 1; i < len(nums); i++ {
+		if nums[i] > n {
+			n = nums[i]
+		}
+	}
+	return n
+}

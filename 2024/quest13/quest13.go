@@ -12,14 +12,6 @@ type Pos struct {
 	y int
 }
 
-func min(a, b int) int {
-	if a < b {
-		return a
-	} else {
-		return b
-	}
-}
-
 func get_dist(grid []string, a Pos, b Pos) int {
 	a_byt := grid[a.y][a.x]
 	b_byt := grid[b.y][b.x]
@@ -86,7 +78,7 @@ func find_path(grid []string, start_b byte, end_b byte) int {
 		for _, neighbour := range neighbours {
 			if _, ok := nodes[neighbour]; ok {
 				dist := get_dist(grid, node, neighbour)
-				nodes[neighbour] = min(nodes[neighbour], smallest_distance+dist)
+				nodes[neighbour] = utils.Min([]int{nodes[neighbour], smallest_distance + dist})
 			}
 		}
 

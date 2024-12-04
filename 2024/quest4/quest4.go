@@ -8,12 +8,7 @@ import (
 )
 
 func hammer(nums []int) int {
-	min := nums[0]
-	for _, num := range nums {
-		if num < min {
-			min = num
-		}
-	}
+	min := utils.Min(nums)
 	strikes := 0
 	for _, num := range nums {
 		strikes += num - min
