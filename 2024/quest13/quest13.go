@@ -4,19 +4,12 @@ import (
 	"fmt"
 	"loader"
 	"math"
+	"utils"
 )
 
 type Pos struct {
 	x int
 	y int
-}
-
-func abs(n int) int {
-	if n < 0 {
-		return n * -1
-	} else {
-		return n
-	}
 }
 
 func min(a, b int) int {
@@ -42,7 +35,7 @@ func get_dist(grid []string, a Pos, b Pos) int {
 		b_val = int(b_byt - '0')
 	}
 
-	dist := abs(a_val - b_val)
+	dist := utils.Abs(a_val - b_val)
 	if dist > 5 {
 		dist = 10 - dist
 	}

@@ -3,6 +3,9 @@ module everybodycodes_runner
 require loader v1.0.0
 replace loader v1.0.0 => ./loader
 
+require utils v1.0.0
+replace utils v1.0.0 => ./utils
+
 require 2024/quest1 v1.0.0
 replace 2024/quest1 v1.0.0 => ./2024/quest1
 require 2024/quest2 v1.0.0

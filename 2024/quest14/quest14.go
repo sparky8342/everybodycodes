@@ -20,14 +20,6 @@ type Node struct {
 	distance int
 }
 
-func abs(n int) int {
-	if n < 0 {
-		return n * -1
-	} else {
-		return n
-	}
-}
-
 func max_height(data []byte) int {
 	height := 0
 	max := 0

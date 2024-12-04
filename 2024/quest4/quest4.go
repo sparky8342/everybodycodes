@@ -4,15 +4,8 @@ import (
 	"fmt"
 	"loader"
 	"sort"
+	"utils"
 )
-
-func abs(n int) int {
-	if n < 0 {
-		return n * -1
-	} else {
-		return n
-	}
-}
 
 func hammer(nums []int) int {
 	min := nums[0]
@@ -39,7 +32,7 @@ func hammer_up_and_down(nums []int) int {
 	}
 	strikes := 0
 	for _, num := range nums {
-		strikes += abs(num - median)
+		strikes += utils.Abs(num - median)
 	}
 	return strikes
 }

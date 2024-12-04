@@ -5,19 +5,12 @@ import (
 	"loader"
 	"math"
 	"sort"
+	"utils"
 )
 
 type Star struct {
 	x int
 	y int
-}
-
-func abs(n int) int {
-	if n < 0 {
-		return n * -1
-	} else {
-		return n
-	}
 }
 
 func parse_data(data []string) []Star {
@@ -38,7 +31,7 @@ func parse_data(data []string) []Star {
 }
 
 func distance(a Star, b Star) int {
-	return abs(a.x-b.x) + abs(a.y-b.y)
+	return utils.Abs(a.x-b.x) + utils.Abs(a.y-b.y)
 }
 
 func compute_distances(stars []Star) [][]int {
