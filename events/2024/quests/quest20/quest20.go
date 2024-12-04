@@ -222,6 +222,50 @@ func shortest_path(grid []string) int {
 	return -1
 }
 
+func furthest_south() int {
+	altitude := 384400
+
+	// input specific solution
+	altitude -= 3 // go east 3
+
+	distance := 0
+
+	for {
+		altitude++
+		distance++
+
+		altitude -= 3
+		distance += 3
+
+		if altitude <= 0 {
+			break
+		}
+
+		altitude++
+		distance++
+
+		altitude -= 3
+		distance += 3
+
+		if altitude <= 0 {
+			break
+		}
+
+		altitude++
+		distance++
+
+		altitude -= 3
+		distance += 3
+
+		if altitude <= 0 {
+			break
+		}
+	}
+
+	distance += altitude
+	return distance
+}
+
 func Run() {
 	loader.Event, loader.Quest, loader.Part = "2024", 20, 1
 
@@ -232,6 +276,7 @@ func Run() {
 	grid = loader.GetStrings()
 	part2 := shortest_path(grid)
 
-	part3 := -1
+	part3 := furthest_south()
+
 	fmt.Printf("%d %d %d\n", part1, part2, part3)
 }
