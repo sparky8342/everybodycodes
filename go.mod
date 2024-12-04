@@ -3,43 +3,43 @@ module everybodycodes_runner
 require loader v1.0.0
 replace loader v1.0.0 => ./loader
 
-require events/2024/quests/quest1 v1.0.0
-replace events/2024/quests/quest1 v1.0.0 => ./events/2024/quests/quest1
-require events/2024/quests/quest2 v1.0.0
-replace events/2024/quests/quest2 v1.0.0 => ./events/2024/quests/quest2
-require events/2024/quests/quest3 v1.0.0
-replace events/2024/quests/quest3 v1.0.0 => ./events/2024/quests/quest3
-require events/2024/quests/quest4 v1.0.0
-replace events/2024/quests/quest4 v1.0.0 => ./events/2024/quests/quest4
-require events/2024/quests/quest5 v1.0.0
-replace events/2024/quests/quest5 v1.0.0 => ./events/2024/quests/quest5
-require events/2024/quests/quest6 v1.0.0
-replace events/2024/quests/quest6 v1.0.0 => ./events/2024/quests/quest6
-require events/2024/quests/quest7 v1.0.0
-replace events/2024/quests/quest7 v1.0.0 => ./events/2024/quests/quest7
-require events/2024/quests/quest8 v1.0.0
-replace events/2024/quests/quest8 v1.0.0 => ./events/2024/quests/quest8
-require events/2024/quests/quest9 v1.0.0
-replace events/2024/quests/quest9 v1.0.0 => ./events/2024/quests/quest9
-require events/2024/quests/quest10 v1.0.0
-replace events/2024/quests/quest10 v1.0.0 => ./events/2024/quests/quest10
-require events/2024/quests/quest11 v1.0.0
-replace events/2024/quests/quest11 v1.0.0 => ./events/2024/quests/quest11
-require events/2024/quests/quest12 v1.0.0
-replace events/2024/quests/quest12 v1.0.0 => ./events/2024/quests/quest12
-require events/2024/quests/quest13 v1.0.0
-replace events/2024/quests/quest13 v1.0.0 => ./events/2024/quests/quest13
-require events/2024/quests/quest14 v1.0.0
-replace events/2024/quests/quest14 v1.0.0 => ./events/2024/quests/quest14
-require events/2024/quests/quest15 v1.0.0
-replace events/2024/quests/quest15 v1.0.0 => ./events/2024/quests/quest15
-require events/2024/quests/quest16 v1.0.0
-replace events/2024/quests/quest16 v1.0.0 => ./events/2024/quests/quest16
-require events/2024/quests/quest17 v1.0.0
-replace events/2024/quests/quest17 v1.0.0 => ./events/2024/quests/quest17
-require events/2024/quests/quest18 v1.0.0
-replace events/2024/quests/quest18 v1.0.0 => ./events/2024/quests/quest18
-require events/2024/quests/quest19 v1.0.0
-replace events/2024/quests/quest19 v1.0.0 => ./events/2024/quests/quest19
-require events/2024/quests/quest20 v1.0.0
-replace events/2024/quests/quest20 v1.0.0 => ./events/2024/quests/quest20
+require 2024/quest1 v1.0.0
+replace 2024/quest1 v1.0.0 => ./2024/quest1
+require 2024/quest2 v1.0.0
+replace 2024/quest2 v1.0.0 => ./2024/quest2
+require 2024/quest3 v1.0.0
+replace 2024/quest3 v1.0.0 => ./2024/quest3
+require 2024/quest4 v1.0.0
+replace 2024/quest4 v1.0.0 => ./2024/quest4
+require 2024/quest5 v1.0.0
+replace 2024/quest5 v1.0.0 => ./2024/quest5
+require 2024/quest6 v1.0.0
+replace 2024/quest6 v1.0.0 => ./2024/quest6
+require 2024/quest7 v1.0.0
+replace 2024/quest7 v1.0.0 => ./2024/quest7
+require 2024/quest8 v1.0.0
+replace 2024/quest8 v1.0.0 => ./2024/quest8
+require 2024/quest9 v1.0.0
+replace 2024/quest9 v1.0.0 => ./2024/quest9
+require 2024/quest10 v1.0.0
+replace 2024/quest10 v1.0.0 => ./2024/quest10
+require 2024/quest11 v1.0.0
+replace 2024/quest11 v1.0.0 => ./2024/quest11
+require 2024/quest12 v1.0.0
+replace 2024/quest12 v1.0.0 => ./2024/quest12
+require 2024/quest13 v1.0.0
+replace 2024/quest13 v1.0.0 => ./2024/quest13
+require 2024/quest14 v1.0.0
+replace 2024/quest14 v1.0.0 => ./2024/quest14
+require 2024/quest15 v1.0.0
+replace 2024/quest15 v1.0.0 => ./2024/quest15
+require 2024/quest16 v1.0.0
+replace 2024/quest16 v1.0.0 => ./2024/quest16
+require 2024/quest17 v1.0.0
+replace 2024/quest17 v1.0.0 => ./2024/quest17
+require 2024/quest18 v1.0.0
+replace 2024/quest18 v1.0.0 => ./2024/quest18
+require 2024/quest19 v1.0.0
+replace 2024/quest19 v1.0.0 => ./2024/quest19
+require 2024/quest20 v1.0.0
+replace 2024/quest20 v1.0.0 => ./2024/quest20
