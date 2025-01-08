@@ -3,7 +3,6 @@ package loader
 import (
 	"fmt"
 	"io/ioutil"
-	"os"
 	"strconv"
 	"strings"
 )
@@ -19,8 +18,7 @@ func get_filename() string {
 func GetOneLine() []byte {
 	data, err := ioutil.ReadFile(get_filename())
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "error %v\n", err)
-		os.Exit(1)
+		panic(err)
 	}
 	if data[len(data)-1] == '\n' {
 		data = data[:len(data)-1]
@@ -31,8 +29,7 @@ func GetOneLine() []byte {
 func GetStrings() []string {
 	data, err := ioutil.ReadFile(get_filename())
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "error %v\n", err)
-		os.Exit(1)
+		panic(err)
 	}
 	if data[len(data)-1] == '\n' {
 		data = data[:len(data)-1]
@@ -43,16 +40,14 @@ func GetStrings() []string {
 func GetOneInt() int {
 	data, err := ioutil.ReadFile(get_filename())
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "error %v\n", err)
-		os.Exit(1)
+		panic(err)
 	}
 	if data[len(data)-1] == '\n' {
 		data = data[:len(data)-1]
 	}
 	n, err := strconv.Atoi(string(data))
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "error %v\n", err)
-		os.Exit(1)
+		panic(err)
 	}
 	return n
 }
@@ -60,8 +55,7 @@ func GetOneInt() int {
 func GetInts() []int {
 	data, err := ioutil.ReadFile(get_filename())
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "error %v\n", err)
-		os.Exit(1)
+		panic(err)
 	}
 	if data[len(data)-1] == '\n' {
 		data = data[:len(data)-1]
@@ -71,8 +65,7 @@ func GetInts() []int {
 	for i, line := range lines {
 		n, err := strconv.Atoi(line)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "error %v\n", err)
-			os.Exit(1)
+			panic(err)
 		}
 		nums[i] = n
 	}

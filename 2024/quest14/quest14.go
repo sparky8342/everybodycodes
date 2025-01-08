@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"loader"
 	"math"
-	"os"
 	"strconv"
 	"strings"
 )
@@ -28,8 +27,7 @@ func max_height(data []byte) int {
 		if step[0] == 'U' || step[0] == 'D' {
 			n, err := strconv.Atoi(step[1:])
 			if err != nil {
-				fmt.Fprintf(os.Stderr, "error %v\n", err)
-				os.Exit(1)
+				panic(err)
 			}
 			if step[0] == 'U' {
 				height += n
@@ -54,8 +52,7 @@ func unique_segments(data []string) int {
 			dir := step[0]
 			n, err := strconv.Atoi(step[1:])
 			if err != nil {
-				fmt.Fprintf(os.Stderr, "error %v\n", err)
-				os.Exit(1)
+				panic(err)
 			}
 
 			for i := 0; i < n; i++ {
@@ -133,8 +130,7 @@ func murkiness(data []string) int {
 			dir := step[0]
 			n, err := strconv.Atoi(step[1:])
 			if err != nil {
-				fmt.Fprintf(os.Stderr, "error %v\n", err)
-				os.Exit(1)
+				panic(err)
 			}
 
 			for i := 0; i < n; i++ {

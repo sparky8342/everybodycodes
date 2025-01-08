@@ -3,7 +3,6 @@ package quest12
 import (
 	"fmt"
 	"loader"
-	"os"
 	"strconv"
 	"strings"
 )
@@ -74,13 +73,11 @@ func parse_meteors(data []string) []Pos {
 		parts := strings.Split(line, " ")
 		x, err := strconv.Atoi(parts[0])
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "error %v\n", err)
-			os.Exit(1)
+			panic(err)
 		}
 		y, err := strconv.Atoi(parts[1])
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "error %v\n", err)
-			os.Exit(1)
+			panic(err)
 		}
 		meteors[i] = Pos{x: x, y: y}
 	}

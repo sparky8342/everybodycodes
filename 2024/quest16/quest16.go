@@ -3,7 +3,6 @@ package quest16
 import (
 	"fmt"
 	"loader"
-	"os"
 	"strconv"
 	"strings"
 	"utils"
@@ -23,8 +22,7 @@ func parse_data(data []string) Machine {
 	for i, r := range rot {
 		n, err := strconv.Atoi(r)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "error %v\n", err)
-			os.Exit(1)
+			panic(err)
 		}
 		machine.rotations[i] = n
 	}
