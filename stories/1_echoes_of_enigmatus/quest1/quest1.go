@@ -47,7 +47,42 @@ func eni(n int, exp int, mod int) int {
 	return result
 }
 
-func highest_line(param_lines []map[byte]int) int {
+func expmod(n int, exp int, mod int) int {
+	if exp == 1 {
+		return n
+	}
+	if exp%2 == 0 {
+		x := expmod(n, exp/2, mod)
+		return (x * x) % mod
+	} else {
+		return (expmod(n, exp-1, mod) * n) % mod
+	}
+}
+
+func eni2(n int, exp int, mod int) int {
+	var num int
+	if exp > 5 {
+		num = expmod(n, exp-5, mod)
+		exp = 5
+	} else {
+		num = 1
+	}
+
+	remainders := []string{}
+	for i := 0; i < exp; i++ {
+		num = (num * n) % mod
+		remainders = append([]string{strconv.Itoa(num)}, remainders...)
+	}
+
+	result, err := strconv.Atoi(strings.Join(remainders, ""))
+	if err != nil {
+		panic(err)
+	}
+
+	return result
+}
+
+func highest_line(param_lines []map[byte]int, eni func(n int, exp int, mod int) int) int {
 	max := 0
 	for _, params := range param_lines {
 		A, B, C, X, Y, Z, M := params['A'], params['B'], params['C'], params['X'], params['Y'], params['Z'], params['M']
@@ -64,10 +99,14 @@ func Run() {
 
 	data := loader.GetStrings()
 	param_lines := parse_data(data)
+	part1 := highest_line(param_lines, eni)
 
-	part1 := highest_line(param_lines)
+	loader.Part = 2
+	data = loader.GetStrings()
+	param_lines = parse_data(data)
+	part2 := highest_line(param_lines, eni2)
 
-	part2, part3 := -1, -1
+	part3 := -1
 
 	fmt.Printf("%d %d %d\n", part1, part2, part3)
 }
