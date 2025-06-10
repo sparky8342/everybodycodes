@@ -54,3 +54,24 @@ func Test2(t *testing.T) {
 		t.Errorf("got %s, wanted %s", got, want)
 	}
 }
+
+func Test3(t *testing.T) {
+	data := []string{
+		"ADD id=1 left=[10,A] right=[30,H]",
+		"ADD id=2 left=[15,D] right=[25,I]",
+		"ADD id=3 left=[12,F] right=[31,J]",
+		"ADD id=4 left=[5,B] right=[27,L]",
+		"ADD id=5 left=[3,C] right=[28,M]",
+		"SWAP 1",
+		"SWAP 5",
+		"ADD id=6 left=[20,G] right=[32,K]",
+		"ADD id=7 left=[4,E] right=[21,N]",
+	}
+
+	got := process_data(data)
+	want := "MGFLNK"
+
+	if got != want {
+		t.Errorf("got %s, wanted %s", got, want)
+	}
+}

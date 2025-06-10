@@ -8,6 +8,7 @@ import (
 )
 
 type Node struct {
+	id     int
 	value  int
 	symbol byte
 	left   *Node
@@ -59,8 +60,12 @@ func bfs(head *Node) []byte {
 	return longest_symbols
 }
 
-func parse_line(line string) (*Node, *Node) {
+func parse_add(line string) (*Node, *Node) {
 	parts := strings.Split(line, " ")
+	id, err := strconv.Atoi(strings.Split(parts[1], "=")[1])
+	if err != nil {
+		panic(err)
+	}
 	left := strings.Split(parts[2], "=")[1]
 	right := strings.Split(parts[3], "=")[1]
 
@@ -72,6 +77,7 @@ func parse_line(line string) (*Node, *Node) {
 		if err != nil {
 			panic(err)
 		}
+		nodes[i].id = id
 		nodes[i].value = n
 		nodes[i].symbol = pair[1][0]
 	}
@@ -80,12 +86,28 @@ func parse_line(line string) (*Node, *Node) {
 }
 
 func process_data(data []string) string {
-	left_head, right_head := parse_line(data[0])
+	left_nodes := map[int]*Node{}
+	right_nodes := map[int]*Node{}
+
+	left_head, right_head := parse_add(data[0])
+	left_nodes[left_head.id] = left_head
+	right_nodes[right_head.id] = right_head
 
 	for i := 1; i < len(data); i++ {
-		left_node, right_node := parse_line(data[i])
-		add_node(left_head, left_node)
-		add_node(right_head, right_node)
+		if data[i][0:3] == "ADD" {
+			left_node, right_node := parse_add(data[i])
+			add_node(left_head, left_node)
+			add_node(right_head, right_node)
+			left_nodes[left_node.id] = left_node
+			right_nodes[right_node.id] = right_node
+		} else if data[i][0:4] == "SWAP" {
+			id, err := strconv.Atoi(data[i][5:])
+			if err != nil {
+				panic(err)
+			}
+			left_nodes[id].value, right_nodes[id].value = right_nodes[id].value, left_nodes[id].value
+			left_nodes[id].symbol, right_nodes[id].symbol = right_nodes[id].symbol, left_nodes[id].symbol
+		}
 	}
 
 	return string(append(bfs(left_head), bfs(right_head)...))
@@ -97,6 +119,10 @@ func Run() {
 	data := loader.GetStrings()
 	part1 := process_data(data)
 
-	part2, part3 := -1, -1
-	fmt.Printf("%s %d %d\n", part1, part2, part3)
+	loader.Part = 2
+	data = loader.GetStrings()
+	part2 := process_data(data)
+
+	part3 := -1
+	fmt.Printf("%s %s %d\n", part1, part2, part3)
 }
