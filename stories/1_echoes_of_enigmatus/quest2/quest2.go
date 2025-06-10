@@ -85,7 +85,7 @@ func parse_add(line string) (*Node, *Node) {
 	return &nodes[0], &nodes[1]
 }
 
-func process_data(data []string) string {
+func process_data(data []string, swapmode int) string {
 	left_nodes := map[int]*Node{}
 	right_nodes := map[int]*Node{}
 
@@ -105,8 +105,12 @@ func process_data(data []string) string {
 			if err != nil {
 				panic(err)
 			}
-			left_nodes[id].value, right_nodes[id].value = right_nodes[id].value, left_nodes[id].value
-			left_nodes[id].symbol, right_nodes[id].symbol = right_nodes[id].symbol, left_nodes[id].symbol
+			if swapmode == 1 {
+				left_nodes[id].value, right_nodes[id].value = right_nodes[id].value, left_nodes[id].value
+				left_nodes[id].symbol, right_nodes[id].symbol = right_nodes[id].symbol, left_nodes[id].symbol
+			} else if swapmode == 2 {
+				*left_nodes[id], *right_nodes[id] = *right_nodes[id], *left_nodes[id]
+			}
 		}
 	}
 
@@ -117,12 +121,15 @@ func Run() {
 	loader.Event, loader.Quest, loader.Part = "1", 2, 1
 
 	data := loader.GetStrings()
-	part1 := process_data(data)
+	part1 := process_data(data, 1)
 
 	loader.Part = 2
 	data = loader.GetStrings()
-	part2 := process_data(data)
+	part2 := process_data(data, 1)
 
-	part3 := -1
-	fmt.Printf("%s %s %d\n", part1, part2, part3)
+	loader.Part = 3
+	data = loader.GetStrings()
+	part3 := process_data(data, 2)
+
+	fmt.Printf("%s %s %s\n", part1, part2, part3)
 }

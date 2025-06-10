@@ -15,7 +15,7 @@ func Test1(t *testing.T) {
 		"ADD id=7 left=[4,E] right=[21,N]",
 	}
 
-	got := process_data(data)
+	got := process_data(data, 1)
 	want := "CFGNLK"
 
 	if got != want {
@@ -47,7 +47,7 @@ func Test2(t *testing.T) {
 		"ADD id=20 left=[278,A] right=[169,C]",
 	}
 
-	got := process_data(data)
+	got := process_data(data, 1)
 	want := "EVERYBODYCODES"
 
 	if got != want {
@@ -68,8 +68,53 @@ func Test3(t *testing.T) {
 		"ADD id=7 left=[4,E] right=[21,N]",
 	}
 
-	got := process_data(data)
+	got := process_data(data, 1)
 	want := "MGFLNK"
+
+	if got != want {
+		t.Errorf("got %s, wanted %s", got, want)
+	}
+}
+
+func Test4(t *testing.T) {
+	data := []string{
+		"ADD id=1 left=[10,A] right=[30,H]",
+		"ADD id=2 left=[15,D] right=[25,I]",
+		"ADD id=3 left=[12,F] right=[31,J]",
+		"ADD id=4 left=[5,B] right=[27,L]",
+		"ADD id=5 left=[3,C] right=[28,M]",
+		"SWAP 1",
+		"SWAP 5",
+		"ADD id=6 left=[20,G] right=[32,K]",
+		"ADD id=7 left=[4,E] right=[21,N]",
+		"SWAP 2",
+	}
+
+	got := process_data(data, 2)
+	want := "DJMGL"
+
+	if got != want {
+		t.Errorf("got %s, wanted %s", got, want)
+	}
+}
+
+func Test5(t *testing.T) {
+	data := []string{
+		"ADD id=1 left=[10,A] right=[30,H]",
+		"ADD id=2 left=[15,D] right=[25,I]",
+		"ADD id=3 left=[12,F] right=[31,J]",
+		"ADD id=4 left=[5,B] right=[27,L]",
+		"ADD id=5 left=[3,C] right=[28,M]",
+		"SWAP 1",
+		"SWAP 5",
+		"ADD id=6 left=[20,G] right=[32,K]",
+		"ADD id=7 left=[4,E] right=[21,N]",
+		"SWAP 2",
+		"SWAP 5",
+	}
+
+	got := process_data(data, 2)
+	want := "DJCGL"
 
 	if got != want {
 		t.Errorf("got %s, wanted %s", got, want)
