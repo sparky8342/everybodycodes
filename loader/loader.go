@@ -2,7 +2,7 @@ package loader
 
 import (
 	"fmt"
-	"io/ioutil"
+	"os"
 	"strconv"
 	"strings"
 )
@@ -16,7 +16,7 @@ func get_filename() string {
 }
 
 func GetOneLine() []byte {
-	data, err := ioutil.ReadFile(get_filename())
+	data, err := os.ReadFile(get_filename())
 	if err != nil {
 		panic(err)
 	}
@@ -27,7 +27,7 @@ func GetOneLine() []byte {
 }
 
 func GetStrings() []string {
-	data, err := ioutil.ReadFile(get_filename())
+	data, err := os.ReadFile(get_filename())
 	if err != nil {
 		panic(err)
 	}
@@ -38,7 +38,7 @@ func GetStrings() []string {
 }
 
 func GetOneInt() int {
-	data, err := ioutil.ReadFile(get_filename())
+	data, err := os.ReadFile(get_filename())
 	if err != nil {
 		panic(err)
 	}
@@ -53,7 +53,7 @@ func GetOneInt() int {
 }
 
 func GetInts() []int {
-	data, err := ioutil.ReadFile(get_filename())
+	data, err := os.ReadFile(get_filename())
 	if err != nil {
 		panic(err)
 	}
