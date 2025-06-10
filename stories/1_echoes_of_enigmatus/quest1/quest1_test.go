@@ -1,0 +1,25 @@
+package quest1
+
+import (
+	"testing"
+)
+
+func Test1(t *testing.T) {
+	data := []string{
+		"A=4 B=4 C=6 X=3 Y=4 Z=5 M=11",
+		"A=8 B=4 C=7 X=8 Y=4 Z=6 M=12",
+		"A=2 B=8 C=6 X=2 Y=4 Z=5 M=13",
+		"A=5 B=9 C=6 X=8 Y=6 Z=8 M=14",
+		"A=5 B=9 C=7 X=6 Y=6 Z=8 M=15",
+		"A=8 B=8 C=8 X=6 Y=9 Z=6 M=16",
+	}
+
+	param_lines := parse_data(data)
+
+	got := highest_line(param_lines)
+	want := 11611972920
+
+	if got != want {
+		t.Errorf("got %d, wanted %d", got, want)
+	}
+}
