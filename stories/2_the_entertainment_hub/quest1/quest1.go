@@ -6,6 +6,11 @@ import (
 	"sort"
 )
 
+type Play struct {
+	slot  int
+	score int
+}
+
 var height, width int
 
 func parse_data(data []string) ([]string, []string) {
@@ -89,12 +94,12 @@ func maximise_tokens(grid []string, tokens []string) int {
 	return total_score
 }
 
-func search(scores [][][]int, pick []int, best_score *int, dir int) {
+func search(scores [][]Play, pick []int, best_score *int, dir int) {
 	clashes := map[int]struct{}{}
 
 	slot_numbers := map[int]int{}
 	for i := 0; i < len(scores); i++ {
-		slot := scores[i][pick[i]][1]
+		slot := scores[i][pick[i]].slot
 		if val, ok := slot_numbers[slot]; !ok {
 			slot_numbers[slot] = i
 		} else {
@@ -106,37 +111,37 @@ func search(scores [][][]int, pick []int, best_score *int, dir int) {
 	if len(clashes) == 0 {
 		score := 0
 		for i := 0; i < len(scores); i++ {
-			score += scores[i][pick[i]][0]
+			score += scores[i][pick[i]].score
 		}
 		if dir == 1 && score > *best_score {
 			*best_score = score
 		} else if dir == -1 && score < *best_score {
 			*best_score = score
 		}
-	}
-
-	for clash := range clashes {
-		pick[clash] += dir
-		search(scores, pick, best_score, dir)
-		pick[clash] -= dir
+	} else {
+		for clash := range clashes {
+			pick[clash] += dir
+			search(scores, pick, best_score, dir)
+			pick[clash] -= dir
+		}
 	}
 }
 
 func unique_slots(grid []string, tokens []string) string {
 	slots := (width + 1) / 2
 
-	scores := [][][]int{}
+	scores := make([][]Play, len(tokens))
 
-	for _, token := range tokens {
-		token_scores := [][]int{}
-		for i := 1; i <= slots; i++ {
-			score := play_token(grid, i, token)
-			token_scores = append(token_scores, []int{score, i})
+	for i, token := range tokens {
+		token_scores := make([]Play, slots)
+		for j := 0; j < slots; j++ {
+			score := play_token(grid, j+1, token)
+			token_scores[j] = Play{slot: j + 1, score: score}
 		}
 		sort.Slice(token_scores, func(i, j int) bool {
-			return token_scores[i][0] > token_scores[j][0]
+			return token_scores[i].score > token_scores[j].score
 		})
-		scores = append(scores, token_scores)
+		scores[i] = token_scores
 	}
 
 	pick := make([]int, len(tokens))
