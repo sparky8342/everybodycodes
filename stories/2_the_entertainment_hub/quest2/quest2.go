@@ -111,6 +111,9 @@ func Run() {
 	balloons = loader.GetOneLine()
 	part2 := shoot_balloon_circle(balloons, 100)
 
-	fmt.Printf("%d\n%d\n", part1, part2)
+	loader.Part = 3
+	balloons = loader.GetOneLine()
+	part3 := shoot_balloon_circle(balloons, 100000)
 
+	fmt.Printf("%d\n%d\n%d\n", part1, part2, part3)
 }
