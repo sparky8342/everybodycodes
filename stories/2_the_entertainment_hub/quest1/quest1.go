@@ -3,6 +3,7 @@ package quest1
 import (
 	"fmt"
 	"loader"
+	"sort"
 )
 
 var height, width int
@@ -88,6 +89,69 @@ func maximise_tokens(grid []string, tokens []string) int {
 	return total_score
 }
 
+func search(scores [][][]int, pick []int, best_score *int, dir int) {
+	clashes := map[int]struct{}{}
+
+	slot_numbers := map[int]int{}
+	for i := 0; i < len(scores); i++ {
+		slot := scores[i][pick[i]][1]
+		if val, ok := slot_numbers[slot]; !ok {
+			slot_numbers[slot] = i
+		} else {
+			clashes[i] = struct{}{}
+			clashes[val] = struct{}{}
+		}
+	}
+
+	if len(clashes) == 0 {
+		score := 0
+		for i := 0; i < len(scores); i++ {
+			score += scores[i][pick[i]][0]
+		}
+		if dir == 1 && score > *best_score {
+			*best_score = score
+		} else if dir == -1 && score < *best_score {
+			*best_score = score
+		}
+	}
+
+	for clash := range clashes {
+		pick[clash] += dir
+		search(scores, pick, best_score, dir)
+		pick[clash] -= dir
+	}
+}
+
+func unique_slots(grid []string, tokens []string) string {
+	slots := (width + 1) / 2
+
+	scores := [][][]int{}
+
+	for _, token := range tokens {
+		token_scores := [][]int{}
+		for i := 1; i <= slots; i++ {
+			score := play_token(grid, i, token)
+			token_scores = append(token_scores, []int{score, i})
+		}
+		sort.Slice(token_scores, func(i, j int) bool {
+			return token_scores[i][0] > token_scores[j][0]
+		})
+		scores = append(scores, token_scores)
+	}
+
+	pick := make([]int, len(tokens))
+	max_score := 0
+	search(scores, pick, &max_score, 1)
+
+	for i := 0; i < len(tokens); i++ {
+		pick[i] = slots - 1
+	}
+	min_score := 1000
+	search(scores, pick, &min_score, -1)
+
+	return fmt.Sprintf("%d %d", min_score, max_score)
+}
+
 func Run() {
 	loader.Event, loader.Quest, loader.Part = "2", 1, 1
 
@@ -100,5 +164,10 @@ func Run() {
 	grid, tokens = parse_data(data)
 	part2 := maximise_tokens(grid, tokens)
 
-	fmt.Printf("%d %d\n", part1, part2)
+	loader.Part = 3
+	data = loader.GetStrings()
+	grid, tokens = parse_data(data)
+	part3 := unique_slots(grid, tokens)
+
+	fmt.Printf("%d\n%d\n%s\n", part1, part2, part3)
 }

@@ -82,3 +82,35 @@ func Test2(t *testing.T) {
 		t.Errorf("got %d, wanted %d", got, want)
 	}
 }
+
+func Test3(t *testing.T) {
+	data := []string{
+		"*.*.*.*.*.*.*.*.*",
+		".*.*.*.*.*.*.*.*.",
+		"*.*.*...*.*...*..",
+		".*.*.*.*.*...*.*.",
+		"*.*.....*...*.*.*",
+		".*.*.*.*.*.*.*.*.",
+		"*...*...*.*.*.*.*",
+		".*.*.*.*.*.*.*.*.",
+		"*.*.*...*.*.*.*.*",
+		".*...*...*.*.*.*.",
+		"*.*.*.*.*.*.*.*.*",
+		".*.*.*.*.*.*.*.*.",
+		"",
+		"RRRLRLRRRRRL",
+		"LLLLRLRRRRRR",
+		"RLLLLLRLRLRL",
+		"LRLLLRRRLRLR",
+		"LLRLLRLLLRRL",
+		"LRLRLLLRRRRL",
+	}
+
+	grid, tokens := parse_data(data)
+	got := unique_slots(grid, tokens)
+	want := "13 43"
+
+	if got != want {
+		t.Errorf("got %s, wanted %s", got, want)
+	}
+}
