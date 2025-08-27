@@ -56,3 +56,5 @@ replace stories/1_echoes_of_enigmatus/quest3 v1.0.0 => ./stories/1_echoes_of_eni
 
 require stories/2_the_entertainment_hub/quest1 v1.0.0
 replace stories/2_the_entertainment_hub/quest1 v1.0.0 => ./stories/2_the_entertainment_hub/quest1
+require stories/2_the_entertainment_hub/quest2 v1.0.0
+replace stories/2_the_entertainment_hub/quest2 v1.0.0 => ./stories/2_the_entertainment_hub/quest2
