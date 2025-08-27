@@ -38,3 +38,47 @@ func Test1(t *testing.T) {
 		t.Errorf("got %d, wanted %d", got, want)
 	}
 }
+
+func Test2(t *testing.T) {
+	data := []string{
+		"*.*.*.*.*.*.*.*.*.*.*.*.*",
+		".*.*.*.*.*.*.*.*.*.*.*.*.",
+		"..*.*.*.*...*.*...*.*.*..",
+		".*...*.*.*.*.*.*.....*.*.",
+		"*.*...*.*.*.*.*.*...*.*.*",
+		".*.*.*.*.*.*.*.*.......*.",
+		"*.*.*.*.*.*.*.*.*.*...*..",
+		".*.*.*.*.*.*.*.*.....*.*.",
+		"*.*...*.*.*.*.*.*.*.*....",
+		".*.*.*.*.*.*.*.*.*.*.*.*.",
+		"*.*.*.*.*.*.*.*.*.*.*.*.*",
+		".*.*.*.*.*.*.*.*.*...*.*.",
+		"*.*.*.*.*.*.*.*.*...*.*.*",
+		".*.*.*.*.*.*.*.*.....*.*.",
+		"*.*.*.*.*.*.*.*...*...*.*",
+		".*.*.*.*.*.*.*.*.*.*.*.*.",
+		"*.*.*...*.*.*.*.*.*.*.*.*",
+		".*...*.*.*.*...*.*.*...*.",
+		"*.*.*.*.*.*.*.*.*.*.*.*.*",
+		".*.*.*.*.*.*.*.*.*.*.*.*.",
+		"",
+		"RRRLLRRRLLRLRRLLLRLR",
+		"RRRRRRRRRRLRRRRRLLRR",
+		"LLLLLLLLRLRRLLRRLRLL",
+		"RRRLLRRRLLRLLRLLLRRL",
+		"RLRLLLRRLRRRLRRLRRRL",
+		"LLLLLLLLRLLRRLLRLLLL",
+		"LRLLRRLRLLLLLLLRLRRL",
+		"LRLLRRLLLRRRRRLRRLRR",
+		"LRLLRRLRLLRLRRLLLRLL",
+		"RLLRRRRLRLRLRLRLLRRL",
+	}
+
+	grid, tokens := parse_data(data)
+	got := maximise_tokens(grid, tokens)
+	want := 115
+
+	if got != want {
+		t.Errorf("got %d, wanted %d", got, want)
+	}
+}
