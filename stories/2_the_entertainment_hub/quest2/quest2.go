@@ -5,9 +5,10 @@ import (
 	"loader"
 )
 
+const bolts = "RGB"
+
 type Balloon struct {
 	colour byte
-	prev   *Balloon
 	next   *Balloon
 }
 
@@ -21,21 +22,17 @@ func print_circle(head *Balloon) {
 }
 
 func shoot_balloon_circle(balloons []byte, repeat int) int {
-	bolts := []byte{'R', 'G', 'B'}
-	bolt_i := 0
-
 	dummy_head := &Balloon{}
 	balloon := dummy_head
 	for i := 0; i < repeat; i++ {
 		for _, colour := range balloons {
-			new_balloon := &Balloon{colour: colour, prev: balloon}
-			balloon.next = new_balloon
-			balloon = new_balloon
+			balloon.next = &Balloon{colour: colour}
+			balloon = balloon.next
 		}
 	}
-	head := dummy_head.next
-	balloon.next = head
-	head.prev = balloon
+
+	head := balloon
+	head.next = dummy_head.next
 
 	no_balloons := len(balloons) * repeat
 	opposite := head
@@ -43,29 +40,16 @@ func shoot_balloon_circle(balloons []byte, repeat int) int {
 		opposite = opposite.next
 	}
 
+	bolt_i := 0
 	shots := 0
 
 	for no_balloons > 0 {
-		current_colour := head.colour
-
-		prev := head.prev
-		next := head.next
-		prev.next = next
-		next.prev = prev
-		head.next = nil
-		head.prev = nil
-		head = next
-
+		current_colour := head.next.colour
+		head.next = head.next.next
 		no_balloons--
 
 		if no_balloons&1 == 1 && current_colour == bolts[bolt_i] {
-			prev := opposite.prev
-			next := opposite.next
-			prev.next = next
-			next.prev = prev
-			opposite.next = nil
-			opposite.prev = nil
-			opposite = next
+			opposite.next = opposite.next.next
 			no_balloons--
 		} else if no_balloons&1 == 0 {
 			opposite = opposite.next
@@ -79,9 +63,7 @@ func shoot_balloon_circle(balloons []byte, repeat int) int {
 }
 
 func shoot_balloons(balloons []byte) int {
-	bolts := []byte{'R', 'G', 'B'}
 	bolt_i := 0
-
 	i := 0
 	shots := 0
 
