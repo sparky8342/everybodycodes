@@ -11,7 +11,7 @@ func Test1(t *testing.T) {
 		"3: faces=[9,8,7,8,9] seed=17",
 	}
 
-	dice, _, _ := parse_data(data, 1)
+	dice := parse_dice(data)
 	got := roll_dice(dice, 10000)
 	want := 844
 
@@ -30,7 +30,7 @@ func Test2(t *testing.T) {
 		"51257284",
 	}
 
-	dice, track, _ := parse_data(data, 2)
+	dice, track := parse_dice_and_track(data)
 	got := race_track(dice, track)
 	want := "1,3,4,2"
 
@@ -50,7 +50,7 @@ func Test3(t *testing.T) {
 		"1799773472",
 	}
 
-	dice, _, grid := parse_data(data, 3)
+	dice, grid := parse_dice_and_grid(data)
 	got := grid_game(dice, grid)
 
 	want := 33
@@ -109,7 +109,7 @@ func Test4(t *testing.T) {
 		"43457237419516813368452247532764649744546181229533942414983335895",
 	}
 
-	dice, _, grid := parse_data(data, 3)
+	dice, grid := parse_dice_and_grid(data)
 	got := grid_game(dice, grid)
 
 	want := 1125
