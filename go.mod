@@ -49,6 +49,8 @@ replace 2024/quest20 v1.0.0 => ./2024/quest20
 
 require 2025/quest1 v1.0.0
 replace 2025/quest1 v1.0.0 => ./2025/quest1/
+require 2025/quest2 v1.0.0
+replace 2025/quest2 v1.0.0 => ./2025/quest2/
 
 require stories/1_echoes_of_enigmatus/quest1 v1.0.0
 replace stories/1_echoes_of_enigmatus/quest1 v1.0.0 => ./stories/1_echoes_of_enigmatus/quest1
