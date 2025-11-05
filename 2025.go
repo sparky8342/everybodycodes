@@ -3,6 +3,7 @@ package main
 import (
 	"2025/quest1"
 	"2025/quest2"
+	"2025/quest3"
 	/*
 	"2025/quest10"
 	"2025/quest11"
@@ -15,7 +16,6 @@ import (
 	"2025/quest18"
 	"2025/quest19"
 	"2025/quest20"
-	"2025/quest3"
 	"2025/quest4"
 	"2025/quest5"
 	"2025/quest6"
@@ -39,9 +39,9 @@ func main() {
 			quest1.Run()
 		case 2:
 			quest2.Run()
-		/*
 		case 3:
 			quest3.Run()
+		/*
 		case 4:
 			quest4.Run()
 		case 5:
@@ -83,9 +83,9 @@ func main() {
 		quest1.Run()
 		fmt.Println("Quest 2")
 		quest2.Run()
-		/*
 		fmt.Println("Quest 3")
 		quest3.Run()
+		/*
 		fmt.Println("Quest 4")
 		quest4.Run()
 		fmt.Println("Quest 5")
