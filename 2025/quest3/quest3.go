@@ -38,6 +38,28 @@ func largest_set(crates []int) int {
 	return total
 }
 
+func smallest_20(crates []int) int {
+	sort.Slice(crates, func(i, j int) bool {
+		return crates[i] < crates[j]
+	})
+
+	last := crates[0]
+	total := crates[0]
+	added := 1
+
+	crate := 1
+	for added < 20 {
+		if crates[crate] > last {
+			last = crates[crate]
+			total += crates[crate]
+			added++
+		}
+		crate++
+	}
+
+	return total
+}
+
 func Run() {
 	loader.Event, loader.Quest, loader.Part = "2025", 3, 1
 
@@ -45,5 +67,10 @@ func Run() {
 	crates := parse_data(data)
 	part1 := largest_set(crates)
 
-	fmt.Printf("%d %d %d\n", part1, 0, 0)
+	loader.Part = 2
+	data = loader.GetOneLine()
+	crates = parse_data(data)
+	part2 := smallest_20(crates)
+
+	fmt.Printf("%d %d %d\n", part1, part2, 0)
 }
