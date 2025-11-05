@@ -47,6 +47,37 @@ func calculate_part1(A pair) string {
 	return fmt.Sprintf("[%d,%d]", result[0], result[1])
 }
 
+func calculate_part2(A pair) int {
+	engraved := 0
+
+	top_left := A
+	bottom_right := add(A, pair{1000, 1000})
+
+	for x := top_left[0]; x <= bottom_right[0]; x += 10 {
+		for y := top_left[1]; y <= bottom_right[1]; y += 10 {
+			point := pair{x, y}
+			result := pair{0, 0}
+
+			ok := true
+			for i := 0; i < 100; i++ {
+				result = multiply(result, result)
+				result = divide(result, pair{100000, 100000})
+				result = add(result, point)
+				if result[0] < -1000000 || result[0] > 1000000 || result[1] < -1000000 || result[1] > 1000000 {
+					ok = false
+					break
+				}
+			}
+
+			if ok {
+				engraved++
+			}
+		}
+	}
+
+	return engraved
+}
+
 func Run() {
 	loader.Event, loader.Quest, loader.Part = "2025", 2, 1
 
@@ -54,5 +85,10 @@ func Run() {
 	A := parse_data(data)
 	part1 := calculate_part1(A)
 
-	fmt.Printf("%s %s %s\n", part1, "", "")
+	loader.Part = 2
+	data = loader.GetOneLine()
+	A = parse_data(data)
+	part2 := calculate_part2(A)
+
+	fmt.Printf("%s %d %s\n", part1, part2, "")
 }

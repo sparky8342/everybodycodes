@@ -15,3 +15,15 @@ func Test1(t *testing.T) {
 		t.Errorf("got %s, wanted %s", got, want)
 	}
 }
+
+func Test2(t *testing.T) {
+	data := []byte("A=[35300,-64910]")
+
+	A := parse_data(data)
+	got := calculate_part2(A)
+	want := 4076
+
+	if got != want {
+		t.Errorf("got %d, wanted %d", got, want)
+	}
+}
