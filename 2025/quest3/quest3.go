@@ -65,17 +65,17 @@ func smallest_no_sets(crates []int) int {
 		return crates[i] > crates[j]
 	})
 
-	sets := [][]int{[]int{crates[0]}}
+	sets := []int{crates[0]}
 
 outer:
 	for i := 1; i < len(crates); i++ {
 		for j := range sets {
-			if crates[i] < sets[j][len(sets[j])-1] {
-				sets[j] = append(sets[j], crates[i])
+			if crates[i] < sets[j] {
+				sets[j] = crates[i]
 				continue outer
 			}
 		}
-		sets = append(sets, []int{crates[i]})
+		sets = append(sets, crates[i])
 	}
 
 	return len(sets)
