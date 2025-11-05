@@ -47,14 +47,14 @@ func calculate_part1(A pair) string {
 	return fmt.Sprintf("[%d,%d]", result[0], result[1])
 }
 
-func calculate_part2(A pair) int {
+func engraving(A pair, step int) int {
 	engraved := 0
 
 	top_left := A
 	bottom_right := add(A, pair{1000, 1000})
 
-	for x := top_left[0]; x <= bottom_right[0]; x += 10 {
-		for y := top_left[1]; y <= bottom_right[1]; y += 10 {
+	for x := top_left[0]; x <= bottom_right[0]; x += step {
+		for y := top_left[1]; y <= bottom_right[1]; y += step {
 			point := pair{x, y}
 			result := pair{0, 0}
 
@@ -88,7 +88,12 @@ func Run() {
 	loader.Part = 2
 	data = loader.GetOneLine()
 	A = parse_data(data)
-	part2 := calculate_part2(A)
+	part2 := engraving(A, 10)
 
-	fmt.Printf("%s %d %s\n", part1, part2, "")
+	loader.Part = 3
+	data = loader.GetOneLine()
+	A = parse_data(data)
+	part3 := engraving(A, 1)
+
+	fmt.Printf("%s %d %d\n", part1, part2, part3)
 }
