@@ -60,6 +60,27 @@ func smallest_20(crates []int) int {
 	return total
 }
 
+func smallest_no_sets(crates []int) int {
+	sort.Slice(crates, func(i, j int) bool {
+		return crates[i] > crates[j]
+	})
+
+	sets := [][]int{[]int{crates[0]}}
+
+outer:
+	for i := 1; i < len(crates); i++ {
+		for j := range sets {
+			if crates[i] < sets[j][len(sets[j])-1] {
+				sets[j] = append(sets[j], crates[i])
+				continue outer
+			}
+		}
+		sets = append(sets, []int{crates[i]})
+	}
+
+	return len(sets)
+}
+
 func Run() {
 	loader.Event, loader.Quest, loader.Part = "2025", 3, 1
 
@@ -72,5 +93,10 @@ func Run() {
 	crates = parse_data(data)
 	part2 := smallest_20(crates)
 
-	fmt.Printf("%d %d %d\n", part1, part2, 0)
+	loader.Part = 3
+	data = loader.GetOneLine()
+	crates = parse_data(data)
+	part3 := smallest_no_sets(crates)
+
+	fmt.Printf("%d %d %d\n", part1, part2, part3)
 }
