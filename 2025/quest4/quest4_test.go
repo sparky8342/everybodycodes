@@ -25,3 +25,25 @@ func Test2(t *testing.T) {
 		t.Errorf("got %d, wanted %d", got, want)
 	}
 }
+
+func Test3(t *testing.T) {
+	gears := []int{128, 64, 32, 16, 8}
+
+	got := turns_needed(gears)
+	want := 625000000000
+
+	if got != want {
+		t.Errorf("got %d, wanted %d", got, want)
+	}
+}
+
+func Test4(t *testing.T) {
+	gears := []int{102, 75, 50, 35, 13}
+
+	got := turns_needed(gears)
+	want := 1274509803922
+
+	if got != want {
+		t.Errorf("got %d, wanted %d", got, want)
+	}
+}
