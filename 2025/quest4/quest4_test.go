@@ -47,3 +47,40 @@ func Test4(t *testing.T) {
 		t.Errorf("got %d, wanted %d", got, want)
 	}
 }
+
+func Test5(t *testing.T) {
+	data := []string{
+		"5",
+		"5|10",
+		"10|20",
+		"5",
+	}
+
+	gears := parse_data(data)
+	got := turns_linked(gears)
+	want := 400
+
+	if got != want {
+		t.Errorf("got %d, wanted %d", got, want)
+	}
+}
+
+func Test6(t *testing.T) {
+	data := []string{
+		"5",
+		"7|21",
+		"18|36",
+		"27|27",
+		"10|50",
+		"10|50",
+		"11",
+	}
+
+	gears := parse_data(data)
+	got := turns_linked(gears)
+	want := 6818
+
+	if got != want {
+		t.Errorf("got %d, wanted %d", got, want)
+	}
+}
