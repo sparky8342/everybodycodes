@@ -9,52 +9,47 @@ import (
 )
 
 func parse_data(data []byte) []int {
-	nums := []int{}
-	for _, str := range strings.Split(string(data), ",") {
-		n, err := strconv.Atoi(str)
+	num_strs := strings.Split(string(data), ",")
+	nums := make([]int, len(num_strs))
+	for i := 0; i < len(num_strs); i++ {
+		n, err := strconv.Atoi(num_strs[i])
 		if err != nil {
 			panic(err)
 		}
-		nums = append(nums, n)
+		nums[i] = n
 	}
 	return nums
 }
 
 func largest_set(crates []int) int {
-	sort.Slice(crates, func(i, j int) bool {
-		return crates[i] > crates[j]
-	})
-
-	last := crates[0]
-	total := crates[0]
-
-	for i := 1; i < len(crates); i++ {
-		if crates[i] < last {
-			last = crates[i]
-			total += crates[i]
+	seen := map[int]struct{}{}
+	total := 0
+	for _, crate := range crates {
+		if _, ok := seen[crate]; !ok {
+			total += crate
+			seen[crate] = struct{}{}
 		}
 	}
-
 	return total
 }
 
 func smallest_20(crates []int) int {
-	sort.Slice(crates, func(i, j int) bool {
-		return crates[i] < crates[j]
+	unique := []int{}
+	seen := map[int]struct{}{}
+	for _, crate := range crates {
+		if _, ok := seen[crate]; !ok {
+			unique = append(unique, crate)
+			seen[crate] = struct{}{}
+		}
+	}
+
+	sort.Slice(unique, func(i, j int) bool {
+		return unique[i] < unique[j]
 	})
 
-	last := crates[0]
-	total := crates[0]
-	added := 1
-
-	crate := 1
-	for added < 20 {
-		if crates[crate] > last {
-			last = crates[crate]
-			total += crates[crate]
-			added++
-		}
-		crate++
+	total := 0
+	for _, crate := range unique[:20] {
+		total += crate
 	}
 
 	return total
