@@ -18,42 +18,33 @@ func turns_needed(gears []int) int {
 	return int((PART2_TURNS * float64(gears[len(gears)-1]) / float64(gears[0])) + 0.9)
 }
 
-func parse_data(data []string) [][]float64 {
-	gears := [][]float64{}
+func parse_data(data []string) []float64 {
+	gears := []float64{}
 
-	n, err := strconv.ParseFloat(data[0], 64)
-	if err != nil {
-		panic(err)
-	}
-	gears = append(gears, []float64{0, n})
-
-	for i := 1; i < len(data)-1; i++ {
-		parts := strings.Split(data[i], "|")
-		n1, err := strconv.ParseFloat(parts[0], 64)
+	for _, row := range data {
+		parts := strings.Split(row, "|")
+		n, err := strconv.ParseFloat(parts[0], 64)
 		if err != nil {
 			panic(err)
 		}
-		n2, err := strconv.ParseFloat(parts[1], 64)
-		if err != nil {
-			panic(err)
+		gears = append(gears, n)
+		if len(parts) == 2 {
+			n, err := strconv.ParseFloat(parts[1], 64)
+			if err != nil {
+				panic(err)
+			}
+			gears = append(gears, n)
 		}
-		gears = append(gears, []float64{n1, n2})
 	}
-
-	n, err = strconv.ParseFloat(data[len(data)-1], 64)
-	if err != nil {
-		panic(err)
-	}
-	gears = append(gears, []float64{n})
 
 	return gears
 }
 
-func turns_linked(gears [][]float64) int {
+func turns_linked(gears []float64) int {
 	turns := 100.0
 
-	for i := 0; i < len(gears)-1; i++ {
-		turns = turns * gears[i][1] / gears[i+1][0]
+	for i := 0; i < len(gears); i += 2 {
+		turns = turns * gears[i] / gears[i+1]
 	}
 
 	return int(turns)
