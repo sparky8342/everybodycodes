@@ -7,50 +7,53 @@ import (
 	"strings"
 )
 
+const PART1_TURNS = 2025
+const PART2_TURNS = 10000000000000.0
+
 func turns(gears []int) int {
-	return gears[0] * 2025 / gears[len(gears)-1]
+	return gears[0] * PART1_TURNS / gears[len(gears)-1]
 }
 
 func turns_needed(gears []int) int {
-	return int((10000000000000.0 * float64(gears[len(gears)-1]) / float64(gears[0])) + 0.9)
+	return int((PART2_TURNS * float64(gears[len(gears)-1]) / float64(gears[0])) + 0.9)
 }
 
-func parse_data(data []string) [][]int {
-	gears := [][]int{}
+func parse_data(data []string) [][]float64 {
+	gears := [][]float64{}
 
-	n, err := strconv.Atoi(data[0])
+	n, err := strconv.ParseFloat(data[0], 64)
 	if err != nil {
 		panic(err)
 	}
-	gears = append(gears, []int{0, n})
+	gears = append(gears, []float64{0, n})
 
 	for i := 1; i < len(data)-1; i++ {
 		parts := strings.Split(data[i], "|")
-		n1, err := strconv.Atoi(parts[0])
+		n1, err := strconv.ParseFloat(parts[0], 64)
 		if err != nil {
 			panic(err)
 		}
-		n2, err := strconv.Atoi(parts[1])
+		n2, err := strconv.ParseFloat(parts[1], 64)
 		if err != nil {
 			panic(err)
 		}
-		gears = append(gears, []int{n1, n2})
+		gears = append(gears, []float64{n1, n2})
 	}
 
-	n, err = strconv.Atoi(data[len(data)-1])
+	n, err = strconv.ParseFloat(data[len(data)-1], 64)
 	if err != nil {
 		panic(err)
 	}
-	gears = append(gears, []int{n})
+	gears = append(gears, []float64{n})
 
 	return gears
 }
 
-func turns_linked(gears [][]int) int {
+func turns_linked(gears [][]float64) int {
 	turns := 100.0
 
 	for i := 0; i < len(gears)-1; i++ {
-		turns = turns * float64(gears[i][1]) / float64(gears[i+1][0])
+		turns = turns * gears[i][1] / gears[i+1][0]
 	}
 
 	return int(turns)
