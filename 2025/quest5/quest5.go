@@ -44,7 +44,7 @@ func parse_line(line string) *Sword {
 	return sword
 }
 
-func add_value(segment *Segment, value int) {
+func (segment *Segment) add_value(value int) {
 	if value < segment.value && segment.left == -1 {
 		segment.left = value
 	} else if value > segment.value && segment.right == -1 {
@@ -52,7 +52,7 @@ func add_value(segment *Segment, value int) {
 	} else if segment.child == nil {
 		segment.child = &Segment{value: value, left: -1, right: -1}
 	} else {
-		add_value(segment.child, value)
+		segment.child.add_value(value)
 	}
 }
 
@@ -69,22 +69,18 @@ func (s *Sword) initialise(nums []int) {
 	fishbone := &Segment{value: nums[0], left: -1, right: -1}
 
 	for i := 1; i < len(nums); i++ {
-		add_value(fishbone, nums[i])
+		fishbone.add_value(nums[i])
 	}
 
-	quality := 0
-
+	fishbone_values := []int{}
 	segment := fishbone
 	for segment != nil {
-		for i := 0; i < digits(segment.value); i++ {
-			quality *= 10
-		}
-		quality += segment.value
+		fishbone_values = append(fishbone_values, segment.value)
 		segment = segment.child
 	}
 
 	s.fishbone = fishbone
-	s.quality = quality
+	s.quality = combine_numbers(fishbone_values)
 }
 
 func compare_quality(data []string) int {
@@ -101,20 +97,15 @@ func compare_quality(data []string) int {
 	return max - min
 }
 
-func combine_numbers(a int, b int, c int) int {
+func combine_numbers(nums []int) int {
 	comb := 0
-	if a != -1 {
-		comb = a
-	}
-	for i := 0; i < digits(b); i++ {
-		comb *= 10
-	}
-	comb += b
-	if c != -1 {
-		for i := 0; i < digits(c); i++ {
-			comb *= 10
+	for _, n := range nums {
+		if n != -1 {
+			for i := 0; i < digits(n); i++ {
+				comb *= 10
+			}
+			comb += n
 		}
-		comb += c
 	}
 	return comb
 }
@@ -125,8 +116,8 @@ func compare_swords(a *Sword, b *Sword) bool {
 		b_seg := b.fishbone
 
 		for a_seg != nil {
-			a_value := combine_numbers(a_seg.left, a_seg.value, a_seg.right)
-			b_value := combine_numbers(b_seg.left, b_seg.value, b_seg.right)
+			a_value := combine_numbers([]int{a_seg.left, a_seg.value, a_seg.right})
+			b_value := combine_numbers([]int{b_seg.left, b_seg.value, b_seg.right})
 
 			if a_value != b_value {
 				return a_value > b_value
