@@ -116,20 +116,11 @@ func combine_numbers(nums []int) int {
 
 func compare_swords(a *Sword, b *Sword) bool {
 	if a.quality == b.quality {
-		a_seg := a.fishbone
-		b_seg := b.fishbone
-
-		level := 0
-
-		for a_seg != nil {
-			if a.levels[level] != b.levels[level] {
-				return a.levels[level] > b.levels[level]
+		for i := 0; i < len(a.levels); i++ {
+			if a.levels[i] != b.levels[i] {
+				return a.levels[i] > b.levels[i]
 			}
-			a_seg = a_seg.child
-			b_seg = b_seg.child
-			level++
 		}
-
 		return a.id > b.id
 	} else {
 		return a.quality > b.quality
