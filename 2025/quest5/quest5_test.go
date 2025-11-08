@@ -7,8 +7,8 @@ import (
 func Test1(t *testing.T) {
 	data := "58:5,3,7,8,9,10,4,5,7,8,8"
 
-	nums := parse_line(data)
-	got := quality(nums)
+	sword := parse_line(data)
+	got := sword.quality
 	want := 581078
 
 	if got != want {
@@ -32,6 +32,41 @@ func Test2(t *testing.T) {
 
 	got := compare_quality(data)
 	want := 77053
+
+	if got != want {
+		t.Errorf("got %d, wanted %d", got, want)
+	}
+}
+
+func Test3(t *testing.T) {
+	data := []string{
+		"1:7,1,9,1,6,9,8,3,7,2",
+		"2:6,1,9,2,9,8,8,4,3,1",
+		"3:7,1,9,1,6,9,8,3,8,3",
+		"4:6,1,9,2,8,8,8,4,3,1",
+		"5:7,1,9,1,6,9,8,3,7,3",
+		"6:6,1,9,2,8,8,8,4,3,5",
+		"7:3,7,2,2,7,4,4,6,3,1",
+		"8:3,7,2,2,7,4,4,6,3,7",
+		"9:3,7,2,2,7,4,1,6,3,7",
+	}
+
+	got := order(data)
+	want := 260
+
+	if got != want {
+		t.Errorf("got %d, wanted %d", got, want)
+	}
+}
+
+func Test4(t *testing.T) {
+	data := []string{
+		"1:7,1,9,1,6,9,8,3,7,2",
+		"2:7,1,9,1,6,9,8,3,7,2",
+	}
+
+	got := order(data)
+	want := 4
 
 	if got != want {
 		t.Errorf("got %d, wanted %d", got, want)

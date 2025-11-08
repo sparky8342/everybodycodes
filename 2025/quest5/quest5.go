@@ -4,9 +4,16 @@ import (
 	"fmt"
 	"loader"
 	"math"
+	"sort"
 	"strconv"
 	"strings"
 )
+
+type Sword struct {
+	id       int
+	fishbone *Segment
+	quality  int
+}
 
 type Segment struct {
 	value int
@@ -15,8 +22,13 @@ type Segment struct {
 	child *Segment
 }
 
-func parse_line(line string) []int {
+func parse_line(line string) *Sword {
 	parts := strings.Split(line, ":")
+	id, err := strconv.Atoi(parts[0])
+	if err != nil {
+		panic(err)
+	}
+
 	num_strs := strings.Split(parts[1], ",")
 	nums := make([]int, len(num_strs))
 	for i, str := range num_strs {
@@ -26,7 +38,10 @@ func parse_line(line string) []int {
 		}
 		nums[i] = n
 	}
-	return nums
+
+	sword := &Sword{id: id}
+	sword.initialise(nums)
+	return sword
 }
 
 func add_value(segment *Segment, value int) {
@@ -50,52 +65,115 @@ func digits(n int) int {
 	return d
 }
 
-func quality(nums []int) int {
+func (s *Sword) initialise(nums []int) {
 	fishbone := &Segment{value: nums[0], left: -1, right: -1}
 
 	for i := 1; i < len(nums); i++ {
 		add_value(fishbone, nums[i])
 	}
 
-	qual := 0
+	quality := 0
 
 	segment := fishbone
 	for segment != nil {
 		for i := 0; i < digits(segment.value); i++ {
-			qual *= 10
+			quality *= 10
 		}
-		qual += segment.value
+		quality += segment.value
 		segment = segment.child
 	}
 
-	return qual
+	s.fishbone = fishbone
+	s.quality = quality
 }
 
 func compare_quality(data []string) int {
 	min := math.MaxInt64
 	max := 0
 	for _, line := range data {
-		nums := parse_line(line)
-		qual := quality(nums)
-		if qual < min {
-			min = qual
-		} else if qual > max {
-			max = qual
+		sword := parse_line(line)
+		if sword.quality < min {
+			min = sword.quality
+		} else if sword.quality > max {
+			max = sword.quality
 		}
 	}
 	return max - min
+}
+
+func combine_numbers(a int, b int, c int) int {
+	comb := 0
+	if a != -1 {
+		comb = a
+	}
+	for i := 0; i < digits(b); i++ {
+		comb *= 10
+	}
+	comb += b
+	if c != -1 {
+		for i := 0; i < digits(c); i++ {
+			comb *= 10
+		}
+		comb += c
+	}
+	return comb
+}
+
+func compare_swords(a *Sword, b *Sword) bool {
+	if a.quality == b.quality {
+		a_seg := a.fishbone
+		b_seg := b.fishbone
+
+		for a_seg != nil {
+			a_value := combine_numbers(a_seg.left, a_seg.value, a_seg.right)
+			b_value := combine_numbers(b_seg.left, b_seg.value, b_seg.right)
+
+			if a_value != b_value {
+				return a_value > b_value
+			}
+
+			a_seg = a_seg.child
+			b_seg = b_seg.child
+		}
+
+		return a.id > b.id
+	} else {
+		return a.quality > b.quality
+	}
+}
+
+func order(data []string) int {
+	swords := make([]*Sword, len(data))
+	for i, line := range data {
+		swords[i] = parse_line(line)
+	}
+
+	sort.Slice(swords, func(i, j int) bool {
+		return compare_swords(swords[i], swords[j])
+	})
+
+	checksum := 0
+	for i, s := range swords {
+		checksum += (i + 1) * s.id
+	}
+
+	return checksum
 }
 
 func Run() {
 	loader.Event, loader.Quest, loader.Part = "2025", 5, 1
 
 	data := loader.GetOneLine()
-	nums := parse_line(string(data))
-	part1 := quality(nums)
+	sword := parse_line(string(data))
+	part1 := sword.quality
 
 	loader.Part = 2
-	data_part2 := loader.GetStrings()
-	part2 := compare_quality(data_part2)
+	multi_data := loader.GetStrings()
+	part2 := compare_quality(multi_data)
 
-	fmt.Printf("%d %d %d\n", part1, part2, 0)
+	loader.Part = 3
+	multi_data = loader.GetStrings()
+	part3 := order(multi_data)
+
+	fmt.Printf("%d %d %d\n", part1, part2, part3)
 }
