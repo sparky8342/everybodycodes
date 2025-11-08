@@ -13,6 +13,7 @@ type Sword struct {
 	id       int
 	fishbone *Segment
 	quality  int
+	levels   []int
 }
 
 type Segment struct {
@@ -74,13 +75,16 @@ func (s *Sword) initialise(nums []int) {
 
 	fishbone_values := []int{}
 	segment := fishbone
+	levels := []int{}
 	for segment != nil {
 		fishbone_values = append(fishbone_values, segment.value)
+		levels = append(levels, combine_numbers([]int{segment.left, segment.value, segment.right}))
 		segment = segment.child
 	}
 
 	s.fishbone = fishbone
 	s.quality = combine_numbers(fishbone_values)
+	s.levels = levels
 }
 
 func compare_quality(data []string) int {
@@ -115,16 +119,15 @@ func compare_swords(a *Sword, b *Sword) bool {
 		a_seg := a.fishbone
 		b_seg := b.fishbone
 
+		level := 0
+
 		for a_seg != nil {
-			a_value := combine_numbers([]int{a_seg.left, a_seg.value, a_seg.right})
-			b_value := combine_numbers([]int{b_seg.left, b_seg.value, b_seg.right})
-
-			if a_value != b_value {
-				return a_value > b_value
+			if a.levels[level] != b.levels[level] {
+				return a.levels[level] > b.levels[level]
 			}
-
 			a_seg = a_seg.child
 			b_seg = b_seg.child
+			level++
 		}
 
 		return a.id > b.id
