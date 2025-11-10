@@ -9,9 +9,10 @@ func total_A_pairs(data []byte) int {
 	pairs := 0
 	A := 0
 	for _, b := range data {
-		if b == 'A' {
+		switch b {
+		case 'A':
 			A++
-		} else if b == 'a' {
+		case 'a':
 			pairs += A
 		}
 	}
