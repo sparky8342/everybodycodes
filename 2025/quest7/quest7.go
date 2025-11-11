@@ -34,13 +34,16 @@ func valid_name(name string, rules Rules) bool {
 	return true
 }
 
-func get_valid_name(names []string, rules Rules) string {
-	for _, name := range names {
+func get_valid_names(names []string, rules Rules) ([]string, int) {
+	valid_names := []string{}
+	index_sum := 0
+	for i, name := range names {
 		if valid_name(name, rules) {
-			return name
+			valid_names = append(valid_names, name)
+			index_sum += i + 1
 		}
 	}
-	return ""
+	return valid_names, index_sum
 }
 
 func Run() {
@@ -48,7 +51,13 @@ func Run() {
 
 	data := loader.GetStrings()
 	names, rules := parse_data(data)
-	part1 := get_valid_name(names, rules)
+	valid_names, _ := get_valid_names(names, rules)
+	part1 := valid_names[0]
 
-	fmt.Printf("%s %s %s\n", part1, "", "")
+	loader.Part = 2
+	data = loader.GetStrings()
+	names, rules = parse_data(data)
+	_, part2 := get_valid_names(names, rules)
+
+	fmt.Printf("%s %d %s\n", part1, part2, "")
 }
