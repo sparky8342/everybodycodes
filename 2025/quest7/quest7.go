@@ -49,7 +49,11 @@ func get_valid_names(names []string, rules Rules) ([]string, int) {
 func dfs(name []byte, rules Rules, names map[string]struct{}) {
 	l := len(name)
 	if l >= 7 {
-		names[string(name)] = struct{}{}
+		str := string(name)
+		if _, ok := names[str]; ok {
+			return
+		}
+		names[str] = struct{}{}
 		if l == 11 {
 			return
 		}
