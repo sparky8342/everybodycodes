@@ -59,10 +59,7 @@ func dfs(name []byte, rules Rules, names map[string]struct{}) {
 		}
 	}
 	for letter := range rules[name[l-1]] {
-		new_name := make([]byte, l)
-		copy(new_name, name)
-		new_name = append(new_name, letter)
-		dfs(new_name, rules, names)
+		dfs(append(name, letter), rules, names)
 	}
 }
 
