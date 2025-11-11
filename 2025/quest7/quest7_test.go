@@ -115,8 +115,7 @@ func Test4(t *testing.T) {
 	}
 
 	prefixes, rules := parse_data(data)
-	valid_prefixes, _ := get_valid_names(prefixes, rules)
-	got := possible_names(valid_prefixes, rules)
+	got := possible_names(prefixes, rules)
 	want := 1154
 
 	if got != want {

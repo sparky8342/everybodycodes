@@ -63,8 +63,9 @@ func dfs(name []byte, rules Rules, names map[string]struct{}) {
 }
 
 func possible_names(prefixes []string, rules Rules) int {
+	valid_prefixes, _ := get_valid_names(prefixes, rules)
 	names := map[string]struct{}{}
-	for _, prefix := range prefixes {
+	for _, prefix := range valid_prefixes {
 		dfs([]byte(prefix), rules, names)
 	}
 	return len(names)
@@ -86,8 +87,7 @@ func Run() {
 	loader.Part = 3
 	data = loader.GetStrings()
 	prefixes, rules := parse_data(data)
-	valid_prefixes, _ := get_valid_names(prefixes, rules)
-	part3 := possible_names(valid_prefixes, rules)
+	part3 := possible_names(prefixes, rules)
 
 	fmt.Printf("%s %d %d\n", part1, part2, part3)
 }
