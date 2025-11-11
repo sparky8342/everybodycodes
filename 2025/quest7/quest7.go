@@ -46,6 +46,30 @@ func get_valid_names(names []string, rules Rules) ([]string, int) {
 	return valid_names, index_sum
 }
 
+func dfs(name []byte, rules Rules, names map[string]struct{}) {
+	l := len(name)
+	if l >= 7 {
+		names[string(name)] = struct{}{}
+		if l == 11 {
+			return
+		}
+	}
+	for letter := range rules[name[l-1]] {
+		new_name := make([]byte, l)
+		copy(new_name, name)
+		new_name = append(new_name, letter)
+		dfs(new_name, rules, names)
+	}
+}
+
+func possible_names(prefixes []string, rules Rules) int {
+	names := map[string]struct{}{}
+	for _, prefix := range prefixes {
+		dfs([]byte(prefix), rules, names)
+	}
+	return len(names)
+}
+
 func Run() {
 	loader.Event, loader.Quest, loader.Part = "2025", 7, 1
 
@@ -59,5 +83,11 @@ func Run() {
 	names, rules = parse_data(data)
 	_, part2 := get_valid_names(names, rules)
 
-	fmt.Printf("%s %d %s\n", part1, part2, "")
+	loader.Part = 3
+	data = loader.GetStrings()
+	prefixes, rules := parse_data(data)
+	valid_prefixes, _ := get_valid_names(prefixes, rules)
+	part3 := possible_names(valid_prefixes, rules)
+
+	fmt.Printf("%s %d %d\n", part1, part2, part3)
 }
