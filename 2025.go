@@ -8,6 +8,7 @@ import (
 	"2025/quest5"
 	"2025/quest6"
 	"2025/quest7"
+	"2025/quest8"
 	"fmt"
 	"os"
 	"strconv"
@@ -34,6 +35,8 @@ func main() {
 			quest6.Run()
 		case 7:
 			quest7.Run()
+		case 8:
+			quest8.Run()
 		}
 	} else {
 		fmt.Println("Quest 1")
@@ -50,5 +53,7 @@ func main() {
 		quest6.Run()
 		fmt.Println("Quest 7")
 		quest7.Run()
+		fmt.Println("Quest 8")
+		quest8.Run()
 	}
 }
