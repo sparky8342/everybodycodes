@@ -9,9 +9,10 @@ import (
 
 type pair [2]int
 
-func parse_data(data []byte) []int {
+func parse_data(data []byte) ([]int, []pair) {
 	num_strs := strings.Split(string(data), ",")
 	nums := make([]int, len(num_strs))
+
 	for i, str := range num_strs {
 		n, err := strconv.Atoi(str)
 		if err != nil {
@@ -19,7 +20,17 @@ func parse_data(data []byte) []int {
 		}
 		nums[i] = n
 	}
-	return nums
+
+	lines := []pair{}
+	for i := 0; i < len(nums)-1; i++ {
+		a, b := nums[i], nums[i+1]
+		if a > b {
+			a, b = b, a
+		}
+		lines = append(lines, pair{a, b})
+	}
+
+	return nums, lines
 }
 
 func centre_count(nails int, nums []int) int {
@@ -54,35 +65,16 @@ func crossing_lines(line pair, lines []pair) int {
 	return count
 }
 
-func knots(nails int, nums []int) int {
-	lines := []pair{}
-	for i := 0; i < len(nums)-1; i++ {
-		a, b := nums[i], nums[i+1]
-		if a > b {
-			a, b = b, a
-		}
-		lines = append(lines, pair{a, b})
-	}
-
+func knots(nails int, lines []pair) int {
 	count := 0
 	for i := 0; i < len(lines); i++ {
 		count += crossing_lines(lines[i], lines)
 
 	}
-
 	return count / 2
 }
 
-func best_cut(nails int, nums []int) int {
-	lines := []pair{}
-	for i := 0; i < len(nums)-1; i++ {
-		a, b := nums[i], nums[i+1]
-		if a > b {
-			a, b = b, a
-		}
-		lines = append(lines, pair{a, b})
-	}
-
+func best_cut(nails int, lines []pair) int {
 	max_threads := 0
 
 	for i := 1; i <= nails; i++ {
@@ -108,18 +100,18 @@ func Run() {
 	loader.Event, loader.Quest, loader.Part = "2025", 8, 1
 
 	data := loader.GetOneLine()
-	nums := parse_data(data)
+	nums, _ := parse_data(data)
 	part1 := centre_count(32, nums)
 
 	loader.Part = 2
 	data = loader.GetOneLine()
-	nums = parse_data(data)
-	part2 := knots(32, nums)
+	_, lines := parse_data(data)
+	part2 := knots(32, lines)
 
 	loader.Part = 3
 	data = loader.GetOneLine()
-	nums = parse_data(data)
-	part3 := best_cut(256, nums)
+	_, lines = parse_data(data)
+	part3 := best_cut(256, lines)
 
 	fmt.Printf("%d %d %d\n", part1, part2, part3)
 }

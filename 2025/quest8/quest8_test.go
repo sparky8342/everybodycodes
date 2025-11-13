@@ -5,8 +5,9 @@ import (
 )
 
 func Test1(t *testing.T) {
-	nums := []int{1, 5, 2, 6, 8, 4, 1, 7, 3}
+	data := []byte("1,5,2,6,8,4,1,7,3")
 
+	nums, _ := parse_data(data)
 	got := centre_count(8, nums)
 	want := 4
 
@@ -16,9 +17,10 @@ func Test1(t *testing.T) {
 }
 
 func Test2(t *testing.T) {
-	nums := []int{1, 5, 2, 6, 8, 4, 1, 7, 3, 5, 7, 8, 2}
+	data := []byte("1,5,2,6,8,4,1,7,3,5,7,8,2")
 
-	got := knots(8, nums)
+	_, lines := parse_data(data)
+	got := knots(8, lines)
 	want := 21
 
 	if got != want {
@@ -27,9 +29,10 @@ func Test2(t *testing.T) {
 }
 
 func Test3(t *testing.T) {
-	nums := []int{1, 5, 2, 6, 8, 4, 1, 7, 3, 6}
+	data := []byte("1,5,2,6,8,4,1,7,3,6")
 
-	got := best_cut(8, nums)
+	_, lines := parse_data(data)
+	got := best_cut(8, lines)
 	want := 7
 
 	if got != want {
