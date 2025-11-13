@@ -37,6 +37,23 @@ func centre_count(nails int, nums []int) int {
 	return count
 }
 
+func crossing_lines(line pair, lines []pair) int {
+	count := 0
+	a, b := line[0], line[1]
+
+	for i := 0; i < len(lines); i++ {
+		c, d := lines[i][0], lines[i][1]
+		if (c < a || c > b) && (d > a && d < b) {
+			count++
+		}
+		if (d < a || d > b) && (c > a && c < b) {
+			count++
+		}
+	}
+
+	return count
+}
+
 func knots(nails int, nums []int) int {
 	lines := []pair{}
 	for i := 0; i < len(nums)-1; i++ {
@@ -49,20 +66,42 @@ func knots(nails int, nums []int) int {
 
 	count := 0
 	for i := 0; i < len(lines); i++ {
-		a, b := lines[i][0], lines[i][1]
+		count += crossing_lines(lines[i], lines)
 
-		for j := i + 1; j < len(lines); j++ {
-			c, d := lines[j][0], lines[j][1]
-			if (c < a || c > b) && (d > a && d < b) {
-				count++
+	}
+
+	return count / 2
+}
+
+func best_cut(nails int, nums []int) int {
+	lines := []pair{}
+	for i := 0; i < len(nums)-1; i++ {
+		a, b := nums[i], nums[i+1]
+		if a > b {
+			a, b = b, a
+		}
+		lines = append(lines, pair{a, b})
+	}
+
+	max_threads := 0
+
+	for i := 1; i <= nails; i++ {
+		for j := i + 2; j <= nails; j++ {
+			cut := pair{i, j}
+			threads := crossing_lines(cut, lines)
+			for _, line := range lines {
+				if line[0] == i && line[1] == j {
+					threads++
+					break
+				}
 			}
-			if (d < a || d > b) && (c > a && c < b) {
-				count++
+			if threads > max_threads {
+				max_threads = threads
 			}
 		}
 	}
 
-	return count
+	return max_threads
 }
 
 func Run() {
@@ -77,5 +116,10 @@ func Run() {
 	nums = parse_data(data)
 	part2 := knots(32, nums)
 
-	fmt.Printf("%d %d %s\n", part1, part2, "")
+	loader.Part = 3
+	data = loader.GetOneLine()
+	nums = parse_data(data)
+	part3 := best_cut(256, nums)
+
+	fmt.Printf("%d %d %d\n", part1, part2, part3)
 }

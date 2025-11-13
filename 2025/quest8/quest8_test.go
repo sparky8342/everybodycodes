@@ -25,3 +25,14 @@ func Test2(t *testing.T) {
 		t.Errorf("got %d, wanted %d", got, want)
 	}
 }
+
+func Test3(t *testing.T) {
+	nums := []int{1, 5, 2, 6, 8, 4, 1, 7, 3, 6}
+
+	got := best_cut(8, nums)
+	want := 7
+
+	if got != want {
+		t.Errorf("got %d, wanted %d", got, want)
+	}
+}
