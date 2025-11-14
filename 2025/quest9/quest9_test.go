@@ -12,7 +12,7 @@ func Test1(t *testing.T) {
 	}
 
 	sequences := parse_data(data)
-	got := similarity_part1(sequences)
+	got := similarity(sequences[2], sequences[0], sequences[1])
 	want := 414
 
 	if got != want {

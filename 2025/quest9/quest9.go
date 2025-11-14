@@ -21,25 +21,6 @@ func parse_data(data []string) []string {
 	return data
 }
 
-func similarity_part1(sequences []string) int {
-	parent1 := sequences[0]
-	parent2 := sequences[1]
-	child := sequences[2]
-
-	p1_matches := 0
-	p2_matches := 0
-	for i := 0; i < len(child); i++ {
-		if parent1[i] == child[i] {
-			p1_matches++
-		}
-		if parent2[i] == child[i] {
-			p2_matches++
-		}
-	}
-
-	return p1_matches * p2_matches
-}
-
 func similarity(child string, parent1 string, parent2 string) int {
 	p1_matches := 0
 	p2_matches := 0
@@ -158,7 +139,7 @@ func Run() {
 
 	data := loader.GetStrings()
 	sequences := parse_data(data)
-	part1 := similarity_part1(sequences)
+	part1 := similarity(sequences[2], sequences[0], sequences[1])
 
 	loader.Part = 2
 	data = loader.GetStrings()
