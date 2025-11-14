@@ -60,6 +60,25 @@ func intersect(a intset, b intset) bool {
 	return false
 }
 
+func combine_groups(groups []intset) []intset {
+outer:
+	for {
+		for i := 0; i < len(groups); i++ {
+			for j := i + 1; j < len(groups); j++ {
+				if intersect(groups[i], groups[j]) {
+					new_group := union(groups[i], groups[j])
+					groups = append(groups[0:j], groups[j+1:]...)
+					groups = append(groups[0:i], groups[i+1:]...)
+					groups = append(groups, new_group)
+					continue outer
+				}
+			}
+		}
+
+		return groups
+	}
+}
+
 func similarity_sum(sequences []string) (int, int) {
 	sum := 0
 
@@ -90,22 +109,7 @@ func similarity_sum(sequences []string) (int, int) {
 		}
 	}
 
-outer:
-	for {
-		for i := 0; i < len(groups); i++ {
-			for j := i + 1; j < len(groups); j++ {
-				if intersect(groups[i], groups[j]) {
-					new_group := union(groups[i], groups[j])
-					groups = append(groups[0:j], groups[j+1:]...)
-					groups = append(groups[0:i], groups[i+1:]...)
-					groups = append(groups, new_group)
-					continue outer
-				}
-			}
-		}
-
-		break
-	}
+	groups = combine_groups(groups)
 
 	sort.Slice(groups, func(i, j int) bool {
 		return len(groups[i]) > len(groups[j])
