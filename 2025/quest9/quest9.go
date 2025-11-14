@@ -81,7 +81,6 @@ func similarity_sum(sequences []string) (int, int) {
 	}
 
 	for len(to_check) > 0 {
-
 		var check int
 		for i := range to_check {
 			check = i
@@ -97,27 +96,13 @@ func similarity_sum(sequences []string) (int, int) {
 			dd := queue[0]
 			queue = queue[1:]
 
-			if dd.parent1 != nil {
-				if _, ok := visited[dd.parent1.id]; !ok {
-					queue = append(queue, dd.parent1)
-					visited[dd.parent1.id] = struct{}{}
-					delete(to_check, dd.parent1.id)
-				}
-			}
-
-			if dd.parent2 != nil {
-				if _, ok := visited[dd.parent2.id]; !ok {
-					queue = append(queue, dd.parent2)
-					visited[dd.parent2.id] = struct{}{}
-					delete(to_check, dd.parent2.id)
-				}
-			}
-
-			for _, child := range dd.children {
-				if _, ok := visited[child.id]; !ok {
-					queue = append(queue, child)
-					visited[child.id] = struct{}{}
-					delete(to_check, child.id)
+			for _, relative := range append(dd.children, dd.parent1, dd.parent2) {
+				if relative != nil {
+					if _, ok := visited[relative.id]; !ok {
+						queue = append(queue, relative)
+						visited[relative.id] = struct{}{}
+						delete(to_check, relative.id)
+					}
 				}
 			}
 		}
