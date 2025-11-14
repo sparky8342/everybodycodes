@@ -3,14 +3,14 @@ package quest9
 import (
 	"fmt"
 	"loader"
+	"sort"
 	"strings"
 )
 
-type DragonDuck struct {
-	id       int
-	parent1  *DragonDuck
-	parent2  *DragonDuck
-	children []*DragonDuck
+type intset map[int]struct{}
+
+func (s intset) add(value int) {
+	s[value] = struct{}{}
 }
 
 func parse_data(data []string) []string {
@@ -40,13 +40,30 @@ func similarity(child string, parent1 string, parent2 string) int {
 	return p1_matches * p2_matches
 }
 
+func union(a intset, b intset) intset {
+	combined := intset{}
+	for id := range a {
+		combined.add(id)
+	}
+	for id := range b {
+		combined.add(id)
+	}
+	return combined
+}
+
+func intersect(a intset, b intset) bool {
+	for id := range a {
+		if _, ok := b[id]; ok {
+			return true
+		}
+	}
+	return false
+}
+
 func similarity_sum(sequences []string) (int, int) {
 	sum := 0
 
-	dragonducks := make([]*DragonDuck, len(sequences))
-	for i := range dragonducks {
-		dragonducks[i] = &DragonDuck{id: i}
-	}
+	groups := []intset{}
 
 	for i := 0; i < len(sequences); i++ {
 		child := sequences[i]
@@ -63,57 +80,40 @@ func similarity_sum(sequences []string) (int, int) {
 				score := similarity(child, parent1, parent2)
 				if score > 0 {
 					sum += score
-					dragonducks[i].parent1 = dragonducks[j]
-					dragonducks[i].parent2 = dragonducks[k]
-					dragonducks[j].children = append(dragonducks[j].children, dragonducks[i])
-					dragonducks[k].children = append(dragonducks[k].children, dragonducks[i])
+					new_group := intset{}
+					new_group.add(i)
+					new_group.add(j)
+					new_group.add(k)
+					groups = append(groups, new_group)
 				}
 			}
 		}
 	}
 
-	max_size := 0
+outer:
+	for {
+		for i := 0; i < len(groups); i++ {
+			for j := i + 1; j < len(groups); j++ {
+				if intersect(groups[i], groups[j]) {
+					new_group := union(groups[i], groups[j])
+					groups = append(groups[0:j], groups[j+1:]...)
+					groups = append(groups[0:i], groups[i+1:]...)
+					groups = append(groups, new_group)
+					continue outer
+				}
+			}
+		}
+
+		break
+	}
+
+	sort.Slice(groups, func(i, j int) bool {
+		return len(groups[i]) > len(groups[j])
+	})
+
 	scale_sum := 0
-
-	to_check := map[int]struct{}{}
-	for i := 0; i < len(dragonducks); i++ {
-		to_check[i] = struct{}{}
-	}
-
-	for len(to_check) > 0 {
-		var check int
-		for i := range to_check {
-			check = i
-			delete(to_check, i)
-			break
-		}
-
-		queue := []*DragonDuck{dragonducks[check]}
-		visited := map[int]struct{}{}
-		visited[dragonducks[check].id] = struct{}{}
-
-		for len(queue) > 0 {
-			dd := queue[0]
-			queue = queue[1:]
-
-			for _, relative := range append(dd.children, dd.parent1, dd.parent2) {
-				if relative != nil {
-					if _, ok := visited[relative.id]; !ok {
-						queue = append(queue, relative)
-						visited[relative.id] = struct{}{}
-						delete(to_check, relative.id)
-					}
-				}
-			}
-		}
-
-		if len(visited) > max_size {
-			max_size = len(visited)
-			scale_sum = 0
-			for id := range visited {
-				scale_sum += id + 1
-			}
-		}
+	for dragonduck := range groups[0] {
+		scale_sum += dragonduck + 1
 	}
 
 	return sum, scale_sum
