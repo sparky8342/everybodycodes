@@ -52,6 +52,9 @@ func union(a intset, b intset) intset {
 }
 
 func intersect(a intset, b intset) bool {
+	if len(a) > len(b) {
+		a, b = b, a
+	}
 	for id := range a {
 		if _, ok := b[id]; ok {
 			return true
