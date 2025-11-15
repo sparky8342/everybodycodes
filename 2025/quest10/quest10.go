@@ -3,7 +3,6 @@ package quest10
 import (
 	"fmt"
 	"loader"
-	"strconv"
 )
 
 type Pos struct {
@@ -19,7 +18,7 @@ type Entry struct {
 var height, width int
 var dirs [8][2]int
 
-var cache map[string]int
+var cache map[int]int
 
 func init() {
 	dirs = [8][2]int{
@@ -147,17 +146,14 @@ func find_max_sheep(start_board []string, turns int) int {
 	return sheep
 }
 
-func state_key(dragonduck Pos, sheep []Pos, sheep_move bool) string {
-	key := strconv.Itoa(dragonduck.x) + "," + strconv.Itoa(dragonduck.y)
+func state_key(dragonduck Pos, sheep []Pos, sheep_move bool) int {
+	key := (dragonduck.x+1)*8 + (dragonduck.y + 1)
 	for _, s := range sheep {
-		key = key + ":" + strconv.Itoa(s.x)
-		key = key + "," + strconv.Itoa(s.y)
+		key = key*8 + (s.x + 1)
+		key = key*8 + (s.y + 1)
 	}
-	key += ":"
 	if sheep_move {
-		key += "1"
-	} else {
-		key += "0"
+		key *= -1
 	}
 	return key
 }
@@ -231,7 +227,7 @@ outer:
 }
 
 func find_sequences(board []string) int {
-	cache = map[string]int{}
+	cache = map[int]int{}
 
 	width = len(board[0])
 	height = len(board)
