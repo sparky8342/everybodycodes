@@ -242,9 +242,7 @@ func find_sequences(board []string) int {
 		}
 	}
 
-	sequences := sheep_moves(board, sheep, dragonduck)
-
-	return sequences
+	return sheep_moves(board, sheep, dragonduck)
 }
 
 func Run() {
