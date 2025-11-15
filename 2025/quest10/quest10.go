@@ -33,6 +33,20 @@ func init() {
 	}
 }
 
+func next_dragons(dragons map[Pos]struct{}) map[Pos]struct{} {
+	next := map[Pos]struct{}{}
+	for dragon := range dragons {
+		for _, dir := range dirs {
+			new_dragon := Pos{x: dragon.x + dir[0], y: dragon.y + dir[1]}
+			if new_dragon.x < 0 || new_dragon.x == width || new_dragon.y < 0 || new_dragon.y == height {
+				continue
+			}
+			next[new_dragon] = struct{}{}
+		}
+	}
+	return next
+}
+
 func in_range(board []string, moves int) int {
 	width = len(board[0])
 	height = len(board)
@@ -43,18 +57,10 @@ func in_range(board []string, moves int) int {
 	dragons[start] = struct{}{}
 
 	for i := 0; i < moves; i++ {
-		next_dragons := map[Pos]struct{}{}
-		for dragon := range dragons {
-			next_dragons[dragon] = struct{}{}
-			for _, dir := range dirs {
-				new_dragon := Pos{x: dragon.x + dir[0], y: dragon.y + dir[1]}
-				if new_dragon.x < 0 || new_dragon.x == width || new_dragon.y < 0 || new_dragon.y == height {
-					continue
-				}
-				next_dragons[new_dragon] = struct{}{}
-			}
+		next := next_dragons(dragons)
+		for dragon := range next {
+			dragons[dragon] = struct{}{}
 		}
-		dragons = next_dragons
 	}
 
 	sheep := 0
@@ -90,18 +96,9 @@ func find_max_sheep(start_board []string, turns int) int {
 	dd_positions[start] = struct{}{}
 
 	sheep := 0
+
 	for i := 0; i < turns; i++ {
-		next_positions := map[Pos]struct{}{}
-		for pos := range dd_positions {
-			for _, dir := range dirs {
-				new_pos := Pos{x: pos.x + dir[0], y: pos.y + dir[1]}
-				if new_pos.x < 0 || new_pos.x >= width || new_pos.y < 0 || new_pos.y >= height {
-					continue
-				}
-				next_positions[new_pos] = struct{}{}
-			}
-		}
-		dd_positions = next_positions
+		dd_positions = next_dragons(dd_positions)
 
 		for pos := range dd_positions {
 			if board[pos.y][pos.x] == 'S' {
