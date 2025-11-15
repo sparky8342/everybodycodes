@@ -3,6 +3,7 @@ package quest10
 import (
 	"fmt"
 	"loader"
+	"strconv"
 )
 
 type Pos struct {
@@ -17,6 +18,8 @@ type Entry struct {
 
 var height, width int
 var dirs [8][2]int
+
+var cache map[string]int
 
 func init() {
 	dirs = [8][2]int{
@@ -144,6 +147,115 @@ func find_max_sheep(start_board []string, turns int) int {
 	return sheep
 }
 
+func state_key(dragonduck Pos, sheep []Pos, sheep_move bool) string {
+	key := strconv.Itoa(dragonduck.x) + "," + strconv.Itoa(dragonduck.y)
+	for _, s := range sheep {
+		key = key + ":" + strconv.Itoa(s.x)
+		key = key + "," + strconv.Itoa(s.y)
+	}
+	key += ":"
+	if sheep_move {
+		key += "1"
+	} else {
+		key += "0"
+	}
+	return key
+}
+
+func sheep_moves(board []string, sheep []Pos, dragonduck Pos) int {
+	key := state_key(dragonduck, sheep, true)
+	if val, ok := cache[key]; ok {
+		//fmt.Println(key, val)
+		return val
+	}
+
+	seq := 0
+
+	for i, s := range sheep {
+		if s.y == height-1 {
+			continue
+		}
+
+		if dragonduck.x == s.x && dragonduck.y == s.y+1 && board[s.y+1][s.x] != '#' {
+			if len(sheep) == 1 {
+				seq += dragonduck_moves(board, sheep, dragonduck)
+			}
+			continue
+		}
+
+		cpy := make([]Pos, len(sheep))
+		copy(cpy, sheep)
+		cpy[i].y++
+
+		seq += dragonduck_moves(board, cpy, dragonduck)
+	}
+
+	cache[key] = seq
+	return seq
+}
+
+func dragonduck_moves(board []string, sheep []Pos, dragonduck Pos) int {
+	key := state_key(dragonduck, sheep, false)
+	if val, ok := cache[key]; ok {
+		return val
+	}
+
+	seq := 0
+
+outer:
+	for _, dir := range dirs {
+		new_pos := Pos{x: dragonduck.x + dir[0], y: dragonduck.y + dir[1]}
+		if new_pos.x < 0 || new_pos.x >= width || new_pos.y < 0 || new_pos.y >= height {
+			continue
+		}
+
+		for i, s := range sheep {
+			if s.x == new_pos.x && s.y == new_pos.y && board[s.y][s.x] != '#' {
+				if len(sheep) == 1 {
+					seq++
+					continue outer
+				}
+
+				cpy := make([]Pos, len(sheep))
+				copy(cpy, sheep)
+				cpy = append(cpy[:i], cpy[i+1:]...)
+
+				seq += sheep_moves(board, cpy, new_pos)
+				continue outer
+			}
+		}
+
+		seq += sheep_moves(board, sheep, new_pos)
+
+	}
+
+	cache[key] = seq
+	return seq
+}
+
+func find_sequences(board []string) int {
+	cache = map[string]int{}
+
+	width = len(board[0])
+	height = len(board)
+
+	dragonduck := Pos{x: width / 2, y: height - 1}
+
+	// find sheep
+	sheep := []Pos{}
+	for y := 0; y < height; y++ {
+		for x := 0; x < width; x++ {
+			if board[y][x] == 'S' {
+				sheep = append(sheep, Pos{x: x, y: y})
+			}
+		}
+	}
+
+	sequences := sheep_moves(board, sheep, dragonduck)
+
+	return sequences
+}
+
 func Run() {
 	loader.Event, loader.Quest, loader.Part = "2025", 10, 1
 
@@ -154,5 +266,9 @@ func Run() {
 	board = loader.GetStrings()
 	part2 := find_max_sheep(board, 20)
 
-	fmt.Printf("%d %d %d\n", part1, part2, 0)
+	loader.Part = 3
+	board = loader.GetStrings()
+	part3 := find_sequences(board)
+
+	fmt.Printf("%d %d %d\n", part1, part2, part3)
 }
