@@ -39,34 +39,32 @@ func in_range(board []string, moves int) int {
 
 	start := Pos{x: width / 2, y: height / 2}
 
-	queue := []Entry{Entry{pos: start}}
+	dragons := map[Pos]struct{}{}
+	dragons[start] = struct{}{}
 
-	sheep := map[Pos]struct{}{}
-
-	for len(queue) > 0 {
-		entry := queue[0]
-		queue = queue[1:]
-
-		if entry.moves > moves {
-			continue
-		}
-
-		pos := entry.pos
-
-		if board[pos.y][pos.x] == 'S' {
-			sheep[pos] = struct{}{}
-		}
-
-		for _, dir := range dirs {
-			new_pos := Pos{x: pos.x + dir[0], y: pos.y + dir[1]}
-			if new_pos.x < 0 || new_pos.x == width || new_pos.y < 0 || new_pos.y == height {
-				continue
+	for i := 0; i < moves; i++ {
+		next_dragons := map[Pos]struct{}{}
+		for dragon := range dragons {
+			next_dragons[dragon] = struct{}{}
+			for _, dir := range dirs {
+				new_dragon := Pos{x: dragon.x + dir[0], y: dragon.y + dir[1]}
+				if new_dragon.x < 0 || new_dragon.x == width || new_dragon.y < 0 || new_dragon.y == height {
+					continue
+				}
+				next_dragons[new_dragon] = struct{}{}
 			}
-			queue = append(queue, Entry{pos: new_pos, moves: entry.moves + 1})
+		}
+		dragons = next_dragons
+	}
+
+	sheep := 0
+	for dragon := range dragons {
+		if board[dragon.y][dragon.x] == 'S' {
+			sheep++
 		}
 	}
 
-	return len(sheep)
+	return sheep
 }
 
 func print_board(board [][]byte) {
