@@ -165,7 +165,6 @@ func state_key(dragonduck Pos, sheep []Pos, sheep_move bool) string {
 func sheep_moves(board []string, sheep []Pos, dragonduck Pos) int {
 	key := state_key(dragonduck, sheep, true)
 	if val, ok := cache[key]; ok {
-		//fmt.Println(key, val)
 		return val
 	}
 
@@ -183,11 +182,9 @@ func sheep_moves(board []string, sheep []Pos, dragonduck Pos) int {
 			continue
 		}
 
-		cpy := make([]Pos, len(sheep))
-		copy(cpy, sheep)
-		cpy[i].y++
-
-		seq += dragonduck_moves(board, cpy, dragonduck)
+		sheep[i].y++
+		seq += dragonduck_moves(board, sheep, dragonduck)
+		sheep[i].y--
 	}
 
 	cache[key] = seq
