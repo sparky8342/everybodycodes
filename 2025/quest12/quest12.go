@@ -51,26 +51,23 @@ func copy_visited(v map[Pos]struct{}) map[Pos]struct{} {
 	return c
 }
 
-func find_best_shot(grid []string, current_visited map[Pos]struct{}) map[Pos]struct{} {
+func find_best_shot(grid []string, available map[Pos]struct{}, current_visited map[Pos]struct{}) map[Pos]struct{} {
 	max := 0
 	best_visited := map[Pos]struct{}{}
 
-	for y := 0; y < height; y++ {
-		for x := 0; x < width; x++ {
-			start := Pos{x: x, y: y}
-			if _, ok := current_visited[start]; ok {
-				continue
-			}
-
-			queue := []Pos{start}
-			visited := copy_visited(current_visited)
-			visited[start] = struct{}{}
-			bfs(grid, queue, visited)
-			if len(visited) > max {
-				max = len(visited)
-				best_visited = visited
-			}
+	for start := range available {
+		queue := []Pos{start}
+		visited := copy_visited(current_visited)
+		visited[start] = struct{}{}
+		bfs(grid, queue, visited)
+		if len(visited) > max {
+			max = len(visited)
+			best_visited = visited
 		}
+	}
+
+	for pos := range best_visited {
+		delete(available, pos)
 	}
 
 	return best_visited
@@ -98,9 +95,16 @@ func shoot_barrels(grid []string, shot_mode int) int {
 		bfs(grid, queue, visited)
 		return len(visited)
 	case 3:
+		available := map[Pos]struct{}{}
+		for y := 0; y < height; y++ {
+			for x := 0; x < width; x++ {
+				available[Pos{x: x, y: y}] = struct{}{}
+			}
+		}
+
 		visited := map[Pos]struct{}{}
 		for i := 0; i < 3; i++ {
-			visited = find_best_shot(grid, visited)
+			visited = find_best_shot(grid, available, visited)
 		}
 
 		return len(visited)
