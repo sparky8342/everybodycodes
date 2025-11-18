@@ -5,7 +5,7 @@ import (
 	"loader"
 )
 
-func move_right_one_round(ducks []int) (bool, []int) {
+func move_right_one_round(ducks []int) bool {
 	moved := false
 	for i := 0; i < len(ducks)-1; i++ {
 		if ducks[i] > ducks[i+1] {
@@ -14,10 +14,10 @@ func move_right_one_round(ducks []int) (bool, []int) {
 			moved = true
 		}
 	}
-	return moved, ducks
+	return moved
 }
 
-func move_left_one_round(ducks []int) (bool, []int) {
+func move_left_one_round(ducks []int) bool {
 	moved := false
 	for i := 0; i < len(ducks)-1; i++ {
 		if ducks[i] < ducks[i+1] {
@@ -26,28 +26,22 @@ func move_left_one_round(ducks []int) (bool, []int) {
 			moved = true
 		}
 	}
-	return moved, ducks
+	return moved
 }
 
-func move_ducks(ducks []int, rounds int) []int {
-	var moved bool
-
+func move_ducks(ducks []int, rounds int) {
 	var i int
 	for i = 0; i < rounds; i++ {
-		moved, ducks = move_right_one_round(ducks)
-		if !moved {
+		if !move_right_one_round(ducks) {
 			break
 		}
 	}
 
 	for ; i < rounds; i++ {
-		moved, ducks = move_left_one_round(ducks)
-		if !moved {
+		if !move_left_one_round(ducks) {
 			break
 		}
 	}
-
-	return ducks
 }
 
 func move_left(ducks []int) int {
@@ -84,10 +78,8 @@ func checksum(ducks []int) int {
 func balance_ducks(ducks []int) int {
 	rounds := 0
 
-	var moved bool
 	for {
-		moved, ducks = move_right_one_round(ducks)
-		if moved {
+		if move_right_one_round(ducks) {
 			rounds++
 		} else {
 			break
@@ -102,7 +94,7 @@ func Run() {
 	loader.Event, loader.Quest, loader.Part = "2025", 11, 1
 
 	ducks := loader.GetInts()
-	ducks = move_ducks(ducks, 10)
+	move_ducks(ducks, 10)
 	part1 := checksum(ducks)
 
 	loader.Part = 2
