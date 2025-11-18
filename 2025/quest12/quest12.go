@@ -21,15 +21,24 @@ func init() {
 	}
 }
 
-func shoot_barrels(grid []string) int {
+func shoot_barrels(grid []string, shot_mode int) int {
 	height := len(grid)
 	width := len(grid[0])
 
-	start := Pos{x: 0, y: 0}
 	visited := map[Pos]struct{}{}
-	visited[start] = struct{}{}
+	queue := []Pos{}
 
-	queue := []Pos{start}
+	if shot_mode == 1 {
+		start := Pos{x: 0, y: 0}
+		queue = []Pos{start}
+		visited[start] = struct{}{}
+	} else if shot_mode == 2 {
+		start1 := Pos{x: 0, y: 0}
+		start2 := Pos{x: width - 1, y: height - 1}
+		queue = []Pos{start1, start2}
+		visited[start1] = struct{}{}
+		visited[start2] = struct{}{}
+	}
 
 	for len(queue) > 0 {
 		pos := queue[0]
@@ -57,7 +66,11 @@ func Run() {
 	loader.Event, loader.Quest, loader.Part = "2025", 12, 1
 
 	grid := loader.GetStrings()
-	part1 := shoot_barrels(grid)
+	part1 := shoot_barrels(grid, 1)
 
-	fmt.Printf("%d %d %d\n", part1, 0, 0)
+	loader.Part = 2
+	grid = loader.GetStrings()
+	part2 := shoot_barrels(grid, 2)
+
+	fmt.Printf("%d %d %d\n", part1, part2, 0)
 }
