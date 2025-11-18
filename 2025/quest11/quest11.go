@@ -50,6 +50,29 @@ func move_ducks(ducks []int, rounds int) []int {
 	return ducks
 }
 
+func move_left(ducks []int) int {
+	rounds := 0
+
+	total := 0
+	for _, duck := range ducks {
+		total += duck
+	}
+	avg := total / len(ducks)
+
+	for i := len(ducks) - 1; i > 0; i-- {
+		if ducks[i] > avg {
+			diff := ducks[i] - avg
+			ducks[i] -= diff
+			ducks[i-1] += diff
+			if diff > rounds {
+				rounds = diff
+			}
+		}
+	}
+
+	return rounds
+}
+
 func checksum(ducks []int) int {
 	c := 0
 	for i := 0; i < len(ducks); i++ {
@@ -71,15 +94,7 @@ func balance_ducks(ducks []int) int {
 		}
 	}
 
-	for {
-		moved, ducks = move_left_one_round(ducks)
-		if moved {
-			rounds++
-		} else {
-			break
-		}
-	}
-
+	rounds += move_left(ducks)
 	return rounds
 }
 
@@ -94,5 +109,9 @@ func Run() {
 	ducks = loader.GetInts()
 	part2 := balance_ducks(ducks)
 
-	fmt.Printf("%d %d %d\n", part1, part2, 0)
+	loader.Part = 3
+	ducks = loader.GetInts()
+	part3 := balance_ducks(ducks)
+
+	fmt.Printf("%d %d %d\n", part1, part2, part3)
 }
