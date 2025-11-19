@@ -22,6 +22,10 @@ func init() {
 	}
 }
 
+func in_bounds(pos Pos) bool {
+	return pos.x >= 0 && pos.x < width && pos.y >= 0 && pos.y < height
+}
+
 func bfs(grid []string, queue []Pos, visited map[Pos]struct{}) {
 	for len(queue) > 0 {
 		pos := queue[0]
@@ -29,10 +33,7 @@ func bfs(grid []string, queue []Pos, visited map[Pos]struct{}) {
 
 		for _, dir := range dirs {
 			next_pos := Pos{x: pos.x + dir[0], y: pos.y + dir[1]}
-			if next_pos.x < 0 || next_pos.x == width || next_pos.y < 0 || next_pos.y == height {
-				continue
-			}
-			if grid[next_pos.y][next_pos.x] > grid[pos.y][pos.x] {
+			if !in_bounds(next_pos) || grid[next_pos.y][next_pos.x] > grid[pos.y][pos.x] {
 				continue
 			}
 			if _, ok := visited[next_pos]; !ok {
@@ -73,6 +74,20 @@ func find_best_shot(grid []string, available map[Pos]struct{}, current_visited m
 	return best_visited
 }
 
+func is_local_peak(grid []string, pos Pos) bool {
+	value := grid[pos.y][pos.x]
+	for _, dir := range dirs {
+		npos := Pos{x: pos.x + dir[0], y: pos.y + dir[1]}
+		if !in_bounds(npos) {
+			continue
+		}
+		if grid[npos.y][npos.x] > value {
+			return false
+		}
+	}
+	return true
+}
+
 func shoot_barrels(grid []string, shot_mode int) int {
 	height = len(grid)
 	width = len(grid[0])
@@ -98,7 +113,10 @@ func shoot_barrels(grid []string, shot_mode int) int {
 		available := map[Pos]struct{}{}
 		for y := 0; y < height; y++ {
 			for x := 0; x < width; x++ {
-				available[Pos{x: x, y: y}] = struct{}{}
+				pos := Pos{x: x, y: y}
+				if is_local_peak(grid, pos) {
+					available[Pos{x: x, y: y}] = struct{}{}
+				}
 			}
 		}
 
