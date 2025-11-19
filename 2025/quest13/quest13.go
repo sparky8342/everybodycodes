@@ -9,7 +9,6 @@ import (
 
 type Number struct {
 	value int
-	prev  *Number
 	next  *Number
 }
 
@@ -53,7 +52,6 @@ func craft_lock_ranges(ranges [][]int, turns int) int {
 		for j := ranges[i][0]; j <= ranges[i][1]; j++ {
 			new_number := &Number{value: j}
 			right.next = new_number
-			new_number.prev = right
 			right = right.next
 		}
 		total += ranges[i][1] - ranges[i][0] + 1
@@ -62,15 +60,13 @@ func craft_lock_ranges(ranges [][]int, turns int) int {
 	for i := 1; i < len(ranges); i += 2 {
 		for j := ranges[i][0]; j <= ranges[i][1]; j++ {
 			new_number := &Number{value: j}
-			left.prev = new_number
 			new_number.next = left
-			left = left.prev
+			left = new_number
 		}
 		total += ranges[i][1] - ranges[i][0] + 1
 	}
 
 	right.next = left
-	left.prev = right
 
 	turns %= total
 
