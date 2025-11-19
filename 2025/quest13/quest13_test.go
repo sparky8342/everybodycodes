@@ -14,3 +14,21 @@ func Test1(t *testing.T) {
 		t.Errorf("got %d, wanted %d", got, want)
 	}
 }
+
+func Test2(t *testing.T) {
+	data := []string{
+		"10-15",
+		"12-13",
+		"20-21",
+		"19-23",
+		"30-37",
+	}
+
+	ranges := parse_data(data)
+	got := craft_lock_ranges(ranges, 20252025)
+	want := 30
+
+	if got != want {
+		t.Errorf("got %d, wanted %d", got, want)
+	}
+}
