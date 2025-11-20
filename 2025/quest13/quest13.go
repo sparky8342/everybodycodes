@@ -13,31 +13,11 @@ type Number struct {
 }
 
 func craft_lock(nums []int, turns int) int {
-	one := &Number{value: 1}
-	left := one
-	right := one
-
-	for i := 0; i < len(nums); i += 2 {
-		new_number := &Number{value: nums[i]}
-		right.next = new_number
-		right = right.next
+	ranges := make([][]int, len(nums))
+	for i, n := range nums {
+		ranges[i] = []int{n, n}
 	}
-	for i := 1; i < len(nums); i += 2 {
-		new_number := &Number{value: nums[i]}
-		new_number.next = left
-		left = new_number
-	}
-
-	right.next = left
-
-	turns %= len(nums) + 1
-
-	next := one
-	for i := 0; i < turns; i++ {
-		next = next.next
-	}
-
-	return next.value
+	return craft_lock_ranges(ranges, turns)
 }
 
 func parse_data(data []string) [][]int {
