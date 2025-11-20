@@ -96,5 +96,9 @@ func Run() {
 	grid := loader.GetStrings()
 	part1 := steps(grid, 10)
 
-	fmt.Printf("%d %d %d\n", part1, 0, 0)
+	loader.Part = 2
+	grid = loader.GetStrings()
+	part2 := steps(grid, 2025)
+
+	fmt.Printf("%d %d %d\n", part1, part2, 0)
 }
