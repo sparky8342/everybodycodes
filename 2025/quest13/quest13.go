@@ -12,14 +12,6 @@ type Number struct {
 	next  *Number
 }
 
-func craft_lock(nums []int, turns int) int {
-	ranges := make([][]int, len(nums))
-	for i, n := range nums {
-		ranges[i] = []int{n, n}
-	}
-	return craft_lock_ranges(ranges, turns)
-}
-
 func parse_data(data []string) [][]int {
 	ranges := [][]int{}
 	for _, row := range data {
@@ -35,6 +27,14 @@ func parse_data(data []string) [][]int {
 		ranges = append(ranges, []int{n1, n2})
 	}
 	return ranges
+}
+
+func craft_lock(nums []int, turns int) int {
+	ranges := make([][]int, len(nums))
+	for i, n := range nums {
+		ranges[i] = []int{n, n}
+	}
+	return craft_lock_ranges(ranges, turns)
 }
 
 func craft_lock_ranges(ranges [][]int, turns int) int {
