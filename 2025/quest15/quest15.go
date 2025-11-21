@@ -3,6 +3,7 @@ package quest15
 import (
 	"fmt"
 	"loader"
+	"strconv"
 	"strings"
 )
 
@@ -36,9 +37,13 @@ func parse_data(data []byte) []Move {
 	parts := strings.Split(string(data), ",")
 	moves := make([]Move, len(parts))
 	for i, part := range parts {
+		n, err := strconv.Atoi(part[1:])
+		if err != nil {
+			panic(err)
+		}
 		moves[i] = Move{
 			dir:    part[0],
-			amount: int(part[1] - '0'),
+			amount: n,
 		}
 	}
 	return moves
@@ -121,8 +126,12 @@ func Run() {
 
 	data := loader.GetOneLine()
 	moves := parse_data(data)
-
 	part1 := find_exit(moves)
 
-	fmt.Printf("%d %d %d\n", part1, 0, 0)
+	loader.Part = 2
+	data = loader.GetOneLine()
+	moves = parse_data(data)
+	part2 := find_exit(moves)
+
+	fmt.Printf("%d %d %d\n", part1, part2, 0)
 }
