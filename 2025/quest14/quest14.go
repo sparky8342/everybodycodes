@@ -6,7 +6,11 @@ import (
 	"strings"
 )
 
-var width, height int
+const PART3_SIZE = 34
+const PART3_MATCH_SIZE = 8
+const PART3_OFFSET = 13
+
+var size int
 
 var dirs [4][2]int
 
@@ -22,9 +26,8 @@ func init() {
 func active_neighbours(grid [][]byte, x int, y int) int {
 	count := 0
 	for _, dir := range dirs {
-		nx := x + dir[0]
-		ny := y + dir[1]
-		if nx < 0 || nx == width || ny < 0 || ny == height {
+		nx, ny := x+dir[0], y+dir[1]
+		if nx < 0 || nx == size || ny < 0 || ny == size {
 			continue
 		}
 		if grid[ny][nx] == '#' {
@@ -35,25 +38,17 @@ func active_neighbours(grid [][]byte, x int, y int) int {
 }
 
 func step(grid [][]byte) [][]byte {
-	next := make([][]byte, height)
+	next := make([][]byte, size)
 
-	for y := 0; y < height; y++ {
-		next[y] = make([]byte, width)
+	for y := 0; y < size; y++ {
+		next[y] = make([]byte, size)
 
-		for x := 0; x < width; x++ {
+		for x := 0; x < size; x++ {
 			n := active_neighbours(grid, x, y)
-			if grid[y][x] == '#' {
-				if n%2 == 1 {
-					next[y][x] = '#'
-				} else {
-					next[y][x] = '.'
-				}
-			} else if grid[y][x] == '.' {
-				if n%2 == 0 {
-					next[y][x] = '#'
-				} else {
-					next[y][x] = '.'
-				}
+			if (grid[y][x] == '#' && n%2 == 1) || (grid[y][x] == '.' && n%2 == 0) {
+				next[y][x] = '#'
+			} else {
+				next[y][x] = '.'
 			}
 		}
 	}
@@ -63,8 +58,8 @@ func step(grid [][]byte) [][]byte {
 
 func count_active(grid [][]byte) int {
 	count := 0
-	for y := 0; y < height; y++ {
-		for x := 0; x < width; x++ {
+	for y := 0; y < size; y++ {
+		for x := 0; x < size; x++ {
 			if grid[y][x] == '#' {
 				count++
 			}
@@ -74,11 +69,10 @@ func count_active(grid [][]byte) int {
 }
 
 func steps(grid_str []string, amount int) int {
-	height = len(grid_str)
-	width = len(grid_str[0])
+	size = len(grid_str)
 
-	grid := make([][]byte, height)
-	for i := 0; i < height; i++ {
+	grid := make([][]byte, size)
+	for i := 0; i < size; i++ {
 		grid[i] = []byte(grid_str[i])
 	}
 
@@ -92,9 +86,9 @@ func steps(grid_str []string, amount int) int {
 }
 
 func matches(grid [][]byte, match []string) bool {
-	for y := 0; y < 8; y++ {
-		for x := 0; x < 8; x++ {
-			if grid[y+13][x+13] != match[y][x] {
+	for y := 0; y < PART3_MATCH_SIZE; y++ {
+		for x := 0; x < PART3_MATCH_SIZE; x++ {
+			if grid[y+PART3_OFFSET][x+PART3_OFFSET] != match[y][x] {
 				return false
 			}
 		}
@@ -103,21 +97,20 @@ func matches(grid [][]byte, match []string) bool {
 }
 
 func cache_key(grid [][]byte) string {
-	strs := make([]string, height)
-	for y := 0; y < height; y++ {
+	strs := make([]string, size)
+	for y := 0; y < size; y++ {
 		strs[y] = string(grid[y])
 	}
 	return strings.Join(strs, "")
 }
 
 func steps_matching(match []string, amount int) int {
-	height = 34
-	width = 34
+	size = PART3_SIZE
 
-	grid := make([][]byte, height)
-	for y := 0; y < height; y++ {
-		grid[y] = make([]byte, width)
-		for x := 0; x < width; x++ {
+	grid := make([][]byte, size)
+	for y := 0; y < size; y++ {
+		grid[y] = make([]byte, size)
+		for x := 0; x < size; x++ {
 			grid[y][x] = '.'
 		}
 	}
