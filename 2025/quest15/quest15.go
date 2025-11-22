@@ -4,7 +4,6 @@ import (
 	"container/heap"
 	"fmt"
 	"loader"
-	"math"
 	"strconv"
 	"strings"
 )
@@ -180,18 +179,14 @@ func find_exit_large(moves []Move) int {
 
 	walls := []Wall{}
 
-	x_walls := map[int][2]int{}
-	y_walls := map[int][2]int{}
-
 	x_turns := map[int]struct{}{}
 	y_turns := map[int]struct{}{}
+
 	x_turns[0] = struct{}{}
 	y_turns[0] = struct{}{}
 
 	start := Pos{}
 	pos := Pos{}
-
-	x_min, x_max, y_min, y_max := math.MaxInt64, 0, math.MaxInt64, 0
 
 	for _, move := range moves {
 		if move.dir == 'L' {
@@ -229,34 +224,6 @@ func find_exit_large(moves []Move) int {
 		}
 		walls = append(walls, wall)
 
-		var vals [2]int
-		if dirs[current_dir] == 'U' || dirs[current_dir] == 'D' {
-			vals = [2]int{last_pos.y, pos.y}
-		} else if dirs[current_dir] == 'L' || dirs[current_dir] == 'R' {
-			vals = [2]int{last_pos.x, pos.x}
-		}
-
-		if vals[0] > vals[1] {
-			vals[0], vals[1] = vals[1], vals[0]
-		}
-
-		if dirs[current_dir] == 'U' || dirs[current_dir] == 'D' {
-			y_walls[pos.x] = vals
-		} else if dirs[current_dir] == 'L' || dirs[current_dir] == 'R' {
-			x_walls[pos.y] = vals
-		}
-
-		if pos.x > x_max {
-			x_max = pos.x
-		} else if pos.x < x_min {
-			x_min = pos.x
-		}
-		if pos.y > y_max {
-			y_max = pos.y
-		} else if pos.y < y_min {
-			y_min = pos.y
-		}
-
 		x_turns[pos.x-1] = struct{}{}
 		x_turns[pos.x] = struct{}{}
 		x_turns[pos.x+1] = struct{}{}
@@ -264,16 +231,6 @@ func find_exit_large(moves []Move) int {
 		y_turns[pos.y] = struct{}{}
 		y_turns[pos.y+1] = struct{}{}
 	}
-
-	x_min -= 2
-	x_max += 2
-	y_min -= 2
-	y_max += 2
-
-	x_walls[y_min] = [2]int{x_min, x_max}
-	x_walls[y_max] = [2]int{x_min, x_max}
-	y_walls[x_min] = [2]int{y_min, y_max}
-	y_walls[x_max] = [2]int{y_min, y_max}
 
 	end := pos
 
@@ -288,11 +245,6 @@ func find_exit_large(moves []Move) int {
 
 		pos := entry.pos
 
-		if _, ok := visited[pos]; ok {
-			continue
-		}
-		visited[pos] = struct{}{}
-
 		if pos.x == end.x && pos.y == end.y {
 			return entry.distance
 		}
@@ -302,6 +254,7 @@ func find_exit_large(moves []Move) int {
 
 			new_pos := pos
 			dist := 0
+
 			for {
 				new_pos.x += dx
 				new_pos.y += dy
@@ -331,14 +284,13 @@ func find_exit_large(moves []Move) int {
 						break
 					}
 				}
-
-				if (dy == 0 && new_pos.x == end.x) || (dx == 0 && new_pos.y == end.y) {
-					break
-				}
 			}
 
-			new_dist := entry.distance + dist
-			heap.Push(&queue, &Entry{pos: new_pos, distance: new_dist})
+			if _, ok := visited[new_pos]; !ok {
+				new_dist := entry.distance + dist
+				heap.Push(&queue, &Entry{pos: new_pos, distance: new_dist})
+				visited[new_pos] = struct{}{}
+			}
 		}
 
 	}
