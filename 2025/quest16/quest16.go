@@ -3,6 +3,7 @@ package quest16
 import (
 	"fmt"
 	"loader"
+	"math"
 	"strconv"
 	"strings"
 )
@@ -28,7 +29,7 @@ func build_wall(nums []int, columns int) int {
 	return blocks
 }
 
-func find_pattern(wall []int) int {
+func find_pattern(wall []int) ([]int, int) {
 	l := len(wall)
 
 	pattern := []int{}
@@ -71,8 +72,29 @@ outer:
 		product *= n
 	}
 
-	return product
+	return pattern, product
 
+}
+
+func find_wall_length(wall []int, blocks int) int {
+	pattern, _ := find_pattern(wall)
+
+	min := 1
+	max := math.MaxInt64
+
+	for min+1 < max {
+		mid := min + (max-min)/2
+		blocks_used := build_wall(pattern, mid)
+		if blocks_used < 0 || blocks_used > blocks {
+			max = mid
+		} else if blocks_used < blocks {
+			min = mid
+		} else if blocks_used == blocks {
+			return mid
+		}
+	}
+
+	return min
 }
 
 func Run() {
@@ -85,7 +107,12 @@ func Run() {
 	loader.Part = 2
 	data = loader.GetOneLine()
 	nums = parse_data(data)
-	part2 := find_pattern(nums)
+	_, part2 := find_pattern(nums)
 
-	fmt.Printf("%d %d %d\n", part1, part2, 0)
+	loader.Part = 3
+	data = loader.GetOneLine()
+	nums = parse_data(data)
+	part3 := find_wall_length(nums, 202520252025000)
+
+	fmt.Printf("%d %d %d\n", part1, part2, part3)
 }
