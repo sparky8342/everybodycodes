@@ -15,3 +15,15 @@ func Test1(t *testing.T) {
 		t.Errorf("got %d, wanted %d", got, want)
 	}
 }
+
+func Test2(t *testing.T) {
+	data := []byte("1,2,2,2,2,3,1,2,3,3,1,3,1,2,3,2,1,4,1,3,2,2,1,3,2,2")
+
+	nums := parse_data(data)
+	got := find_pattern(nums)
+	want := 270
+
+	if got != want {
+		t.Errorf("got %d, wanted %d", got, want)
+	}
+}
