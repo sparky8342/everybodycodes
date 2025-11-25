@@ -29,42 +29,39 @@ func build_wall(nums []int, columns int) int {
 	return blocks
 }
 
+func compare_walls(a []int, b []int) bool {
+	for i := 0; i < len(a); i++ {
+		if a[i] != b[i] {
+			return false
+		}
+	}
+	return true
+}
+
 func find_pattern(wall []int) ([]int, int) {
 	l := len(wall)
 
 	pattern := []int{}
 	test_wall := make([]int, l)
 
-	n := 1
+	n := 0
 
 outer:
-	for {
-
-		ok := true
-		for i := n - 1; i < l; i += n {
-			test_wall[i]++
-			if test_wall[i] > wall[i] {
-				ok = false
-			}
-		}
-
-		if ok {
-			pattern = append(pattern, n)
-		} else {
-			for i := n - 1; i < l; i += n {
-				test_wall[i]--
-			}
-		}
-
+	for !compare_walls(test_wall, wall) {
 		n++
 
-		for i := 0; i < l; i++ {
-			if test_wall[i] != wall[i] {
+		cpy := make([]int, l)
+		copy(cpy, test_wall)
+
+		for i := n - 1; i < l; i += n {
+			cpy[i]++
+			if cpy[i] > wall[i] {
 				continue outer
 			}
 		}
 
-		break
+		pattern = append(pattern, n)
+		test_wall = cpy
 	}
 
 	product := 1
@@ -85,12 +82,10 @@ func find_wall_length(wall []int, blocks int) int {
 	for min+1 < max {
 		mid := min + (max-min)/2
 		blocks_used := build_wall(pattern, mid)
-		if blocks_used < 0 || blocks_used > blocks {
+		if blocks_used < 0 || blocks_used > blocks { // < 0 is needed because of int64 overflows
 			max = mid
 		} else if blocks_used < blocks {
 			min = mid
-		} else if blocks_used == blocks {
-			return mid
 		}
 	}
 
