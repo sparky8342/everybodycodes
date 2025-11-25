@@ -5,18 +5,22 @@ import (
 	"loader"
 )
 
+func pow2(n int) int {
+	return n * n
+}
+
 func lava_spread(grid []string, radius int) int {
 	size := len(grid)
 
-	xv := size / 2
-	yv := xv
+	cv := size / 2
+	square_radius := radius * radius
 
 	total := 0
 	for y := 0; y < size; y++ {
 		for x := 0; x < size; x++ {
-			if x == xv && y == yv {
+			if x == cv && y == cv {
 				fmt.Print("@")
-			} else if (xv-x)*(xv-x)+(yv-y)*(yv-y) <= radius*radius {
+			} else if pow2(cv-x)+pow2(cv-y) <= square_radius {
 				total += int(grid[y][x] - '0')
 				fmt.Print(string(grid[y][x]))
 			} else {
