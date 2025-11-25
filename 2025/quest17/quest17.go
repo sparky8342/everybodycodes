@@ -33,11 +33,44 @@ func lava_spread(grid []string, radius int) int {
 	return total
 }
 
+func max_ring(grid []string) int {
+	size := len(grid)
+
+	cv := size / 2
+
+	max := 0
+	max_radius := 0
+
+	for radius := 1; radius <= cv; radius++ {
+		square_radius := radius * radius
+		lava := 0
+		for y := 0; y < size; y++ {
+			for x := 0; x < size; x++ {
+				if x == cv && y == cv {
+					continue
+				} else if pow2(cv-x)+pow2(cv-y) <= square_radius && pow2(cv-x)+pow2(cv-y) > pow2(radius-1) {
+					lava += int(grid[y][x] - '0')
+				}
+			}
+		}
+		if lava > max {
+			max = lava
+			max_radius = radius
+		}
+	}
+
+	return max * max_radius
+}
+
 func Run() {
 	loader.Event, loader.Quest, loader.Part = "2025", 17, 1
 
 	grid := loader.GetStrings()
 	part1 := lava_spread(grid, 10)
 
-	fmt.Printf("%d %d %d\n", part1, 0, 0)
+	loader.Part = 2
+	grid = loader.GetStrings()
+	part2 := max_ring(grid)
+
+	fmt.Printf("%d %d %d\n", part1, part2, 0)
 }
