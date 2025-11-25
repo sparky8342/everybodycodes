@@ -43,16 +43,22 @@ func max_ring(grid []string) int {
 
 	for radius := 1; radius <= cv; radius++ {
 		square_radius := radius * radius
+		prev_square_radius := pow2(radius - 1)
+
 		lava := 0
 		for y := 0; y < size; y++ {
 			for x := 0; x < size; x++ {
 				if x == cv && y == cv {
 					continue
-				} else if pow2(cv-x)+pow2(cv-y) <= square_radius && pow2(cv-x)+pow2(cv-y) > pow2(radius-1) {
+				}
+
+				r := pow2(cv-x) + pow2(cv-y)
+				if r <= square_radius && r > prev_square_radius {
 					lava += int(grid[y][x] - '0')
 				}
 			}
 		}
+
 		if lava > max {
 			max = lava
 			max_radius = radius
