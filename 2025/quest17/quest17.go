@@ -74,15 +74,12 @@ func lava_spread(grid []string, radius int) int {
 	for y := 0; y < size; y++ {
 		for x := 0; x < size; x++ {
 			if x == cv && y == cv {
-				fmt.Print("@")
-			} else if pow2(cv-x)+pow2(cv-y) <= square_radius {
+				continue
+			}
+			if pow2(cv-x)+pow2(cv-y) <= square_radius {
 				total += int(grid[y][x] - '0')
-				fmt.Print(string(grid[y][x]))
-			} else {
-				fmt.Print(".")
 			}
 		}
-		fmt.Println()
 	}
 
 	return total
