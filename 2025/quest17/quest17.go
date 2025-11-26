@@ -1,10 +1,10 @@
 package quest17
 
 import (
+	"container/heap"
 	"fmt"
 	"loader"
 	"math"
-	"sort"
 )
 
 type Pos struct {
@@ -18,10 +18,6 @@ type Entry struct {
 	distance    int
 }
 
-func pow2(n int) int {
-	return n * n
-}
-
 var dirs [4][2]int
 
 func init() {
@@ -31,6 +27,36 @@ func init() {
 		[2]int{0, 1},
 		[2]int{0, -1},
 	}
+}
+
+type PriorityQueue []*Entry
+
+func (pq PriorityQueue) Len() int { return len(pq) }
+
+func (pq PriorityQueue) Less(i, j int) bool {
+	return pq[i].distance < pq[j].distance
+}
+
+func (pq PriorityQueue) Swap(i, j int) {
+	pq[i], pq[j] = pq[j], pq[i]
+}
+
+func (pq *PriorityQueue) Push(x interface{}) {
+	item := x.(*Entry)
+	*pq = append(*pq, item)
+}
+
+func (pq *PriorityQueue) Pop() interface{} {
+	old := *pq
+	n := len(old)
+	item := old[n-1]
+	old[n-1] = nil // avoid memory leak
+	*pq = old[0 : n-1]
+	return item
+}
+
+func pow2(n int) int {
+	return n * n
 }
 
 func lava_spread(grid []string, radius int) int {
@@ -153,11 +179,12 @@ func shortest_path(grid [][]byte, start Pos) int {
 
 	distances[start.y][start.x] = []int{0, 0}
 
-	queue := []Entry{Entry{pos: start}}
+	queue := make(PriorityQueue, 1)
+	queue[0] = &Entry{pos: start}
+	heap.Init(&queue)
 
-	for len(queue) > 0 {
-		entry := queue[0]
-		queue = queue[1:]
+	for queue.Len() > 0 {
+		entry := heap.Pop(&queue).(*Entry)
 
 		pos := entry.pos
 
@@ -186,15 +213,10 @@ func shortest_path(grid [][]byte, start Pos) int {
 
 				if dist < distances[new_pos.y][new_pos.x][0] || (new_visited_bot > distances[new_pos.y][new_pos.x][1] && new_pos.y < cv) {
 					distances[new_pos.y][new_pos.x] = []int{dist, new_visited_bot}
-					queue = append(queue, Entry{pos: new_pos, distance: dist, visited_bot: new_visited_bot})
+					heap.Push(&queue, &Entry{pos: new_pos, distance: dist, visited_bot: new_visited_bot})
 				}
 			}
 		}
-
-		// TODO - use heap instead
-		sort.Slice(queue, func(i, j int) bool {
-			return queue[i].distance < queue[j].distance
-		})
 	}
 
 	return -1
