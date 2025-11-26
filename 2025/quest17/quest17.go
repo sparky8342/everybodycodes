@@ -14,8 +14,13 @@ type Pos struct {
 
 type Entry struct {
 	pos         Pos
-	visited_bot int
+	visited_bot bool
 	distance    int
+}
+
+type GridSpace struct {
+	distance    int
+	visited_bot bool
 }
 
 var dirs [4][2]int
@@ -168,16 +173,16 @@ func shortest_path(grid [][]byte, start Pos) int {
 	size := len(grid)
 	cv := size / 2
 
-	distances := make([][][]int, size)
+	distances := make([][]GridSpace, size)
 	for y := range distances {
-		row := make([][]int, size)
+		row := make([]GridSpace, size)
 		for x := 0; x < size; x++ {
-			row[x] = []int{math.MaxInt32, 0}
+			row[x] = GridSpace{distance: math.MaxInt32}
 		}
 		distances[y] = row
 	}
 
-	distances[start.y][start.x] = []int{0, 0}
+	distances[start.y][start.x].distance = 0
 
 	queue := make(PriorityQueue, 1)
 	queue[0] = &Entry{pos: start}
@@ -188,7 +193,7 @@ func shortest_path(grid [][]byte, start Pos) int {
 
 		pos := entry.pos
 
-		if entry.visited_bot == 1 && pos.x == start.x && pos.y == start.y {
+		if entry.visited_bot && pos.x == start.x && pos.y == start.y {
 			return entry.distance
 		}
 
@@ -199,11 +204,11 @@ func shortest_path(grid [][]byte, start Pos) int {
 			}
 			if grid[new_pos.y][new_pos.x] != '.' && grid[new_pos.y][new_pos.x] != '@' {
 				new_visited_bot := entry.visited_bot
-				if entry.visited_bot == 0 && new_pos.x > cv {
+				if !entry.visited_bot && new_pos.x > cv {
 					continue
 				}
-				if entry.visited_bot == 0 && new_pos.x == cv && new_pos.y > cv {
-					new_visited_bot = 1
+				if !entry.visited_bot && new_pos.x == cv && new_pos.y > cv {
+					new_visited_bot = true
 				}
 
 				dist := entry.distance
@@ -211,8 +216,8 @@ func shortest_path(grid [][]byte, start Pos) int {
 					dist += int(grid[new_pos.y][new_pos.x] - '0')
 				}
 
-				if dist < distances[new_pos.y][new_pos.x][0] || (new_visited_bot > distances[new_pos.y][new_pos.x][1] && new_pos.y < cv) {
-					distances[new_pos.y][new_pos.x] = []int{dist, new_visited_bot}
+				if dist < distances[new_pos.y][new_pos.x].distance || (new_visited_bot && !distances[new_pos.y][new_pos.x].visited_bot && new_pos.y < cv) {
+					distances[new_pos.y][new_pos.x] = GridSpace{ distance : dist, visited_bot : new_visited_bot }
 					heap.Push(&queue, &Entry{pos: new_pos, distance: dist, visited_bot: new_visited_bot})
 				}
 			}
