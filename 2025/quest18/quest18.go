@@ -14,9 +14,11 @@ type Plant struct {
 	branches  []int
 }
 
-func parse_data(data []string) *Plant {
+func parse_data(data []string) (*Plant, []*Plant, [][]int) {
 	var plant *Plant
 	plants := map[int]*Plant{}
+	free_plants := []*Plant{}
+	test_cases := [][]int{}
 
 	for _, row := range data {
 		parts := strings.Split(row, " ")
@@ -39,8 +41,10 @@ func parse_data(data []string) *Plant {
 				panic(err)
 			}
 
-			plant.children = append(plant.children, nil)
+			free_plant := &Plant{thickness: 1}
+			plant.children = append(plant.children, free_plant)
 			plant.branches = append(plant.branches, thickness)
+			free_plants = append(free_plants, free_plant)
 		} else if parts[0] == "-" && parts[1] == "branch" {
 			child, err := strconv.Atoi(parts[4])
 			if err != nil {
@@ -53,6 +57,12 @@ func parse_data(data []string) *Plant {
 
 			plant.children = append(plant.children, plants[child])
 			plant.branches = append(plant.branches, thickness)
+		} else if parts[0] == "0" || parts[0] == "1" {
+			test_case := make([]int, len(parts))
+			for i, part := range parts {
+				test_case[i] = int(part[0] - '0')
+			}
+			test_cases = append(test_cases, test_case)
 		}
 	}
 
@@ -70,15 +80,15 @@ func parse_data(data []string) *Plant {
 		}
 	*/
 
-	return plant
+	return plant, free_plants, test_cases
 }
 
 func (p *Plant) energy() int {
 	incoming := 0
-	for i := 0; i < len(p.children); i++ {
-		if p.children[i] == nil {
-			incoming += p.branches[i]
-		} else {
+	if len(p.children) == 0 {
+		incoming = p.thickness
+	} else {
+		for i := 0; i < len(p.children); i++ {
 			incoming += p.branches[i] * p.children[i].energy()
 		}
 	}
@@ -89,12 +99,28 @@ func (p *Plant) energy() int {
 	}
 }
 
+func run_test_cases(top *Plant, free_plants []*Plant, test_cases [][]int) int {
+	total := 0
+	for _, test_case := range test_cases {
+		for i := 0; i < len(test_case); i++ {
+			free_plants[i].thickness = test_case[i]
+		}
+		total += top.energy()
+	}
+	return total
+}
+
 func Run() {
 	loader.Event, loader.Quest, loader.Part = "2025", 18, 1
 
 	data := loader.GetStrings()
-	top := parse_data(data)
+	top, _, _ := parse_data(data)
 	part1 := top.energy()
 
-	fmt.Printf("%d %d %d\n", part1, 0, 0)
+	loader.Part = 2
+	data = loader.GetStrings()
+	top, free_plants, test_cases := parse_data(data)
+	part2 := run_test_cases(top, free_plants, test_cases)
+
+	fmt.Printf("%d %d %d\n", part1, part2, 0)
 }
