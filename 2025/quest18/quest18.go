@@ -5,6 +5,8 @@ import (
 	"loader"
 	"strconv"
 	"strings"
+	"math/rand/v2"
+	"sort"
 )
 
 type Plant struct {
@@ -14,11 +16,52 @@ type Plant struct {
 	branches  []int
 }
 
-func parse_data(data []string) (*Plant, []*Plant, [][]int) {
+type TestCase struct {
+	settings Bitfield
+	energy   int
+}
+
+type Bitfield struct {
+	field1 uint64
+	field2 uint64
+}
+
+func (b *Bitfield) get(n int) bool {
+	if n > 63 {
+		return b.field2&(1<<(n-63)) != 0
+	} else {
+		return b.field1&(1<<n) != 0
+	}
+}
+
+func (b *Bitfield) set(n int) {
+	if n > 63 {
+		b.field2 = b.field2 | (1 << (n - 63))
+	} else {
+		b.field1 = b.field1 | (1 << n)
+	}
+}
+
+func (b *Bitfield) clear(n int) {
+	if n > 63 {
+		b.field2 = b.field2 ^ (1 << (n - 63))
+	} else {
+		b.field1 = b.field1 ^ (1 << n)
+	}
+}
+
+func (b *Bitfield) inc() {
+	b.field1++
+	if b.field1 == 0 {
+		b.field2++
+	}
+}
+
+func parse_data(data []string) (*Plant, []*Plant, []Bitfield) {
 	var plant *Plant
 	plants := map[int]*Plant{}
 	free_plants := []*Plant{}
-	test_cases := [][]int{}
+	test_cases := []Bitfield{}
 
 	for _, row := range data {
 		parts := strings.Split(row, " ")
@@ -58,27 +101,15 @@ func parse_data(data []string) (*Plant, []*Plant, [][]int) {
 			plant.children = append(plant.children, plants[child])
 			plant.branches = append(plant.branches, thickness)
 		} else if parts[0] == "0" || parts[0] == "1" {
-			test_case := make([]int, len(parts))
-			for i, part := range parts {
-				test_case[i] = int(part[0] - '0')
+			test_case := Bitfield{}
+			for i := 0; i < len(parts); i++ {
+				if parts[i][0] == '1' {
+					test_case.set(i)
+				}
 			}
 			test_cases = append(test_cases, test_case)
 		}
 	}
-
-	/*
-		for _, p := range plants {
-			fmt.Println(p.id, p.thickness, p.branches)
-			for _, c := range p.children {
-				if c == nil {
-					fmt.Println("nil")
-				} else {
-					fmt.Println(c.id)
-				}
-			}
-			fmt.Println()
-		}
-	*/
 
 	return plant, free_plants, test_cases
 }
@@ -99,15 +130,138 @@ func (p *Plant) energy() int {
 	}
 }
 
-func run_test_cases(top *Plant, free_plants []*Plant, test_cases [][]int) int {
+func run_test_case(top *Plant, free_plants []*Plant, test_case Bitfield) int {
+	for i := 0; i < len(free_plants); i++ {
+		if test_case.get(i) {
+			free_plants[i].thickness = 1
+		} else {
+			free_plants[i].thickness = 0
+		}
+	}
+	return top.energy()
+}
+
+func run_test_cases(top *Plant, free_plants []*Plant, test_cases []Bitfield) int {
 	total := 0
 	for _, test_case := range test_cases {
-		for i := 0; i < len(test_case); i++ {
-			free_plants[i].thickness = test_case[i]
-		}
-		total += top.energy()
+		total += run_test_case(top, free_plants, test_case)
 	}
 	return total
+}
+
+func next_gen(a Bitfield, b Bitfield, l int) Bitfield {
+	r := rand.IntN(l)
+	child := Bitfield{}
+	for i := 0; i < r; i++ {
+		if a.get(i) {
+			child.set(i)
+		}
+	}
+	for i := r; i < l; i++ {
+		if b.get(i) {
+			child.set(i)
+		}
+	}
+	return child
+}
+
+func mutation(n Bitfield, l int) Bitfield {
+	r := rand.IntN(10)
+	if r == 0 {
+		r = rand.IntN(l)
+		if n.get(r) {
+			n.clear(r)
+		} else {
+			n.set(r)
+		}
+	}
+	return n
+}
+
+func max_energy(top *Plant, free_plants []*Plant) int {
+	// basic genetic algorithm to find the best settings for the free_plants (branches)
+
+	amount := 100
+
+	lookup := []int{0}
+	inc := 1
+	for len(lookup) <= amount {
+		lookup = append(lookup, lookup[len(lookup)-1]+inc)
+		inc++
+	}
+	max_rand := lookup[len(lookup)-1]
+
+	// initial cases
+	test_cases := make([]TestCase, amount)
+
+	for i := 0; i < amount; i++ {
+		for j := 0; j < len(free_plants); j++ {
+			n := rand.IntN(2)
+			if n == 1 {
+				test_cases[i].settings.set(j)
+			}
+		}
+	}
+
+	for i := 0; i < amount; i++ {
+		test_cases[i].energy = run_test_case(top, free_plants, test_cases[i].settings)
+	}
+
+	sort.Slice(test_cases, func(i, j int) bool {
+		return test_cases[i].energy < test_cases[j].energy
+	})
+
+	for i := 0; i < 100000; i++ {
+		// create next generation - select 2 with bias on the higher energy cases,
+		// create a child and then a random mutation
+
+		// doesn't always find correct answer, maybe better to run until all cases have the same (max) energy
+
+		next_cases := make([]TestCase, amount)
+		for i := 0; i < amount; i++ {
+			selections := []int{}
+			for i := 0; i < 2; i++ {
+				r := rand.IntN(max_rand)
+				for i, n := range lookup {
+					if r < n {
+						selections = append(selections, i-1)
+						break
+					}
+				}
+			}
+			next_case := TestCase{settings: mutation(next_gen(test_cases[selections[0]].settings, test_cases[selections[1]].settings, len(free_plants)), len(free_plants))}
+			next_case.energy = run_test_case(top, free_plants, next_case.settings)
+			next_cases[i] = next_case
+		}
+
+		test_cases = next_cases
+		sort.Slice(test_cases, func(i, j int) bool {
+			return test_cases[i].energy < test_cases[j].energy
+		})
+
+	}
+
+	return test_cases[amount-1].energy
+}
+
+func energy_diff(top *Plant, free_plants []*Plant, test_cases []Bitfield) int {
+	max := max_energy(top, free_plants)
+	total_diff := 0
+	for _, test_case := range test_cases {
+		for i := 0; i < len(free_plants); i++ {
+			if test_case.get(i) {
+				free_plants[i].thickness = 1
+			} else {
+				free_plants[i].thickness = 0
+			}
+		}
+		energy := top.energy()
+		if energy > 0 {
+			total_diff += max - energy
+		}
+		//	fmt.Println(test_case, top.energy())
+	}
+	return total_diff
 }
 
 func Run() {
@@ -122,5 +276,10 @@ func Run() {
 	top, free_plants, test_cases := parse_data(data)
 	part2 := run_test_cases(top, free_plants, test_cases)
 
-	fmt.Printf("%d %d %d\n", part1, part2, 0)
+	loader.Part = 3
+	data = loader.GetStrings()
+	top, free_plants, test_cases = parse_data(data)
+	part3 := energy_diff(top, free_plants, test_cases)
+
+	fmt.Printf("%d %d %d\n", part1, part2, part3)
 }

@@ -43,7 +43,6 @@ func Test1(t *testing.T) {
 
 func Test2(t *testing.T) {
 	data := []string{
-
 		"Plant 1 with thickness 1:",
 		"- free branch with thickness 1",
 		"",
@@ -76,6 +75,52 @@ func Test2(t *testing.T) {
 	top, free_plants, test_cases := parse_data(data)
 	got := run_test_cases(top, free_plants, test_cases)
 	want := 324
+
+	if got != want {
+		t.Errorf("got %d, wanted %d", got, want)
+	}
+}
+
+func Test3(t *testing.T) {
+	data := []string{
+		"Plant 1 with thickness 1:",
+		"- free branch with thickness 1",
+		"",
+		"Plant 2 with thickness 1:",
+		"- free branch with thickness 1",
+		"",
+		"Plant 3 with thickness 1:",
+		"- free branch with thickness 1",
+		"",
+		"Plant 4 with thickness 1:",
+		"- free branch with thickness 1",
+		"",
+		"Plant 5 with thickness 8:",
+		"- branch to Plant 1 with thickness -8",
+		"- branch to Plant 2 with thickness 11",
+		"- branch to Plant 3 with thickness 13",
+		"- branch to Plant 4 with thickness -7",
+		"",
+		"Plant 6 with thickness 7:",
+		"- branch to Plant 1 with thickness 14",
+		"- branch to Plant 2 with thickness -9",
+		"- branch to Plant 3 with thickness 12",
+		"- branch to Plant 4 with thickness 9",
+		"",
+		"Plant 7 with thickness 23:",
+		"- branch to Plant 5 with thickness 17",
+		"- branch to Plant 6 with thickness 18",
+		"",
+		"",
+		"0 1 0 0",
+		"0 1 0 1",
+		"0 1 1 1",
+		"1 1 0 1",
+	}
+
+	top, free_plants, test_cases := parse_data(data)
+	got := energy_diff(top, free_plants, test_cases)
+	want := 946
 
 	if got != want {
 		t.Errorf("got %d, wanted %d", got, want)
