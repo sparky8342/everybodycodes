@@ -83,6 +83,8 @@ require 2025/quest17 v1.0.0
 replace 2025/quest17 v1.0.0 => ./2025/quest17/
 require 2025/quest18 v1.0.0
 replace 2025/quest18 v1.0.0 => ./2025/quest18/
+require 2025/quest19 v1.0.0
+replace 2025/quest19 v1.0.0 => ./2025/quest19/
 
 require stories/1_echoes_of_enigmatus/quest1 v1.0.0
 replace stories/1_echoes_of_enigmatus/quest1 v1.0.0 => ./stories/1_echoes_of_enigmatus/quest1
