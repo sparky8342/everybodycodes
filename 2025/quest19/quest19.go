@@ -90,48 +90,35 @@ func multi_gap(walls []Wall) int {
 		next_positions := map[Pos]int{}
 		for pos, flaps := range positions {
 			for _, wall_pos := range next_wall_positions {
-				if pos.x%2 == wall_pos.x%2 && pos.y%2 != wall_pos.y%2 {
-					continue
-				}
-				if pos.x%2 != wall_pos.x%2 && pos.y%2 == wall_pos.y%2 {
+				if (pos.x%2 == wall_pos.x%2) != (pos.y%2 == wall_pos.y%2) {
 					continue
 				}
 
 				x_dist := wall_pos.x - pos.x
-
-				if wall_pos.y > pos.y {
-					up_needed := wall_pos.y - pos.y
-					if up_needed > x_dist {
-						continue
-					}
-					f := flaps + (x_dist-up_needed)/2 + up_needed
-					if val, ok := next_positions[wall_pos]; ok {
-						if f > val {
-							continue
-						}
-					}
-					next_positions[wall_pos] = f
-				} else if wall_pos.y < pos.y {
-					down_needed := pos.y - wall_pos.y
-					if down_needed > x_dist {
-						continue
-					}
-					f := flaps + (x_dist-down_needed)/2
-					if val, ok := next_positions[wall_pos]; ok {
-						if f > val {
-							continue
-						}
-					}
-					next_positions[wall_pos] = f
-				} else if wall_pos.y == pos.y {
-					f := flaps + x_dist/2
-					if val, ok := next_positions[wall_pos]; ok {
-						if f > val {
-							continue
-						}
-					}
-					next_positions[wall_pos] = f
+				y_dist := wall_pos.y - pos.y
+				if y_dist < 0 {
+					y_dist *= -1
 				}
+
+				if y_dist > x_dist {
+					continue
+				}
+
+				f := flaps
+				if wall_pos.y > pos.y {
+					f += (x_dist-y_dist)/2 + y_dist
+				} else if wall_pos.y < pos.y {
+					f += (x_dist - y_dist) / 2
+				} else if wall_pos.y == pos.y {
+					f += x_dist / 2
+				}
+
+				if val, ok := next_positions[wall_pos]; ok {
+					if f > val {
+						continue
+					}
+				}
+				next_positions[wall_pos] = f
 			}
 		}
 
