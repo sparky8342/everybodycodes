@@ -20,11 +20,6 @@ type Pos struct {
 	y int
 }
 
-type Entry struct {
-	pos   Pos
-	flaps int
-}
-
 func parse_data(data []string) []Wall {
 	walls := []Wall{}
 
@@ -82,7 +77,6 @@ func multi_gap(walls []Wall) int {
 	positions[Pos{}] = 0
 
 	for _, wall := range walls {
-
 		next_wall_positions := []Pos{}
 		for _, gap := range wall.gaps {
 			for y := gap[0]; y <= gap[1]; y++ {
@@ -94,11 +88,9 @@ func multi_gap(walls []Wall) int {
 		for pos, flaps := range positions {
 			for _, wall_pos := range next_wall_positions {
 				if pos.x%2 == wall_pos.x%2 && pos.y%2 != wall_pos.y%2 {
-					//fmt.Println(pos, "unreachable")
 					continue
 				}
 				if pos.x%2 != wall_pos.x%2 && pos.y%2 == wall_pos.y%2 {
-					//fmt.Println(pos, "unreachable")
 					continue
 				}
 
@@ -107,7 +99,6 @@ func multi_gap(walls []Wall) int {
 				if wall_pos.y > pos.y {
 					up_needed := wall_pos.y - pos.y
 					if up_needed > x_dist {
-						//fmt.Println(pos, "unreachable")
 						continue
 					}
 					f := flaps + (x_dist-up_needed)/2 + up_needed
@@ -120,7 +111,6 @@ func multi_gap(walls []Wall) int {
 				} else if wall_pos.y < pos.y {
 					down_needed := pos.y - wall_pos.y
 					if down_needed > x_dist {
-						//fmt.Println(pos, "unreachable")
 						continue
 					}
 					f := flaps + (x_dist-down_needed)/2
@@ -138,11 +128,8 @@ func multi_gap(walls []Wall) int {
 						}
 					}
 					next_positions[wall_pos] = f
-
 				}
-
 			}
-
 		}
 
 		positions = next_positions
