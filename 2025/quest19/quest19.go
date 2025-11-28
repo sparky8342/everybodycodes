@@ -8,11 +8,14 @@ import (
 	"strings"
 )
 
-type pair [2]int
+type Gap struct {
+	start int
+	end   int
+}
 
 type Wall struct {
 	x    int
-	gaps []pair
+	gaps []Gap
 }
 
 type Pos struct {
@@ -35,7 +38,7 @@ func parse_data(data []string) []Wall {
 		}
 
 		x := nums[0]
-		gap := pair{nums[1], nums[1] + nums[2] - 1}
+		gap := Gap{start: nums[1], end: nums[1] + nums[2] - 1}
 
 		if len(walls) > 0 {
 			last := len(walls) - 1
@@ -47,7 +50,7 @@ func parse_data(data []string) []Wall {
 
 		walls = append(walls, Wall{
 			x:    nums[0],
-			gaps: []pair{gap},
+			gaps: []Gap{gap},
 		})
 	}
 
@@ -60,7 +63,7 @@ func flap(walls []Wall) int {
 	flaps := 0
 	for _, wall := range walls {
 		for ; x <= wall.x; x++ {
-			if y < wall.gaps[0][0] {
+			if y < wall.gaps[0].start {
 				flaps++
 				y++
 			} else {
@@ -79,7 +82,7 @@ func multi_gap(walls []Wall) int {
 	for _, wall := range walls {
 		next_wall_positions := []Pos{}
 		for _, gap := range wall.gaps {
-			for y := gap[0]; y <= gap[1]; y++ {
+			for y := gap.start; y <= gap.end; y++ {
 				next_wall_positions = append(next_wall_positions, Pos{x: wall.x, y: y})
 			}
 		}
