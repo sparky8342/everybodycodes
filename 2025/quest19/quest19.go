@@ -77,56 +77,85 @@ func flap(walls []Wall) int {
 	return flaps
 }
 
-func multi_flap(walls []Wall) int {
-	x_walls := map[int][]pair{}
+func multi_gap(walls []Wall) int {
+	positions := map[Pos]int{}
+	positions[Pos{}] = 0
 
-	// TODO - do this format in parse_data instead (and change part 1)
 	for _, wall := range walls {
-		if _, ok := x_walls[wall.x]; !ok {
-			x_walls[wall.x] = []pair{}
-		}
-		x_walls[wall.x] = append(x_walls[wall.x], wall.gaps...)
-	}
 
-	end_x := walls[len(walls)-1].x + 1
-
-	min_flaps := math.MaxInt32
-	search(Pos{}, end_x, 0, x_walls, &min_flaps)
-
-	return min_flaps
-}
-
-func search(pos Pos, end_x int, flaps int, x_walls map[int][]pair, min_flaps *int) {
-	if flaps > *min_flaps {
-		return
-	}
-
-	x := pos.x + 1
-
-	if x == end_x {
-		if flaps < *min_flaps {
-			*min_flaps = flaps
-		}
-		return
-	}
-
-	if gaps, ok := x_walls[x]; ok {
-		for _, y := range []int{pos.y - 1, pos.y + 1} {
-			for _, gap := range gaps {
-				if y >= gap[0] && y <= gap[1] {
-					new_flaps := flaps
-					if y == pos.y+1 {
-						new_flaps++
-					}
-					search(Pos{x: x, y: y}, end_x, new_flaps, x_walls, min_flaps)
-					break
-				}
+		next_wall_positions := []Pos{}
+		for _, gap := range wall.gaps {
+			for y := gap[0]; y <= gap[1]; y++ {
+				next_wall_positions = append(next_wall_positions, Pos{x: wall.x, y: y})
 			}
 		}
-	} else {
-		search(Pos{x: x, y: pos.y - 1}, end_x, flaps, x_walls, min_flaps)
-		search(Pos{x: x, y: pos.y + 1}, end_x, flaps+1, x_walls, min_flaps)
+
+		next_positions := map[Pos]int{}
+		for pos, flaps := range positions {
+			for _, wall_pos := range next_wall_positions {
+				if pos.x%2 == wall_pos.x%2 && pos.y%2 != wall_pos.y%2 {
+					//fmt.Println(pos, "unreachable")
+					continue
+				}
+				if pos.x%2 != wall_pos.x%2 && pos.y%2 == wall_pos.y%2 {
+					//fmt.Println(pos, "unreachable")
+					continue
+				}
+
+				x_dist := wall_pos.x - pos.x
+
+				if wall_pos.y > pos.y {
+					up_needed := wall_pos.y - pos.y
+					if up_needed > x_dist {
+						//fmt.Println(pos, "unreachable")
+						continue
+					}
+					f := flaps + (x_dist-up_needed)/2 + up_needed
+					if val, ok := next_positions[wall_pos]; ok {
+						if f > val {
+							continue
+						}
+					}
+					next_positions[wall_pos] = f
+				} else if wall_pos.y < pos.y {
+					down_needed := pos.y - wall_pos.y
+					if down_needed > x_dist {
+						//fmt.Println(pos, "unreachable")
+						continue
+					}
+					f := flaps + (x_dist-down_needed)/2
+					if val, ok := next_positions[wall_pos]; ok {
+						if f > val {
+							continue
+						}
+					}
+					next_positions[wall_pos] = f
+				} else if wall_pos.y == pos.y {
+					f := flaps + x_dist/2
+					if val, ok := next_positions[wall_pos]; ok {
+						if f > val {
+							continue
+						}
+					}
+					next_positions[wall_pos] = f
+
+				}
+
+			}
+
+		}
+
+		positions = next_positions
 	}
+
+	min := math.MaxInt32
+	for _, flaps := range positions {
+		if flaps < min {
+			min = flaps
+		}
+	}
+
+	return min
 }
 
 func Run() {
@@ -139,7 +168,12 @@ func Run() {
 	loader.Part = 2
 	data = loader.GetStrings()
 	walls = parse_data(data)
-	part2 := multi_flap(walls)
+	part2 := multi_gap(walls)
 
-	fmt.Printf("%d %d %d\n", part1, part2, 0)
+	loader.Part = 3
+	data = loader.GetStrings()
+	walls = parse_data(data)
+	part3 := multi_gap(walls)
+
+	fmt.Printf("%d %d %d\n", part1, part2, part3)
 }

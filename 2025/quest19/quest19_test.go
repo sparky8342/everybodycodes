@@ -36,7 +36,7 @@ func Test2(t *testing.T) {
 	}
 
 	walls := parse_data(data)
-	got := multi_flap(walls)
+	got := multi_gap(walls)
 	want := 22
 
 	if got != want {
