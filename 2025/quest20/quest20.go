@@ -16,18 +16,29 @@ type Entry struct {
 	distance int
 }
 
+var height, width int
+var valid_spaces map[byte]struct{}
+
+func init() {
+	valid_spaces = map[byte]struct{}{
+		'T': struct{}{},
+		'S': struct{}{},
+		'E': struct{}{},
+	}
+}
+
 func count_pairs(grid []string) (int, map[Pos][]Pos) {
-	height := len(grid)
-	width := len(grid[0])
+	height = len(grid)
+	width = len(grid[0])
 
 	paths := map[Pos][]Pos{}
 
 	pairs := 0
 	for y := 0; y < height-1; y++ {
 		for x := 0; x < width-1; x++ {
-			if grid[y][x] == 'T' || grid[y][x] == 'S' || grid[y][x] == 'E' {
+			if _, ok := valid_spaces[grid[y][x]]; ok {
 				start := Pos{x: x, y: y}
-				if grid[y][x+1] == 'T' || grid[y][x+1] == 'S' || grid[y][x+1] == 'E' {
+				if _, ok := valid_spaces[grid[y][x+1]]; ok {
 					end := Pos{x: x + 1, y: y}
 					if _, ok := paths[start]; !ok {
 						paths[start] = []Pos{}
@@ -39,17 +50,19 @@ func count_pairs(grid []string) (int, map[Pos][]Pos) {
 					paths[end] = append(paths[end], start)
 					pairs++
 				}
-				if (y%2 != x%2) && (grid[y+1][x] == 'T' || grid[y+1][x] == 'S' || grid[y+1][x] == 'E') {
-					end := Pos{x: x, y: y + 1}
-					if _, ok := paths[start]; !ok {
-						paths[start] = []Pos{}
+				if y%2 != x%2 {
+					if _, ok := valid_spaces[grid[y+1][x]]; ok {
+						end := Pos{x: x, y: y + 1}
+						if _, ok := paths[start]; !ok {
+							paths[start] = []Pos{}
+						}
+						paths[start] = append(paths[start], end)
+						if _, ok := paths[end]; !ok {
+							paths[end] = []Pos{}
+						}
+						paths[end] = append(paths[end], start)
+						pairs++
 					}
-					paths[start] = append(paths[start], end)
-					if _, ok := paths[end]; !ok {
-						paths[end] = []Pos{}
-					}
-					paths[end] = append(paths[end], start)
-					pairs++
 				}
 			}
 		}
@@ -58,10 +71,7 @@ func count_pairs(grid []string) (int, map[Pos][]Pos) {
 	return pairs, paths
 }
 
-func bfs(grid []string, paths map[Pos][]Pos) int {
-	height := len(grid)
-	width := len(grid[0])
-
+func find_start_end(grid []string) (Pos, Pos) {
 	start, end := Pos{}, Pos{}
 	for y := 0; y < height; y++ {
 		for x := 0; x < width; x++ {
@@ -72,6 +82,11 @@ func bfs(grid []string, paths map[Pos][]Pos) int {
 			}
 		}
 	}
+	return start, end
+}
+
+func bfs(grid []string, paths map[Pos][]Pos) int {
+	start, end := find_start_end(grid)
 
 	queue := []Entry{Entry{pos: start}}
 	visited := map[Pos]struct{}{}
@@ -98,9 +113,6 @@ func bfs(grid []string, paths map[Pos][]Pos) int {
 }
 
 func rotate_grid(grid []string) []string {
-	height := len(grid)
-	width := len(grid[0])
-
 	r := make([][]byte, height)
 	for y := range r {
 		r[y] = make([]byte, width)
@@ -151,8 +163,8 @@ func rotate_grid(grid []string) []string {
 }
 
 func bfs_rotate(rotate0 []string) int {
-	height := len(rotate0)
-	width := len(rotate0[0])
+	height = len(rotate0)
+	width = len(rotate0[0])
 
 	rotate1 := rotate_grid(rotate0)
 	rotate2 := rotate_grid(rotate1)
@@ -165,44 +177,34 @@ func bfs_rotate(rotate0 []string) int {
 
 		for y := 0; y < height; y++ {
 			for x := 0; x < width; x++ {
-				if from[y][x] == 'T' || from[y][x] == 'S' || from[y][x] == 'E' {
+				if _, ok := valid_spaces[from[y][x]]; ok {
 					start := Pos{x: x, y: y, rotation: rotation}
-					if to[y][x] == 'T' || to[y][x] == 'S' || to[y][x] == 'E' {
-						end := Pos{x: x, y: y, rotation: (rotation + 1) % 3}
-						if _, ok := paths[start]; !ok {
-							paths[start] = []Pos{}
-						}
-						paths[start] = append(paths[start], end)
+
+					possible := []Pos{Pos{x: x, y: y}}
+
+					if x < width-1 {
+						possible = append(possible, Pos{x: x + 1, y: y})
 					}
-					if x < width-1 && (to[y][x+1] == 'T' || to[y][x+1] == 'S' || to[y][x+1] == 'E') {
-						end := Pos{x: x + 1, y: y, rotation: (rotation + 1) % 3}
-						if _, ok := paths[start]; !ok {
-							paths[start] = []Pos{}
-						}
-						paths[start] = append(paths[start], end)
+					if x > 0 {
+						possible = append(possible, Pos{x: x - 1, y: y})
 					}
-					if x > 0 && (to[y][x-1] == 'T' || to[y][x-1] == 'S' || to[y][x-1] == 'E') {
-						end := Pos{x: x - 1, y: y, rotation: (rotation + 1) % 3}
-						if _, ok := paths[start]; !ok {
-							paths[start] = []Pos{}
-						}
-						paths[start] = append(paths[start], end)
+					if y < height-1 && (y%2 != x%2) {
+						possible = append(possible, Pos{x: x, y: y + 1})
 					}
-					if y < height-1 && (y%2 != x%2) && (to[y+1][x] == 'T' || to[y+1][x] == 'S' || to[y+1][x] == 'E') {
-						end := Pos{x: x, y: y + 1, rotation: (rotation + 1) % 3}
-						if _, ok := paths[start]; !ok {
-							paths[start] = []Pos{}
-						}
-						paths[start] = append(paths[start], end)
-					}
-					if y > 0 && (y%2 == x%2) && (to[y-1][x] == 'T' || to[y-1][x] == 'S' || to[y-1][x] == 'E') {
-						end := Pos{x: x, y: y - 1, rotation: (rotation + 1) % 3}
-						if _, ok := paths[start]; !ok {
-							paths[start] = []Pos{}
-						}
-						paths[start] = append(paths[start], end)
+					if y > 0 && (y%2 == x%2) {
+						possible = append(possible, Pos{x: x, y: y - 1})
 					}
 
+					for _, pos := range possible {
+						if _, ok := valid_spaces[to[pos.y][pos.x]]; ok {
+							pos.rotation = (rotation + 1) % 3
+							if _, ok := paths[start]; !ok {
+								paths[start] = []Pos{}
+							}
+							paths[start] = append(paths[start], pos)
+						}
+
+					}
 				}
 			}
 		}
@@ -211,16 +213,7 @@ func bfs_rotate(rotate0 []string) int {
 
 	}
 
-	start, end := Pos{}, Pos{}
-	for y := 0; y < height; y++ {
-		for x := 0; x < width; x++ {
-			if rotate0[y][x] == 'S' {
-				start.x, start.y = x, y
-			} else if rotate0[y][x] == 'E' {
-				end.x, end.y = x, y
-			}
-		}
-	}
+	start, end := find_start_end(rotate0)
 
 	queue := []Entry{Entry{pos: start}}
 	visited := map[Pos]struct{}{}
