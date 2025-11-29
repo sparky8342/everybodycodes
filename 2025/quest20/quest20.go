@@ -17,14 +17,9 @@ type Entry struct {
 }
 
 var height, width int
-var valid_spaces map[byte]struct{}
 
-func init() {
-	valid_spaces = map[byte]struct{}{
-		'T': struct{}{},
-		'S': struct{}{},
-		'E': struct{}{},
-	}
+func valid_space(b byte) bool {
+	return b == 'T' || b == 'S' || b == 'E'
 }
 
 func count_pairs(grid []string) (int, map[Pos][]Pos) {
@@ -36,9 +31,9 @@ func count_pairs(grid []string) (int, map[Pos][]Pos) {
 	pairs := 0
 	for y := 0; y < height-1; y++ {
 		for x := 0; x < width-1; x++ {
-			if _, ok := valid_spaces[grid[y][x]]; ok {
+			if valid_space(grid[y][x]) {
 				start := Pos{x: x, y: y}
-				if _, ok := valid_spaces[grid[y][x+1]]; ok {
+				if valid_space(grid[y][x+1]) {
 					end := Pos{x: x + 1, y: y}
 					if _, ok := paths[start]; !ok {
 						paths[start] = []Pos{}
@@ -50,19 +45,17 @@ func count_pairs(grid []string) (int, map[Pos][]Pos) {
 					paths[end] = append(paths[end], start)
 					pairs++
 				}
-				if y%2 != x%2 {
-					if _, ok := valid_spaces[grid[y+1][x]]; ok {
-						end := Pos{x: x, y: y + 1}
-						if _, ok := paths[start]; !ok {
-							paths[start] = []Pos{}
-						}
-						paths[start] = append(paths[start], end)
-						if _, ok := paths[end]; !ok {
-							paths[end] = []Pos{}
-						}
-						paths[end] = append(paths[end], start)
-						pairs++
+				if y%2 != x%2 && valid_space(grid[y+1][x]) {
+					end := Pos{x: x, y: y + 1}
+					if _, ok := paths[start]; !ok {
+						paths[start] = []Pos{}
 					}
+					paths[start] = append(paths[start], end)
+					if _, ok := paths[end]; !ok {
+						paths[end] = []Pos{}
+					}
+					paths[end] = append(paths[end], start)
+					pairs++
 				}
 			}
 		}
@@ -177,7 +170,7 @@ func bfs_rotate(rotate0 []string) int {
 
 		for y := 0; y < height; y++ {
 			for x := 0; x < width; x++ {
-				if _, ok := valid_spaces[from[y][x]]; ok {
+				if valid_space(from[y][x]) {
 					start := Pos{x: x, y: y, rotation: rotation}
 
 					possible := []Pos{Pos{x: x, y: y}}
@@ -196,7 +189,7 @@ func bfs_rotate(rotate0 []string) int {
 					}
 
 					for _, pos := range possible {
-						if _, ok := valid_spaces[to[pos.y][pos.x]]; ok {
+						if valid_space(to[pos.y][pos.x]) {
 							pos.rotation = (rotation + 1) % 3
 							if _, ok := paths[start]; !ok {
 								paths[start] = []Pos{}
