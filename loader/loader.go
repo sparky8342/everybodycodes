@@ -12,7 +12,7 @@ var Quest int
 var Part int
 
 func get_filename() string {
-	return fmt.Sprintf("inputs/%s/everybody_codes_e%s_q%02d_p%d.txt", Event, Event, Quest, Part)
+	return fmt.Sprintf("inputs/everybody_codes_e%s_q%02d_p%d.txt", Event, Quest, Part)
 }
 
 func GetOneLine() []byte {

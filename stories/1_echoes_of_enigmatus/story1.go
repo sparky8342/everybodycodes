@@ -3,9 +3,9 @@ package main
 import (
 	"fmt"
 	"os"
-	"stories/2_the_entertainment_hub/quest1"
-	"stories/2_the_entertainment_hub/quest2"
-	"stories/2_the_entertainment_hub/quest3"
+	"quest1"
+	"quest2"
+	"quest3"
 	"strconv"
 )
 

@@ -3,9 +3,9 @@ package main
 import (
 	"fmt"
 	"os"
-	"stories/1_echoes_of_enigmatus/quest1"
-	"stories/1_echoes_of_enigmatus/quest2"
-	"stories/1_echoes_of_enigmatus/quest3"
+	"quest1"
+	"quest2"
+	"quest3"
 	"strconv"
 )
 

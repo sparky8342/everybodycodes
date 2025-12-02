@@ -1,0 +1,3 @@
+go test quest1 -v 
+go test quest2 -v 
+go test quest3 -v 
