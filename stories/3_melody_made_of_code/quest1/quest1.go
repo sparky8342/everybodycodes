@@ -20,7 +20,7 @@ type Scale struct {
 func colour_value(colour string) int {
 	value := 0
 	for i := 5; i >= 0; i-- {
-		if colour[i] == 'R' || colour[i] == 'G' || colour[i] == 'B' || colour[i] == 'S' {
+		if colour[i] < 91 { // is upper case
 			value += 1 << (5 - i)
 		}
 	}
@@ -39,14 +39,14 @@ func parse_data(data []string) []Scale {
 		}
 		scales[i].id = id
 
-		parts2 := strings.Split(parts[1], " ")
-		scales[i].red = colour_value(parts2[0])
-		scales[i].green = colour_value(parts2[1])
-		scales[i].blue = colour_value(parts2[2])
+		parts = strings.Split(parts[1], " ")
+		scales[i].red = colour_value(parts[0])
+		scales[i].green = colour_value(parts[1])
+		scales[i].blue = colour_value(parts[2])
 		scales[i].sum = scales[i].red + scales[i].green + scales[i].blue
 
-		if len(parts2) == 4 {
-			scales[i].shine = colour_value(parts2[3])
+		if len(parts) == 4 {
+			scales[i].shine = colour_value(parts[3])
 		}
 	}
 
