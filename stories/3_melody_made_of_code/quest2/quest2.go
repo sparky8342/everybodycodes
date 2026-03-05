@@ -46,6 +46,14 @@ func init() {
 	}
 }
 
+func (area *Area) add(pos Pos) {
+	area.grid[pos] = struct{}{}
+	area.min_x = utils.Min([]int{area.min_x, pos.x})
+	area.max_x = utils.Max([]int{area.max_x, pos.x})
+	area.min_y = utils.Min([]int{area.min_y, pos.y})
+	area.max_y = utils.Max([]int{area.max_y, pos.y})
+}
+
 func parse_data(data []string) (Pos, []Pos) {
 	height := len(data)
 	width := len(data[0])
@@ -201,14 +209,9 @@ func steps_to_surround_bones(sound Pos, bones []Pos, full_sequence bool) int {
 
 	area := Area{}
 	area.grid = map[Pos]struct{}{}
-	area.grid[sound] = struct{}{}
+	area.add(sound)
 	for _, bone := range bones {
-		area.grid[bone] = struct{}{}
-
-		area.min_x = utils.Min([]int{area.min_x, bone.x})
-		area.max_x = utils.Max([]int{area.max_x, bone.x})
-		area.min_y = utils.Min([]int{area.min_y, bone.y})
-		area.max_y = utils.Max([]int{area.max_y, bone.y})
+		area.add(bone)
 	}
 
 	move_dirs := dirs
@@ -230,13 +233,8 @@ func steps_to_surround_bones(sound Pos, bones []Pos, full_sequence bool) int {
 		}
 
 		sound = next
-		area.grid[sound] = struct{}{}
+		area.add(sound)
 		steps++
-
-		area.min_x = utils.Min([]int{area.min_x, next.x})
-		area.max_x = utils.Max([]int{area.max_x, next.x})
-		area.min_y = utils.Min([]int{area.min_y, next.y})
-		area.max_y = utils.Max([]int{area.max_y, next.y})
 
 		fill(area)
 
