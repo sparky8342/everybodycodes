@@ -20,6 +20,7 @@ type Pos struct {
 }
 
 var dirs [][]int
+var dir_sequence [][]int
 
 func init() {
 	dirs = [][]int{
@@ -28,13 +29,29 @@ func init() {
 		[]int{0, 1},
 		[]int{-1, 0},
 	}
+
+	dir_sequence = [][]int{
+		[]int{0, -1},
+		[]int{0, -1},
+		[]int{0, -1},
+		[]int{1, 0},
+		[]int{1, 0},
+		[]int{1, 0},
+		[]int{0, 1},
+		[]int{0, 1},
+		[]int{0, 1},
+		[]int{-1, 0},
+		[]int{-1, 0},
+		[]int{-1, 0},
+	}
 }
 
-func parse_data(data []string) (Pos, Pos) {
+func parse_data(data []string) (Pos, []Pos) {
 	height := len(data)
 	width := len(data[0])
 
-	start, bone := Pos{}, Pos{}
+	start := Pos{}
+	bones := []Pos{}
 
 	for y := 0; y < height; y++ {
 		for x := 0; x < width; x++ {
@@ -42,13 +59,12 @@ func parse_data(data []string) (Pos, Pos) {
 				start.x = x
 				start.y = y
 			} else if data[y][x] == '#' {
-				bone.x = x
-				bone.y = y
+				bones = append(bones, Pos{x: x, y: y})
 			}
 		}
 	}
 
-	return start, bone
+	return start, bones
 }
 
 func steps_to_bone(sound Pos, bone Pos) int {
@@ -87,6 +103,15 @@ func surrounded(area Area, bone Pos) bool {
 			y: bone.y + dir[1],
 		}
 		if _, ok := area.grid[n]; !ok {
+			return false
+		}
+	}
+	return true
+}
+
+func bones_surrounded(area Area, bones []Pos) bool {
+	for _, bone := range bones {
+		if !surrounded(area, bone) {
 			return false
 		}
 	}
@@ -162,26 +187,33 @@ func print_grid(grid map[Pos]struct{}, sound Pos, bone Pos) {
 	fmt.Println()
 }
 
-func steps_to_surround_bone(sound Pos, bone Pos) int {
+func steps_to_surround_bones(sound Pos, bones []Pos, full_sequence bool) int {
 	steps := 0
 
 	area := Area{}
 	area.grid = map[Pos]struct{}{}
 	area.grid[sound] = struct{}{}
-	area.grid[bone] = struct{}{}
+	for _, bone := range bones {
+		area.grid[bone] = struct{}{}
 
-	area.min_x = utils.Min([]int{sound.x, bone.x})
-	area.max_x = utils.Max([]int{sound.x, bone.x})
-	area.min_y = utils.Min([]int{sound.y, bone.y})
-	area.max_y = utils.Max([]int{sound.y, bone.y})
+		area.min_x = utils.Min([]int{area.min_x, bone.x})
+		area.max_x = utils.Max([]int{area.max_x, bone.x})
+		area.min_y = utils.Min([]int{area.min_y, bone.y})
+		area.max_y = utils.Max([]int{area.max_y, bone.y})
+	}
+
+	move_dirs := dirs
+	if full_sequence {
+		move_dirs = dir_sequence
+	}
 
 	dir := -1
 	for {
-		dir = (dir + 1) % 4
+		dir = (dir + 1) % len(move_dirs)
 
 		next := Pos{
-			x: sound.x + dirs[dir][0],
-			y: sound.y + dirs[dir][1],
+			x: sound.x + move_dirs[dir][0],
+			y: sound.y + move_dirs[dir][1],
 		}
 
 		if _, ok := area.grid[next]; ok {
@@ -199,7 +231,7 @@ func steps_to_surround_bone(sound Pos, bone Pos) int {
 
 		fill(area)
 
-		if surrounded(area, bone) {
+		if bones_surrounded(area, bones) {
 			return steps
 		}
 	}
@@ -209,13 +241,18 @@ func Run() {
 	loader.Event, loader.Quest, loader.Part = "3", 2, 1
 
 	data := loader.GetStrings()
-	start, bone := parse_data(data)
-	part1 := steps_to_bone(start, bone)
+	start, bones := parse_data(data)
+	part1 := steps_to_bone(start, bones[0])
 
 	loader.Part = 2
 	data = loader.GetStrings()
-	start, bone = parse_data(data)
-	part2 := steps_to_surround_bone(start, bone)
+	start, bones = parse_data(data)
+	part2 := steps_to_surround_bones(start, bones, false)
 
-	fmt.Printf("%d %d %d\n", part1, part2, -1)
+	loader.Part = 3
+	data = loader.GetStrings()
+	start, bones = parse_data(data)
+	part3 := steps_to_surround_bones(start, bones, true)
+
+	fmt.Printf("%d %d %d\n", part1, part2, part3)
 }
