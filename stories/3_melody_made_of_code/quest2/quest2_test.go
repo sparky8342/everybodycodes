@@ -23,3 +23,23 @@ func Test1(t *testing.T) {
 		t.Errorf("got %d, wanted %d", got, want)
 	}
 }
+
+func Test2(t *testing.T) {
+	data := []string{
+		".......",
+		".......",
+		".......",
+		".#.@...",
+		".......",
+		".......",
+		".......",
+	}
+
+	start, bone := parse_data(data)
+	got := steps_to_surround_bone(start, bone)
+	want := 47
+
+	if got != want {
+		t.Errorf("got %d, wanted %d", got, want)
+	}
+}
