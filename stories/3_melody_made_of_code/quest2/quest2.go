@@ -118,7 +118,7 @@ func bones_surrounded(area Area, bones []Pos) bool {
 	return true
 }
 
-func flood_fill(area Area, start Pos) {
+func flood_fill(area Area, start Pos) map[Pos]struct{} {
 	filled := map[Pos]struct{}{}
 	filled[start] = struct{}{}
 
@@ -129,7 +129,7 @@ func flood_fill(area Area, start Pos) {
 		queue = queue[1:]
 
 		if pos.x < area.min_x || pos.x > area.max_x || pos.y < area.min_y || pos.y > area.max_y {
-			return
+			return filled
 		}
 
 		for _, dir := range dirs {
@@ -152,17 +152,26 @@ func flood_fill(area Area, start Pos) {
 	for space := range filled {
 		area.grid[space] = struct{}{}
 	}
+
+	return filled
 }
 
 func fill(area Area) {
+	seen := map[Pos]struct{}{}
 	for space := range area.grid {
 		for _, dir := range dirs {
 			neighbour := Pos{
 				x: space.x + dir[0],
 				y: space.y + dir[1],
 			}
+			if _, ok := seen[neighbour]; ok {
+				continue
+			}
 			if _, ok := area.grid[neighbour]; !ok {
-				flood_fill(area, neighbour)
+				filled := flood_fill(area, neighbour)
+				for space := range filled {
+					seen[space] = struct{}{}
+				}
 			}
 		}
 	}
