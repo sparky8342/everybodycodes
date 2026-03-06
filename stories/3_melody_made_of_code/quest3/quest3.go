@@ -15,7 +15,6 @@ type Node struct {
 	left_socket_shape   string
 	right_socket_colour string
 	right_socket_shape  string
-	plug_conn           *Node
 	left_conn           *Node
 	right_conn          *Node
 	left_conn_strong    bool
@@ -46,59 +45,57 @@ func parse_line(line string) *Node {
 }
 
 func add_node(node *Node, to_add **Node, mode int) bool {
-	if node.left_conn != nil {
-		t := *to_add
-		if mode == 3 && node.left_conn_strong == false && node.left_socket_colour == t.plug_colour && node.left_socket_shape == t.plug_shape {
-			node.left_conn, *to_add = *to_add, node.left_conn
-			node.left_conn_strong = true
-		} else if add_node(node.left_conn, to_add, mode) {
-			return true
-		}
-	} else {
-		t := *to_add
-		colour := node.left_socket_colour == t.plug_colour
-		shape := node.left_socket_shape == t.plug_shape
-		add := false
-		strong := false
-		if colour && shape {
-			add = true
-			strong = true
-		}
-		if mode != 1 && (colour || shape) {
-			add = true
-		}
-		if add {
-			node.left_conn = *to_add
-			node.left_conn_strong = strong
-			return true
-		}
-	}
+	// i == 0 left, i == 1 right -- an attempt to reduce duplicate code
+	for i := 0; i <= 1; i++ {
+		var conn **Node
+		var strong *bool
+		var socket_colour, socket_shape string
 
-	if node.right_conn != nil {
-		t := *to_add
-		if mode == 3 && node.right_conn_strong == false && node.right_socket_colour == t.plug_colour && node.right_socket_shape == t.plug_shape {
-			node.right_conn, *to_add = *to_add, node.right_conn
-			node.right_conn_strong = true
-		} else if add_node(node.right_conn, to_add, mode) {
-			return true
+		if i == 0 {
+			if node.left_conn != nil {
+				conn = &node.left_conn
+			}
+			strong = &node.left_conn_strong
+			socket_colour = node.left_socket_colour
+			socket_shape = node.left_socket_shape
+		} else {
+			if node.right_conn != nil {
+				conn = &node.right_conn
+			}
+			strong = &node.right_conn_strong
+			socket_colour = node.right_socket_colour
+			socket_shape = node.right_socket_shape
 		}
-	} else {
-		t := *to_add
-		colour := node.right_socket_colour == t.plug_colour
-		shape := node.right_socket_shape == t.plug_shape
-		add := false
-		strong := false
-		if colour && shape {
-			add = true
-			strong = true
-		}
-		if mode != 1 && (colour || shape) {
-			add = true
-		}
-		if add {
-			node.right_conn = *to_add
-			node.right_conn_strong = strong
-			return true
+
+		tp := *to_add
+		if conn != nil {
+			if mode == 3 && *strong == false && socket_colour == tp.plug_colour && socket_shape == tp.plug_shape {
+				*conn, *to_add = *to_add, *conn
+				*strong = true
+			} else if add_node(*conn, to_add, mode) {
+				return true
+			}
+		} else {
+			colour := socket_colour == tp.plug_colour
+			shape := socket_shape == tp.plug_shape
+			add := false
+			new_strong := false
+			if colour && shape {
+				add = true
+				new_strong = true
+			}
+			if mode != 1 && (colour || shape) {
+				add = true
+			}
+			if add {
+				if i == 0 {
+					node.left_conn = *to_add
+				} else {
+					node.right_conn = *to_add
+				}
+				*strong = new_strong
+				return true
+			}
 		}
 	}
 
