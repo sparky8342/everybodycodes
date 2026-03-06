@@ -45,13 +45,13 @@ func parse_line(line string) *Node {
 	return node
 }
 
-func add_node(root *Node, node *Node, to_add **Node, mode int) bool {
+func add_node(node *Node, to_add **Node, mode int) bool {
 	if node.left_conn != nil {
 		t := *to_add
 		if mode == 3 && node.left_conn_strong == false && node.left_socket_colour == t.plug_colour && node.left_socket_shape == t.plug_shape {
 			node.left_conn, *to_add = *to_add, node.left_conn
 			node.left_conn_strong = true
-		} else if add_node(root, node.left_conn, to_add, mode) {
+		} else if add_node(node.left_conn, to_add, mode) {
 			return true
 		}
 	} else {
@@ -79,7 +79,7 @@ func add_node(root *Node, node *Node, to_add **Node, mode int) bool {
 		if mode == 3 && node.right_conn_strong == false && node.right_socket_colour == t.plug_colour && node.right_socket_shape == t.plug_shape {
 			node.right_conn, *to_add = *to_add, node.right_conn
 			node.right_conn_strong = true
-		} else if add_node(root, node.right_conn, to_add, mode) {
+		} else if add_node(node.right_conn, to_add, mode) {
 			return true
 		}
 	} else {
@@ -133,7 +133,7 @@ func parse_data(data []string, mode int) *Node {
 	for i := 1; i < len(data); i++ {
 		node := parse_line(data[i])
 		np := &node
-		for !add_node(root, root, np, mode) {
+		for !add_node(root, np, mode) {
 		}
 	}
 
