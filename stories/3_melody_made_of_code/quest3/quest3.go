@@ -18,6 +18,8 @@ type Node struct {
 	plug_conn           *Node
 	left_conn           *Node
 	right_conn          *Node
+	left_conn_strong    bool
+	right_conn_strong   bool
 }
 
 func parse_value(line string) (string, string) {
@@ -43,31 +45,59 @@ func parse_line(line string) *Node {
 	return node
 }
 
-func add_node(node *Node, to_add *Node, strong bool) bool {
+func add_node(root *Node, node *Node, to_add **Node, mode int) bool {
 	if node.left_conn != nil {
-		if add_node(node.left_conn, to_add, strong) {
+		t := *to_add
+		if mode == 3 && node.left_conn_strong == false && node.left_socket_colour == t.plug_colour && node.left_socket_shape == t.plug_shape {
+			node.left_conn, *to_add = *to_add, node.left_conn
+			node.left_conn_strong = true
+		} else if add_node(root, node.left_conn, to_add, mode) {
 			return true
 		}
 	} else {
-		colour := node.left_socket_colour == to_add.plug_colour
-		shape := node.left_socket_shape == to_add.plug_shape
-		if (strong && colour && shape) || (!strong && (colour || shape)) {
-			node.left_conn = to_add
-			to_add.plug_conn = node
+		t := *to_add
+		colour := node.left_socket_colour == t.plug_colour
+		shape := node.left_socket_shape == t.plug_shape
+		add := false
+		strong := false
+		if colour && shape {
+			add = true
+			strong = true
+		}
+		if mode != 1 && (colour || shape) {
+			add = true
+		}
+		if add {
+			node.left_conn = *to_add
+			node.left_conn_strong = strong
 			return true
 		}
 	}
 
 	if node.right_conn != nil {
-		if add_node(node.right_conn, to_add, strong) {
+		t := *to_add
+		if mode == 3 && node.right_conn_strong == false && node.right_socket_colour == t.plug_colour && node.right_socket_shape == t.plug_shape {
+			node.right_conn, *to_add = *to_add, node.right_conn
+			node.right_conn_strong = true
+		} else if add_node(root, node.right_conn, to_add, mode) {
 			return true
 		}
 	} else {
-		colour := node.right_socket_colour == to_add.plug_colour
-		shape := node.right_socket_shape == to_add.plug_shape
-		if (strong && colour && shape) || (!strong && (colour || shape)) {
-			node.right_conn = to_add
-			to_add.plug_conn = node
+		t := *to_add
+		colour := node.right_socket_colour == t.plug_colour
+		shape := node.right_socket_shape == t.plug_shape
+		add := false
+		strong := false
+		if colour && shape {
+			add = true
+			strong = true
+		}
+		if mode != 1 && (colour || shape) {
+			add = true
+		}
+		if add {
+			node.right_conn = *to_add
+			node.right_conn_strong = strong
 			return true
 		}
 	}
@@ -97,12 +127,14 @@ func read_tree(root *Node) int {
 	return checksum
 }
 
-func parse_data(data []string, strong bool) *Node {
+func parse_data(data []string, mode int) *Node {
 	root := parse_line(data[0])
 
 	for i := 1; i < len(data); i++ {
 		node := parse_line(data[i])
-		add_node(root, node, strong)
+		np := &node
+		for !add_node(root, root, np, mode) {
+		}
 	}
 
 	return root
@@ -112,13 +144,18 @@ func Run() {
 	loader.Event, loader.Quest, loader.Part = "3", 3, 1
 
 	data := loader.GetStrings()
-	root := parse_data(data, true)
+	root := parse_data(data, 1)
 	part1 := read_tree(root)
 
 	loader.Part = 2
 	data = loader.GetStrings()
-	root = parse_data(data, false)
+	root = parse_data(data, 2)
 	part2 := read_tree(root)
 
-	fmt.Printf("%d %d %d\n", part1, part2, -1)
+	loader.Part = 3
+	data = loader.GetStrings()
+	root = parse_data(data, 3)
+	part3 := read_tree(root)
+
+	fmt.Printf("%d %d %d\n", part1, part2, part3)
 }
