@@ -10,5 +10,5 @@ require quest1 v1.0.0
 replace quest1 v1.0.0 => ./quest1
 require quest2 v1.0.0
 replace quest2 v1.0.0 => ./quest2
-//require quest3 v1.0.0
-//replace quest3 v1.0.0 => ./quest3
+require quest3 v1.0.0
+replace quest3 v1.0.0 => ./quest3
