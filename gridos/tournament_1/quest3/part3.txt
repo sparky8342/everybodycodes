@@ -1,0 +1,28 @@
+HEADS AAAA
+
+START **** START2 **** SRRR
+START2 **** CHECK **** SSRD
+
+CHECK #*** CHECK **** RRRR
+
+CHECK ===* DOWN ~~~~ DDDD
+CHECK ==#* CHECK ~~** RRRR
+CHECK =#** CHECK ~*** RRRR
+
+CHECK ~~=* DOWN **~~ DDDD
+
+CHECK ~~#* CHECK **** RRRR
+CHECK ~#** CHECK **** RRRR
+
+CHECK ____ STOP  **** LLLL
+
+CHECK ~~~* DOWN ***~ DDDD
+
+DOWN **** CHECK **** LLLL
+
+CHECK __~* REPOS **** RRRR
+CHECK _~~* REPOS **** RRRR
+CHECK ~~_* REPOS2 **** RRRR
+REPOS **** REPOS2 **** RRRR
+REPOS2 **** CHECK **** UUUU
+
