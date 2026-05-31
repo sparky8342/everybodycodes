@@ -1,0 +1,50 @@
+HEADS AA
+
+START ** START2 +* RR
+START2 ** GO1 ** SD
+
+GO1 .@ GO1 +* RR
+GO1 .. GO2 ++ DD
+GO2 +. GO2 *+ RR
+GO2 @. GO2 *+ RR
+GO2 .. GO1 ++ UU
+GO1 .+ GO1 +* RR
+GO2 __ BACK ** LL
+
+BACK ** GO3 ** DL
+
+GO3 +. GO4 *+ LL
+GO4 +. GO4 *+ DD
+GO4 @. GO4 *+ DD
+GO4 .. GO3 ++ RR
+GO3 .+ GO3 +* DD
+GO3 .@ GO3 +* DD
+GO3 .. GO4 ++ LL
+GO4 ++ GO4 ** DD
+GO4 __ UP ** UU
+
+UP ** GO5 ** LU
+
+GO5 .@ GO5 +* LL
+GO5 .. GO6 ++ UU
+GO6 +. GO6 *+ LL
+GO6 @. GO6 *+ LL
+GO6 .. GO5 ++ DD
+GO5 .+ GO5 +* LL
+GO5 +@ GO5 ** LL
+GO5 +. GO6 *+ UU
+GO6 ++ GO6 ** LL
+GO6 __ RIGHT  ** RR
+
+RIGHT ** GO7 ** UR
+
+GO7 +. GO8 *+ RR
+GO8 +. GO8 *+ UU
+GO8 @. GO8 *+ UU
+GO8 .. GO7 ++ LL
+GO7 .+ GO7 +* UU
+GO7 .@ GO7 +* UU
+GO7 .. GO8 ++ RR
+GO8 ++ GO8 ** UU
+GO7 ++ STOP ** SS
+GO8 .+ GO7 +* LL
