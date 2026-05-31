@@ -9,10 +9,9 @@ GO2 +. GO2 *+ RR
 GO2 @. GO2 *+ RR
 GO2 .. GO1 ++ UU
 GO1 .+ GO1 +* RR
-GO2 __ BACK ** SS
+GO2 __ BACK ** LL
 
-BACK ** BACK2 ** LL
-BACK2 ** GO3 ** DL
+BACK ** GO3 ** DL
 
 GO3 +. GO4 *+ LL
 GO4 +. GO4 *+ DD
