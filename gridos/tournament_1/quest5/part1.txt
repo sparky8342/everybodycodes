@@ -1,0 +1,12 @@
+HEADS AA
+
+START ** START2 +* RR
+START2 ** GO1 ** SD
+
+GO1 .@ GO1 +* RR
+GO1 .. GO2 ++ DD
+GO2 +. GO2 *+ RR
+GO2 @. GO2 *+ RR
+GO2 .. GO1 ++ UU
+GO1 .+ GO1 +* RR
+GO2 __ STOP ** SS
