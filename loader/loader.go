@@ -71,3 +71,27 @@ func GetInts() []int {
 	}
 	return nums
 }
+
+func GetCSVInts() [][]int {
+	data, err := os.ReadFile(get_filename())
+	if err != nil {
+		panic(err)
+	}
+	if data[len(data)-1] == '\n' {
+		data = data[:len(data)-1]
+	}
+	lines := strings.Split(string(data), "\n")
+	nums := make([][]int, len(lines))
+	for i, line := range lines {
+		num_line := []int{}
+		for _, str := range strings.Split(line, ",") {
+			n, err := strconv.Atoi(str)
+			if err != nil {
+				panic(err)
+			}
+			num_line = append(num_line, n)
+		}
+		nums[i] = num_line
+	}
+	return nums
+}
