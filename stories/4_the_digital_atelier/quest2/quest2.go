@@ -13,6 +13,17 @@ type Pos struct {
 	y int
 }
 
+var dirs [][]int
+
+func init() {
+	dirs = [][]int{
+		[]int{0, 1},
+		[]int{0, -1},
+		[]int{1, 0},
+		[]int{-1, 0},
+	}
+}
+
 func parse_data(data []string) (map[byte]Pos, string) {
 	r, err := regexp.Compile("(\\w).*?(\\d+),(\\d+)")
 	if err != nil {
@@ -39,7 +50,7 @@ func parse_data(data []string) (map[byte]Pos, string) {
 	return locations, moves
 }
 
-func launch(locations map[byte]Pos, moves string) int {
+func launch(locations map[byte]Pos, moves string) map[Pos]struct{} {
 	visited := map[Pos]struct{}{}
 
 	location := locations['S']
@@ -52,7 +63,20 @@ func launch(locations map[byte]Pos, moves string) int {
 		visited[location] = struct{}{}
 	}
 
-	return len(visited)
+	return visited
+}
+
+func add_fireflies(visited map[Pos]struct{}) int {
+	fireflies := map[Pos]struct{}{}
+	for pos := range visited {
+		for _, dir := range dirs {
+			firefly := Pos{x: pos.x + dir[0], y: pos.y + dir[1]}
+			if _, ok := visited[firefly]; !ok {
+				fireflies[firefly] = struct{}{}
+			}
+		}
+	}
+	return len(fireflies)
 }
 
 func Run() {
@@ -60,8 +84,14 @@ func Run() {
 
 	data := loader.GetStrings()
 	locations, moves := parse_data(data)
-	part1 := launch(locations, moves)
+	part1 := len(launch(locations, moves))
 
-	part2, part3 := -1, -1
+	loader.Part = 2
+	data = loader.GetStrings()
+	locations, moves = parse_data(data)
+	visited := launch(locations, moves)
+	part2 := add_fireflies(visited)
+
+	part3 := -1
 	fmt.Printf("%d %d %d\n", part1, part2, part3)
 }

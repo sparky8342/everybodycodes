@@ -13,8 +13,46 @@ func Test1(t *testing.T) {
 	}
 
 	locations, moves := parse_data(data)
-	got := launch(locations, moves)
+	got := len(launch(locations, moves))
 	want := 8
+
+	if got != want {
+		t.Errorf("got %d, wanted %d", got, want)
+	}
+}
+
+func Test2(t *testing.T) {
+	data := []string{
+		"START=[5,0]",
+		"A=[0,0]",
+		"B=[10,0]",
+		"C=[5,10]",
+		"MOVES=ABCCBABCA",
+	}
+
+	locations, moves := parse_data(data)
+	visited := launch(locations, moves)
+	got := add_fireflies(visited)
+	want := 25
+
+	if got != want {
+		t.Errorf("got %d, wanted %d", got, want)
+	}
+}
+
+func Test3(t *testing.T) {
+	data := []string{
+		"START=[5,0]",
+		"A=[0,0]",
+		"B=[10,0]",
+		"C=[5,10]",
+		"MOVES=BABCAABBCABCCCBBABCCCAAACABABCBCBBCAABBABBCACCBAABCBCBBBCBBBBBCCCAACAACB",
+	}
+
+	locations, moves := parse_data(data)
+	visited := launch(locations, moves)
+	got := add_fireflies(visited)
+	want := 46
 
 	if got != want {
 		t.Errorf("got %d, wanted %d", got, want)
