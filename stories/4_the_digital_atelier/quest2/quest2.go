@@ -3,6 +3,7 @@ package quest2
 import (
 	"fmt"
 	"loader"
+	"math/rand/v2"
 	"regexp"
 	"strconv"
 	"strings"
@@ -45,7 +46,10 @@ func parse_data(data []string) (map[byte]Pos, string) {
 		locations[m[1][0]] = Pos{x: x, y: y}
 	}
 
-	moves := strings.Split(data[4], "=")[1]
+	moves := ""
+	if len(data) == 5 {
+		moves = strings.Split(data[4], "=")[1]
+	}
 
 	return locations, moves
 }
@@ -61,6 +65,38 @@ func launch(locations map[byte]Pos, moves string) map[Pos]struct{} {
 		location.x = (location.x + move_to.x) / 2
 		location.y = (location.y + move_to.y) / 2
 		visited[location] = struct{}{}
+	}
+
+	return visited
+}
+
+func launch_random_fill(locations map[byte]Pos) map[Pos]struct{} {
+	visited := map[Pos]struct{}{}
+
+	location := locations['S']
+	visited[location] = struct{}{}
+
+	no_add := 0
+	for no_add < 10000000000 {
+		var move_to Pos
+		r := rand.IntN(3)
+		switch r {
+		case 0:
+			move_to = locations['A']
+		case 1:
+			move_to = locations['B']
+		case 2:
+			move_to = locations['C']
+		}
+
+		location.x = (location.x + move_to.x) / 2
+		location.y = (location.y + move_to.y) / 2
+		if _, ok := visited[location]; !ok {
+			visited[location] = struct{}{}
+			no_add = 0
+		} else {
+			no_add++
+		}
 	}
 
 	return visited
@@ -92,6 +128,11 @@ func Run() {
 	visited := launch(locations, moves)
 	part2 := add_fireflies(visited)
 
-	part3 := -1
+	loader.Part = 3
+	data = loader.GetStrings()
+	locations, _ = parse_data(data)
+	visited = launch_random_fill(locations)
+	part3 := add_fireflies(visited)
+
 	fmt.Printf("%d %d %d\n", part1, part2, part3)
 }
