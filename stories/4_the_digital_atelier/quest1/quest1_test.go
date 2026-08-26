@@ -49,3 +49,35 @@ func Test3(t *testing.T) {
 		t.Errorf("got %d, wanted %d", got, want)
 	}
 }
+
+func Test4(t *testing.T) {
+	sequences := [][]int{
+		[]int{1, 1, 1, 1, 1},
+		[]int{5, 1, 2, 3, 4, 5, 1, 2, 3, 4},
+		[]int{2, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1},
+		[]int{5, 1, 2, 1, 2, 7, 1, 2, 1, 2, 7, 1, 2, 1, 2},
+	}
+
+	got := process_sequences_no_crossover(sequences)
+	want := 27
+
+	if got != want {
+		t.Errorf("got %d, wanted %d", got, want)
+	}
+}
+
+func Test5(t *testing.T) {
+	sequences := [][]int{
+		[]int{5, 3, 1, 1},
+		[]int{5, 3, 1, 1, 5, 1, 1, 3, 4, 8, 1, 1},
+		[]int{5, 3, 1, 1, 5, 1, 1, 3, 4, 8, 2, 1},
+		[]int{10, 9, 9, 8, 8, 7, 7, 6, 6, 5, 5, 4, 4, 3, 3, 2, 2, 1},
+	}
+
+	got := process_sequences_no_crossover(sequences)
+	want := 35
+
+	if got != want {
+		t.Errorf("got %d, wanted %d", got, want)
+	}
+}
