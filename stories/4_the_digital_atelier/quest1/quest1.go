@@ -3,40 +3,26 @@ package quest1
 import (
 	"fmt"
 	"loader"
+	"math/big"
 )
 
-func set_n(number_line []bool, n int) []bool {
-	for n >= len(number_line) {
-		number_line = append(number_line, false)
-	}
-	number_line[n] = true
-	return number_line
-}
-
-func get_n(number_line []bool, n int) bool {
-	if n >= len(number_line) {
-		return false
-	}
-	return number_line[n]
-}
-
 func process_sequence(sequence []int, unique_points bool) int {
-	number_line := []bool{true}
+	number_line := big.NewInt(1)
 	n := 0
 	for _, num := range sequence {
-		if n-num < 0 || get_n(number_line, n-num) == true {
+		if n-num < 0 || number_line.Bit(n-num) == 1 {
 			n += num
 		} else {
 			n -= num
 		}
 
 		if unique_points {
-			for get_n(number_line, n) {
+			for number_line.Bit(n) == 1 {
 				n++
 			}
 		}
 
-		number_line = set_n(number_line, n)
+		number_line.SetBit(number_line, n, 1)
 	}
 	return n
 }
@@ -62,7 +48,7 @@ func crosses_range(ranges [][]int, from int, to int) bool {
 }
 
 func process_sequence_no_crossover(sequence []int) int {
-	number_line := []bool{true}
+	number_line := big.NewInt(1)
 	n := 0
 
 	highest := 0
@@ -71,10 +57,11 @@ func process_sequence_no_crossover(sequence []int) int {
 
 	range_id := 0
 
+outer:
 	for _, num := range sequence {
 		// go back
-		if n-num > 0 && get_n(number_line, n-num) == false && !crosses_range(ranges[range_id], n-num, n) {
-			number_line = set_n(number_line, n-num)
+		if n-num > 0 && number_line.Bit(n-num) == 0 && !crosses_range(ranges[range_id], n-num, n) {
+			number_line.SetBit(number_line, n-num, 1)
 			ranges[range_id] = append(ranges[range_id], []int{n - num, n})
 			range_id = (range_id + 1) % 2
 			n -= num
@@ -83,24 +70,21 @@ func process_sequence_no_crossover(sequence []int) int {
 
 		// go forward
 		to := n + num
-		for to < highest+20 {
-			if get_n(number_line, to) || crosses_range(ranges[range_id], n, to) {
-				to++
-			} else {
-				break
+		for number_line.Bit(to) == 1 || crosses_range(ranges[range_id], n, to) {
+			to++
+			if to > highest+1 {
+				continue outer
 			}
 		}
 
-		if crosses_range(ranges[range_id], n, to) {
-			continue
-		}
-
-		number_line = set_n(number_line, to)
+		number_line.SetBit(number_line, to, 1)
 		ranges[range_id] = append(ranges[range_id], []int{n, to})
 		range_id = (range_id + 1) % 2
 
 		n = to
-		highest = to
+		if to > highest {
+			highest = to
+		}
 
 	}
 
