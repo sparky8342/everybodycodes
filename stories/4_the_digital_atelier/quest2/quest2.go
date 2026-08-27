@@ -3,7 +3,6 @@ package quest2
 import (
 	"fmt"
 	"loader"
-	"math/rand/v2"
 	"regexp"
 	"strconv"
 	"strings"
@@ -70,32 +69,23 @@ func launch(locations map[byte]Pos, moves string) map[Pos]struct{} {
 	return visited
 }
 
-func launch_random_fill(locations map[byte]Pos) map[Pos]struct{} {
-	visited := map[Pos]struct{}{}
+func launch_fill(locations map[byte]Pos) map[Pos]struct{} {
+	visited := map[Pos]struct{}{locations['S']: struct{}{}}
+	queue := []Pos{locations['S']}
 
-	location := locations['S']
-	visited[location] = struct{}{}
+	for len(queue) > 0 {
+		pos := queue[0]
+		queue = queue[1:]
 
-	no_add := 0
-	for no_add < 10000000000 {
-		var move_to Pos
-		r := rand.IntN(3)
-		switch r {
-		case 0:
-			move_to = locations['A']
-		case 1:
-			move_to = locations['B']
-		case 2:
-			move_to = locations['C']
-		}
-
-		location.x = (location.x + move_to.x) / 2
-		location.y = (location.y + move_to.y) / 2
-		if _, ok := visited[location]; !ok {
-			visited[location] = struct{}{}
-			no_add = 0
-		} else {
-			no_add++
+		for _, loc := range []byte{'A', 'B', 'C'} {
+			new_pos := Pos{
+				x: (pos.x + locations[loc].x) / 2,
+				y: (pos.y + locations[loc].y) / 2,
+			}
+			if _, ok := visited[new_pos]; !ok {
+				visited[new_pos] = struct{}{}
+				queue = append(queue, new_pos)
+			}
 		}
 	}
 
@@ -131,7 +121,7 @@ func Run() {
 	loader.Part = 3
 	data = loader.GetStrings()
 	locations, _ = parse_data(data)
-	visited = launch_random_fill(locations)
+	visited = launch_fill(locations)
 	part3 := add_fireflies(visited)
 
 	fmt.Printf("%d %d %d\n", part1, part2, part3)

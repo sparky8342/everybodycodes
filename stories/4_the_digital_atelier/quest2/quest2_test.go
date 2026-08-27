@@ -68,7 +68,7 @@ func Test4(t *testing.T) {
 	}
 
 	locations, _ := parse_data(data)
-	visited := launch_random_fill(locations)
+	visited := launch_fill(locations)
 	got := add_fireflies(visited)
 	want := 42
 
@@ -86,7 +86,7 @@ func Test5(t *testing.T) {
 	}
 
 	locations, _ := parse_data(data)
-	visited := launch_random_fill(locations)
+	visited := launch_fill(locations)
 	got := add_fireflies(visited)
 	want := 432
 
