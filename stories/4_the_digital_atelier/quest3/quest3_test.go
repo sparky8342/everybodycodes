@@ -12,9 +12,9 @@ func Test1(t *testing.T) {
 		"vertical-offsets=11011",
 	}
 
-	width, height, h_offsets, v_offsets := parse_data(data)
-	grid := draw_pattern(width, height, h_offsets, v_offsets)
-	got := count_isolated(grid, width, height)
+	grid := parse_data(data)
+	draw_pattern(grid)
+	got := count_isolated(grid)
 	want := 27
 
 	if got != want {
@@ -30,10 +30,10 @@ func Test2(t *testing.T) {
 		"vertical-offsets=11011",
 	}
 
-	width, height, h_offsets, v_offsets := parse_data(data)
-	grid := draw_pattern(width, height, h_offsets, v_offsets)
-	colour_in(grid, width, height)
-	got := count_isolated(grid, width, height)
+	grid := parse_data(data)
+	draw_pattern(grid)
+	colour_in(grid)
+	got := count_isolated(grid)
 
 	want := 15
 
@@ -50,10 +50,10 @@ func Test3(t *testing.T) {
 		"vertical-offsets=001101",
 	}
 
-	width, height, h_offsets, v_offsets := parse_data(data)
-	grid := draw_pattern(width, height, h_offsets, v_offsets)
-	colour_in(grid, width, height)
-	got := count_isolated(grid, width, height)
+	grid := parse_data(data)
+	draw_pattern(grid)
+	colour_in(grid)
+	got := count_isolated(grid)
 
 	want := 7
 
@@ -70,10 +70,10 @@ func Test4(t *testing.T) {
 		"vertical-offsets=110100001110111011101000001111",
 	}
 
-	width, height, h_offsets, v_offsets := parse_data(data)
-	grid := draw_pattern(width, height, h_offsets, v_offsets)
-	colour_in(grid, width, height)
-	got := count_isolated(grid, width, height)
+	grid := parse_data(data)
+	draw_pattern(grid)
+	colour_in(grid)
+	got := count_isolated(grid)
 
 	want := 269
 
