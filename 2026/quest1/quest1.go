@@ -12,7 +12,7 @@ func next_square(n int) int {
 	if sqrt == floor {
 		return n
 	}
-	floor += 1
+	floor++
 	return int(floor * floor)
 }
 
@@ -33,7 +33,7 @@ func next_frame(n int) int {
 	if frame_no == floor {
 		return n
 	}
-	floor += 1
+	floor++
 	return int(floor*4 + 4)
 }
 
@@ -41,6 +41,30 @@ func pines_needed_frame(pines []int) int {
 	needed := 0
 	for _, n := range pines {
 		needed += next_frame(n) - n
+	}
+	return needed
+}
+
+func next_square_empty_centre(n int) int {
+	if n <= 8 {
+		return 8
+	}
+	sqrt := math.Sqrt(float64(n + 1))
+	floor := float64(int(sqrt))
+	if int(floor)%2 == 1 && sqrt == floor {
+		return n
+	}
+	floor++
+	if int(floor)%2 == 0 {
+		floor++
+	}
+	return int(floor*floor) - 1
+}
+
+func pines_needed_square_empty_centre(pines []int) int {
+	needed := 0
+	for _, n := range pines {
+		needed += next_square_empty_centre(n) - n
 	}
 	return needed
 }
@@ -55,6 +79,9 @@ func Run() {
 	pines = loader.GetCSVInts()[0]
 	part2 := pines_needed_frame(pines)
 
-	part3 := -1
+	loader.Part = 3
+	pines = loader.GetCSVInts()[0]
+	part3 := pines_needed_square_empty_centre(pines)
+
 	fmt.Printf("%d %d %d\n", part1, part2, part3)
 }
