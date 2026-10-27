@@ -7,7 +7,7 @@ import (
 func Test1(t *testing.T) {
 	pines := []int{3, 11, 12, 16, 24, 25}
 
-	got := pines_needed(pines)
+	got := pines_needed(pines, next_square)
 	want := 11
 
 	if got != want {
@@ -18,7 +18,7 @@ func Test1(t *testing.T) {
 func Test2(t *testing.T) {
 	pines := []int{3, 11, 12, 16, 24, 25}
 
-	got := pines_needed_frame(pines)
+	got := pines_needed(pines, next_frame)
 	want := 9
 
 	if got != want {
@@ -29,7 +29,7 @@ func Test2(t *testing.T) {
 func Test3(t *testing.T) {
 	pines := []int{3, 11, 12, 16, 24, 25}
 
-	got := pines_needed_square_empty_centre(pines)
+	got := pines_needed(pines, next_square_empty_centre)
 	want := 61
 
 	if got != want {

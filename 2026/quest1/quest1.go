@@ -16,14 +16,6 @@ func next_square(n int) int {
 	return int(floor * floor)
 }
 
-func pines_needed(pines []int) int {
-	needed := 0
-	for _, n := range pines {
-		needed += next_square(n) - n
-	}
-	return needed
-}
-
 func next_frame(n int) int {
 	if n <= 8 {
 		return 8
@@ -35,14 +27,6 @@ func next_frame(n int) int {
 	}
 	floor++
 	return int(floor*4 + 4)
-}
-
-func pines_needed_frame(pines []int) int {
-	needed := 0
-	for _, n := range pines {
-		needed += next_frame(n) - n
-	}
-	return needed
 }
 
 func next_square_empty_centre(n int) int {
@@ -61,27 +45,26 @@ func next_square_empty_centre(n int) int {
 	return int(floor*floor) - 1
 }
 
-func pines_needed_square_empty_centre(pines []int) int {
+func pines_needed(pines []int, fn func(int) int) int {
 	needed := 0
 	for _, n := range pines {
-		needed += next_square_empty_centre(n) - n
+		needed += fn(n) - n
 	}
 	return needed
 }
-
 func Run() {
 	loader.Event, loader.Quest, loader.Part = "2026", 1, 1
 
 	pines := loader.GetCSVInts()[0]
-	part1 := pines_needed(pines)
+	part1 := pines_needed(pines, next_square)
 
 	loader.Part = 2
 	pines = loader.GetCSVInts()[0]
-	part2 := pines_needed_frame(pines)
+	part2 := pines_needed(pines, next_frame)
 
 	loader.Part = 3
 	pines = loader.GetCSVInts()[0]
-	part3 := pines_needed_square_empty_centre(pines)
+	part3 := pines_needed(pines, next_square_empty_centre)
 
 	fmt.Printf("%d %d %d\n", part1, part2, part3)
 }
