@@ -4,27 +4,7 @@ import (
 	"fmt"
 	"os"
 	"quest1"
-/*
-	"quest10"
-	"quest11"
-	"quest12"
-	"quest13"
-	"quest14"
-	"quest15"
-	"quest16"
-	"quest17"
-	"quest18"
-	"quest19"
 	"quest2"
-	"quest20"
-	"quest3"
-	"quest4"
-	"quest5"
-	"quest6"
-	"quest7"
-	"quest8"
-	"quest9"
-*/
 	"strconv"
 )
 
@@ -37,9 +17,9 @@ func main() {
 		switch part {
 		case 1:
 			quest1.Run()
-		/*
 		case 2:
 			quest2.Run()
+		/*
 		case 3:
 			quest3.Run()
 		case 4:
@@ -81,9 +61,9 @@ func main() {
 	} else {
 		fmt.Println("Quest 1")
 		quest1.Run()
-		/*
 		fmt.Println("Quest 2")
 		quest2.Run()
+		/*
 		fmt.Println("Quest 3")
 		quest3.Run()
 		fmt.Println("Quest 4")
