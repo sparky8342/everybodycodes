@@ -9,15 +9,17 @@ import (
 
 type pair [2]int
 
-func find_missing_rule(rules map[pair]bool, max int) (int, int) {
+func find_missing_rules(rules map[pair]bool, max int) []pair {
+	missing := []pair{}
 	for a := 1; a <= max; a++ {
 		for b := a + 1; b <= max; b++ {
-			if _, ok := rules[pair{a, b}]; !ok {
-				return a, b
+			rule := pair{a, b}
+			if _, ok := rules[rule]; !ok {
+				missing = append(missing, rule)
 			}
 		}
 	}
-	return -1, -1
+	return missing
 }
 
 func arrange_alloys(line string) int {
@@ -52,27 +54,31 @@ func arrange_alloys(line string) int {
 	expected_rules *= 2
 
 	if len(rules) < expected_rules {
-		a, b := find_missing_rule(rules, max)
+		missing_rules := find_missing_rules(rules, max)
+		fmt.Println(missing_rules)
 
-		var val int
-		var rule pair
-		var order bool
-		for rule, order = range rules {
-			if rule[0] == a {
-				val = rule[1]
-				break
+	outer:
+		for len(missing_rules) > 0 {
+			missing_rule := missing_rules[0]
+			missing_rules = missing_rules[1:]
+
+			var val int
+			var rule pair
+			var order bool
+			for rule, order = range rules {
+				if rule[0] == missing_rule[0] {
+					val = rule[1]
+
+					if val, ok := rules[pair{val, missing_rule[1]}]; ok {
+						if val == order {
+							rules[missing_rule] = order
+							rules[pair{missing_rule[1], missing_rule[0]}] = !order
+							continue outer
+						}
+					}
+				}
 			}
-		}
-
-		order2 := rules[pair{val, b}]
-
-		if order == order2 {
-			rules[pair{a, b}] = order
-			rules[pair{b, a}] = !order
-		} else {
-			fmt.Println("NOT MATCHING") 
-			// this didn't happen? my thought is if it did,
-			// a matching pair must be found instead
+			missing_rules = append(missing_rules, missing_rule)
 		}
 	}
 
@@ -111,7 +117,8 @@ func Run() {
 	part2 := arrange_groups(data)
 
 	loader.Part = 3
-	part3 := -1
+	data = loader.GetStrings()
+	part3 := arrange_groups(data)
 
 	fmt.Printf("%d %d %d\n", part1, part2, part3)
 }

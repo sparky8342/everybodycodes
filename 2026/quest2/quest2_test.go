@@ -33,3 +33,18 @@ func Test2(t *testing.T) {
 		t.Errorf("got %d, wanted %d", got, want)
 	}
 }
+
+func Test3(t *testing.T) {
+	data := []string{
+		"3>1 1>2 1<5 4<2 3>5",
+		"2>1 2<5 3>1 4>3 2<4 5<3",
+		"5>1 3<4 1>2 3>5",
+	}
+
+	got := arrange_groups(data)
+	want := 122157
+
+	if got != want {
+		t.Errorf("got %d, wanted %d", got, want)
+	}
+}
