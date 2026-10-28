@@ -7,9 +7,23 @@ import (
 	"strings"
 )
 
-func arrange_alloys(line string) int {
-	rules := map[int]bool{}
+type pair [2]int
 
+func find_missing_rule(rules map[pair]bool, max int) (int, int) {
+	for a := 1; a <= max; a++ {
+		for b := a + 1; b <= max; b++ {
+			if _, ok := rules[pair{a, b}]; !ok {
+				return a, b
+			}
+		}
+	}
+	return -1, -1
+}
+
+func arrange_alloys(line string) int {
+	rules := map[pair]bool{}
+
+	max := 1
 	for _, rule := range strings.Split(line, " ") {
 		a := int(rule[0] - '0')
 		b := int(rule[2] - '0')
@@ -20,18 +34,59 @@ func arrange_alloys(line string) int {
 			result = true
 		}
 
-		rules[a*10+b] = result
-		rules[b*10+a] = !result
+		rules[pair{a, b}] = result
+		rules[pair{b, a}] = !result
+
+		if a > max {
+			max = a
+		}
+		if b > max {
+			max = b
+		}
 	}
 
-	alloys := []int{1, 2, 3, 4, 5}
+	expected_rules := 0
+	for i := 1; i < max; i++ {
+		expected_rules += i
+	}
+	expected_rules *= 2
+
+	if len(rules) < expected_rules {
+		a, b := find_missing_rule(rules, max)
+
+		var val int
+		var rule pair
+		var order bool
+		for rule, order = range rules {
+			if rule[0] == a {
+				val = rule[1]
+				break
+			}
+		}
+
+		order2 := rules[pair{val, b}]
+
+		if order == order2 {
+			rules[pair{a, b}] = order
+			rules[pair{b, a}] = !order
+		} else {
+			fmt.Println("NOT MATCHING") 
+			// this didn't happen? my thought is if it did,
+			// a matching pair must be found instead
+		}
+	}
+
+	alloys := []int{}
+	for i := 1; i <= max; i++ {
+		alloys = append(alloys, i)
+	}
 	sort.Slice(alloys, func(i, j int) bool {
-		return rules[alloys[i]*10+alloys[j]]
+		return rules[pair{alloys[i], alloys[j]}]
 	})
 
 	checksum := 0
-	for i := 0; i < 5; i++ {
-		checksum = checksum*10 + alloys[i]
+	for _, alloy := range alloys {
+		checksum = checksum*10 + alloy
 	}
 
 	return checksum
@@ -52,7 +107,8 @@ func Run() {
 	part1 := arrange_groups(data)
 
 	loader.Part = 2
-	part2 := -1
+	data = loader.GetStrings()
+	part2 := arrange_groups(data)
 
 	loader.Part = 3
 	part3 := -1
