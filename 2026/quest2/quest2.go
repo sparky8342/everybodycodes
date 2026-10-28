@@ -55,19 +55,17 @@ func arrange_alloys(line string) int {
 
 	if len(rules) < expected_rules {
 		missing_rules := find_missing_rules(rules, max)
-		fmt.Println(missing_rules)
 
 	outer:
 		for len(missing_rules) > 0 {
 			missing_rule := missing_rules[0]
 			missing_rules = missing_rules[1:]
 
-			var val int
 			var rule pair
 			var order bool
 			for rule, order = range rules {
 				if rule[0] == missing_rule[0] {
-					val = rule[1]
+					val := rule[1]
 
 					if val, ok := rules[pair{val, missing_rule[1]}]; ok {
 						if val == order {
@@ -78,6 +76,7 @@ func arrange_alloys(line string) int {
 					}
 				}
 			}
+
 			missing_rules = append(missing_rules, missing_rule)
 		}
 	}
