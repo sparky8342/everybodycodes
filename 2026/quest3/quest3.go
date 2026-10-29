@@ -15,7 +15,7 @@ func pow(n, p int) int {
 }
 
 func score(bases []int, number []int) int {
-	score := number[len(number)-1]
+	sc := number[len(number)-1]
 	p := 1
 	var base_pos int
 	if len(bases) == 1 {
@@ -24,14 +24,14 @@ func score(bases []int, number []int) int {
 		base_pos = len(bases) - 2
 	}
 	for i := len(number) - 2; i >= 0; i-- {
-		score += pow(bases[base_pos], p) * number[i]
+		sc += pow(bases[base_pos], p) * number[i]
 		p++
 		base_pos--
 		if base_pos == -1 {
 			base_pos = len(bases) - 1
 		}
 	}
-	return score
+	return sc
 }
 
 func add1(num []int) []int {
