@@ -11,7 +11,7 @@ func Test1(t *testing.T) {
 		"ISO-1111 1111",
 	}
 
-	got := score(data)
+	got := total_score(data)
 	want := 1478
 
 	if got != want {
@@ -30,8 +30,27 @@ func Test2(t *testing.T) {
 		"ISO-2341 945",
 	}
 
-	got := score(data)
+	got := total_score(data)
 	want := 1161463
+
+	if got != want {
+		t.Errorf("got %d, wanted %d", got, want)
+	}
+}
+
+func Test3(t *testing.T) {
+	data := []string{
+		"ISO2-3 23",
+		"ISO2-61 149",
+		"ISO2-978 99",
+		"ISO2-5887 5923",
+		"ISO2-76988 123749",
+		"ISO2-435657 929977",
+		"ISO2-3949 870737",
+	}
+
+	got := total_score(data)
+	want := 50987
 
 	if got != want {
 		t.Errorf("got %d, wanted %d", got, want)
