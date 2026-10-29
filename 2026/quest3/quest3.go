@@ -7,11 +7,13 @@ import (
 )
 
 func pow(n, p int) int {
-	ans := n
-	for i := 1; i < p; i++ {
-		ans *= n
+	if p == 0 {
+		return 1
+	} else if p%2 == 0 {
+		return pow(n*n, p/2)
+	} else {
+		return n * pow(n, p-1)
 	}
-	return ans
 }
 
 func score(bases []int, number []int) int {
