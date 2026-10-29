@@ -9,8 +9,9 @@ import (
 )
 
 type Warrior struct {
-	id   int
-	time int
+	id    int
+	parts int
+	time  int
 }
 
 func parse_data(data []string) []*Warrior {
@@ -32,6 +33,7 @@ func parse_data(data []string) []*Warrior {
 		}
 
 		warriors[id].time += time
+		warriors[id].parts++
 	}
 
 	sl := []*Warrior{}
@@ -44,7 +46,11 @@ func parse_data(data []string) []*Warrior {
 
 func order_warriors(warriors []*Warrior) int {
 	sort.Slice(warriors, func(i, j int) bool {
-		return warriors[i].time < warriors[j].time
+		if warriors[i].parts == warriors[j].parts {
+			return warriors[i].time < warriors[j].time
+		} else {
+			return warriors[i].parts > warriors[j].parts
+		}
 	})
 	checksum := 0
 	for i := 0; i < len(warriors); i++ {
@@ -61,7 +67,9 @@ func Run() {
 	part1 := order_warriors(warriors)
 
 	loader.Part = 2
-	part2 := -1
+	data = loader.GetStrings()
+	warriors = parse_data(data)
+	part2 := order_warriors(warriors)
 
 	loader.Part = 3
 	part3 := -1
