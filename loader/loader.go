@@ -37,6 +37,22 @@ func GetStrings() []string {
 	return strings.Split(string(data), "\n")
 }
 
+func GetByteRows() [][]byte {
+	data, err := os.ReadFile(get_filename())
+	if err != nil {
+		panic(err)
+	}
+	if data[len(data)-1] == '\n' {
+		data = data[:len(data)-1]
+	}
+	rows := strings.Split(string(data), "\n")
+	byte_rows := make([][]byte, len(rows))
+	for i := 0; i < len(rows); i++ {
+		byte_rows[i] = []byte(rows[i])
+	}
+	return byte_rows
+}
+
 func GetOneInt() int {
 	data, err := os.ReadFile(get_filename())
 	if err != nil {
