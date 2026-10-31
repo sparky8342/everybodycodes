@@ -5,7 +5,7 @@ import (
 )
 
 func Test1(t *testing.T) {
-	grid := [][]byte{
+	grid = [][]byte{
 		[]byte("010100100100001101000"),
 		[]byte("111101001000001110000"),
 		[]byte("101111011000101010011"),
@@ -19,7 +19,7 @@ func Test1(t *testing.T) {
 		[]byte("001100101110010010000"),
 	}
 
-	got := reconstruct(grid)
+	got := reconstruct()
 	want := 137
 
 	if got != want {
@@ -28,7 +28,7 @@ func Test1(t *testing.T) {
 }
 
 func Test2(t *testing.T) {
-	grid := [][]byte{
+	grid = [][]byte{
 		[]byte("010100100100001101000"),
 		[]byte("111101001000001110000"),
 		[]byte("101111011000101010011"),
@@ -42,7 +42,7 @@ func Test2(t *testing.T) {
 		[]byte("001100101110010010000"),
 	}
 
-	got := reconstruct_with_sand(grid)
+	got := reconstruct_with_sand()
 	want := 69
 
 	if got != want {
@@ -51,7 +51,7 @@ func Test2(t *testing.T) {
 }
 
 func Test3(t *testing.T) {
-	grid := [][]byte{
+	grid = [][]byte{
 		[]byte("010100100100001101000"),
 		[]byte("111101001000001110000"),
 		[]byte("101111011000101010011"),
@@ -65,7 +65,7 @@ func Test3(t *testing.T) {
 		[]byte("001100101110010010000"),
 	}
 
-	got := reconstruct_with_sand_and_trees(grid)
+	got := reconstruct_with_sand_and_trees()
 	want := 14
 
 	if got != want {
