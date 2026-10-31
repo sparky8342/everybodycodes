@@ -26,3 +26,26 @@ func Test1(t *testing.T) {
 		t.Errorf("got %d, wanted %d", got, want)
 	}
 }
+
+func Test2(t *testing.T) {
+	grid := [][]byte{
+		[]byte("010100100100001101000"),
+		[]byte("111101001000001110000"),
+		[]byte("101111011000101010011"),
+		[]byte("001000101010000100000"),
+		[]byte("000110100110011001100"),
+		[]byte("000001110111111000000"),
+		[]byte("101100010101011110000"),
+		[]byte("001101100000001010011"),
+		[]byte("001001001111010001001"),
+		[]byte("100011011110011010101"),
+		[]byte("001100101110010010000"),
+	}
+
+	got := reconstruct_with_sand(grid)
+	want := 69
+
+	if got != want {
+		t.Errorf("got %d, wanted %d", got, want)
+	}
+}
