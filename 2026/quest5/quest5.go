@@ -12,6 +12,18 @@ type Pos struct {
 
 var height, width int
 
+var stamp [][]byte
+
+func init() {
+	stamp = [][]byte{
+		[]byte(".+++."),
+		[]byte("+++++"),
+		[]byte("++X++"),
+		[]byte("+++++"),
+		[]byte(".+++."),
+	}
+}
+
 func in_bounds(x int, y int) bool {
 	return !(x < 0 || x >= width || y < 0 || y >= height)
 }
@@ -64,6 +76,23 @@ func sand_count(grid [][]byte, pos Pos) int {
 			n_x := pos.x + dx
 			n_y := pos.y + dy
 			if in_bounds(n_x, n_y) && grid[n_y][n_x] == '=' {
+				count++
+			}
+		}
+	}
+	return count
+}
+
+func tree_count(grid [][]byte, pos Pos) int {
+	count := 0
+	for dy := -1; dy <= 1; dy++ {
+		for dx := -1; dx <= 1; dx++ {
+			if dx == 0 && dy == 0 {
+				continue
+			}
+			n_x := pos.x + dx
+			n_y := pos.y + dy
+			if in_bounds(n_x, n_y) && grid[n_y][n_x] == '@' {
 				count++
 			}
 		}
@@ -164,6 +193,58 @@ func reconstruct_with_sand(grid [][]byte) int {
 	return len(sand)
 }
 
+func stamp_fits(grid [][]byte, x int, y int) bool {
+	for sy := 0; sy < 5; sy++ {
+		for sx := 0; sx < 5; sx++ {
+			if stamp[sy][sx] == '.' {
+				continue
+			} else if stamp[sy][sx] == '+' {
+				if !(grid[y+sy][x+sx] == '#' || grid[y+sy][x+sx] == '@') {
+					return false
+				}
+			} else if stamp[sy][sx] == 'X' {
+				if grid[y+sy][x+sx] != '#' {
+					return false
+				}
+			}
+		}
+	}
+	return true
+}
+
+func reconstruct_with_sand_and_trees(grid [][]byte) int {
+	reconstruct_with_sand(grid)
+
+	trees := map[Pos]struct{}{}
+	for y := 0; y < height-5; y++ {
+		for x := 0; x < width-5; x++ {
+			if stamp_fits(grid, x, y) {
+				tree := Pos{x: x + 2, y: y + 2}
+				trees[tree] = struct{}{}
+				grid[tree.y][tree.x] = '@'
+			}
+		}
+	}
+
+	for i := 0; i <= 1; i++ {
+		new_trees := map[Pos]struct{}{}
+		for tree := range trees {
+			neighbours := get_neighbours(grid, tree)
+			for _, neighbour := range neighbours {
+				if tree_count(grid, neighbour) >= 4 && sand_count(grid, neighbour) == 0 {
+					new_trees[neighbour] = struct{}{}
+				}
+			}
+		}
+		for tree := range new_trees {
+			grid[tree.y][tree.x] = '@'
+			trees[tree] = struct{}{}
+		}
+	}
+
+	return len(trees)
+}
+
 func Run() {
 	loader.Event, loader.Quest, loader.Part = "2026", 5, 1
 
@@ -175,7 +256,8 @@ func Run() {
 	part2 := reconstruct_with_sand(grid)
 
 	loader.Part = 3
-	part3 := -1
+	grid = loader.GetByteRows()
+	part3 := reconstruct_with_sand_and_trees(grid)
 
 	fmt.Printf("%d %d %d\n", part1, part2, part3)
 }
