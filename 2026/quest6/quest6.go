@@ -71,6 +71,24 @@ func dfs_up(ingredients Ingredients, name string, current_name string, products_
 	}
 }
 
+func find_products_with_multiple(ingredients Ingredients, names []string) int {
+	counts := map[string]int{}
+	for _, name := range names {
+		products_found := map[string]struct{}{}
+		dfs_up(ingredients, name, name, products_found)
+		for product := range products_found {
+			counts[product]++
+		}
+	}
+	amount := 0
+	for _, count := range counts {
+		if count > 1 {
+			amount++
+		}
+	}
+	return amount
+}
+
 func Run() {
 	loader.Event, loader.Quest, loader.Part = "2026", 6, 1
 
@@ -84,7 +102,9 @@ func Run() {
 	part2 := find_no_products(ingredients, "NULL")
 
 	loader.Part = 3
-	part3 := -1
+	data = loader.GetStrings()
+	ingredients = parse_data(data)
+	part3 := find_products_with_multiple(ingredients, []string{"NULLv1", "NULLv2", "NULLv3"})
 
 	fmt.Printf("%d %d %d\n", part1, part2, part3)
 }
