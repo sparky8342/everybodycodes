@@ -42,7 +42,7 @@ func parse_data(data []string) map[int]*Cloud {
 	return clouds
 }
 
-func charge(clouds map[int]*Cloud) int {
+func charge(clouds map[int]*Cloud, pulse int) int {
 	start := 1
 	for id, cloud := range clouds {
 		if len(cloud.connections) > len(clouds[start].connections) {
@@ -50,14 +50,15 @@ func charge(clouds map[int]*Cloud) int {
 		}
 	}
 
-	pulse := 5
-	targets := []int{start}
+	targets := map[int]int{start: 1}
 
 	for pulse > 0 {
-		new_targets := []int{}
-		for _, target := range targets {
-			clouds[target].energy += pulse
-			new_targets = append(new_targets, clouds[target].connections...)
+		new_targets := map[int]int{}
+		for target, amount := range targets {
+			clouds[target].energy += amount * pulse
+			for _, connection := range clouds[target].connections {
+				new_targets[connection] += amount
+			}
 		}
 		targets = new_targets
 		pulse--
@@ -75,10 +76,12 @@ func Run() {
 
 	data := loader.GetStrings()
 	clouds := parse_data(data)
-	part1 := charge(clouds)
+	part1 := charge(clouds, 5)
 
 	loader.Part = 2
-	part2 := -1
+	data = loader.GetStrings()
+	clouds = parse_data(data)
+	part2 := charge(clouds, 10)
 
 	loader.Part = 3
 	part3 := -1
