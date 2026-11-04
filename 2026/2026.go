@@ -10,6 +10,7 @@ import (
 	"quest5"
 	"quest6"
 	"quest7"
+	"quest8"
 	"strconv"
 )
 
@@ -34,9 +35,9 @@ func main() {
 			quest6.Run()
 		case 7:
 			quest7.Run()
+		case 8:
+			quest8.Run()
 			/*
-				case 8:
-					quest8.Run()
 				case 9:
 					quest9.Run()
 				case 10:
@@ -78,9 +79,9 @@ func main() {
 		quest6.Run()
 		fmt.Println("Quest 7")
 		quest7.Run()
+		fmt.Println("Quest 8")
+		quest8.Run()
 		/*
-			fmt.Println("Quest 8")
-			quest8.Run()
 			fmt.Println("Quest 9")
 			quest9.Run()
 			fmt.Println("Quest 10")
