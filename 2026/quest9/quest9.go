@@ -65,23 +65,36 @@ func growth_time(plants []Plant) int {
 	return total
 }
 
+func max_branch(branches map[int]int) int {
+	max := 0
+	for branch := range branches {
+		if branch > max {
+			max = branch
+		}
+	}
+	return max
+}
+
 func growth_leaves_limit(plant Plant) int {
 	time := 1
-	branches := []int{1}
+	branches := map[int]int{1: 1}
 	leaves := 1
 
 	for leaves < plant.limit {
-		new_branches := []int{}
-		for i := 0; i < len(branches); i++ {
-			branches[i]++
-			if branches[i] == plant.growth {
-				branches[i] /= 2
-				new_branches = append(new_branches, branches[i], 1)
-				leaves++
+		step := plant.growth - max_branch(branches)
+		new_branches := map[int]int{}
+		for branch_len, amount := range branches {
+			branch_len += step
+			if branch_len == plant.growth {
+				new_branches[branch_len/2] += amount * 2
+				new_branches[1] += amount
+				leaves += amount
+			} else {
+				new_branches[branch_len] += amount
 			}
 		}
-		branches = append(branches, new_branches...)
-		time++
+		branches = new_branches
+		time += step
 	}
 
 	return time
@@ -108,7 +121,9 @@ func Run() {
 	part2 := growth_time_leaves_limit(plants)
 
 	loader.Part = 3
-	part3 := -1
+	data = loader.GetStrings()
+	plants = parse_data(data)
+	part3 := growth_time_leaves_limit(plants)
 
 	fmt.Printf("%d %d %d\n", part1, part2, part3)
 }
