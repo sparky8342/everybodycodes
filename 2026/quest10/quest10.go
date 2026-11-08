@@ -11,10 +11,11 @@ type Pos struct {
 }
 
 type Ghost struct {
-	x  int
-	y  int
-	dx int
-	dy int
+	x          int
+	y          int
+	dx         int
+	dy         int
+	collisions int
 }
 
 func find_ghosts(grid []string) []*Ghost {
@@ -40,7 +41,7 @@ func find_ghosts(grid []string) []*Ghost {
 	return ghosts
 }
 
-func move_ghosts_one_round(grid []string, ghosts []*Ghost) int {
+func move_ghosts_one_round(grid []string, ghosts []*Ghost, collisions_limit int) ([]*Ghost, int) {
 	collisions := 0
 	moved_to := map[Pos][]*Ghost{}
 
@@ -56,15 +57,18 @@ func move_ghosts_one_round(grid []string, ghosts []*Ghost) int {
 				ghost.dx, ghost.dy = 0, -1
 			}
 			collisions++
+			ghost.collisions++
 		} else {
 			ghost.y += ghost.dy
 			ghost.x += ghost.dx
 		}
-		pos := Pos{x: ghost.x, y: ghost.y}
-		if _, ok := moved_to[pos]; !ok {
-			moved_to[pos] = []*Ghost{ghost}
-		} else {
-			moved_to[pos] = append(moved_to[pos], ghost)
+		if ghost.collisions < collisions_limit {
+			pos := Pos{x: ghost.x, y: ghost.y}
+			if _, ok := moved_to[pos]; !ok {
+				moved_to[pos] = []*Ghost{ghost}
+			} else {
+				moved_to[pos] = append(moved_to[pos], ghost)
+			}
 		}
 	}
 
@@ -74,19 +78,40 @@ func move_ghosts_one_round(grid []string, ghosts []*Ghost) int {
 			for _, ghost := range ghosts {
 				ghost.dx *= -1
 				ghost.dy *= -1
+				ghost.collisions++
 			}
 		}
 	}
 
-	return collisions
+	i := 0
+	for i < len(ghosts) {
+		if ghosts[i].collisions >= collisions_limit {
+			ghosts = append(ghosts[:i], ghosts[i+1:]...)
+		} else {
+			i++
+		}
+	}
+
+	return ghosts, collisions
 }
 
 func move_ghosts(grid []string, ghosts []*Ghost) int {
 	collisions := 0
 	for i := 0; i < 10; i++ {
-		collisions += move_ghosts_one_round(grid, ghosts)
+		var round_collisions int
+		ghosts, round_collisions = move_ghosts_one_round(grid, ghosts, 100)
+		collisions += round_collisions
 	}
 	return collisions
+}
+
+func move_ghosts_until_gone(grid []string, ghosts []*Ghost, collision_limit int) int {
+	rounds := 0
+	for len(ghosts) > 0 {
+		ghosts, _ = move_ghosts_one_round(grid, ghosts, collision_limit)
+		rounds++
+	}
+	return rounds
 }
 
 func Run() {
@@ -97,7 +122,9 @@ func Run() {
 	part1 := move_ghosts(grid, ghosts)
 
 	loader.Part = 2
-	part2 := -1
+	grid = loader.GetStrings()
+	ghosts = find_ghosts(grid)
+	part2 := move_ghosts_until_gone(grid, ghosts, 10000)
 
 	loader.Part = 3
 	part3 := -1

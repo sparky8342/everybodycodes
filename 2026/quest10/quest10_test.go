@@ -27,3 +27,51 @@ func Test1(t *testing.T) {
 		t.Errorf("got %d, wanted %d", got, want)
 	}
 }
+
+func Test2(t *testing.T) {
+	grid := []string{
+		"###########",
+		"#####.#####",
+		"###.....###",
+		"##.......##",
+		"##.>>.<<.##",
+		"#v...>...v#",
+		"##...v...##",
+		"##.......##",
+		"###.....###",
+		"#####.#####",
+		"###########",
+	}
+
+	ghosts := find_ghosts(grid)
+	got := move_ghosts_until_gone(grid, ghosts, 10)
+	want := 53
+
+	if got != want {
+		t.Errorf("got %d, wanted %d", got, want)
+	}
+}
+
+func Test3(t *testing.T) {
+	grid := []string{
+		"###########",
+		"#####.#####",
+		"###.....###",
+		"##.......##",
+		"##.>>.<<.##",
+		"#v...>...v#",
+		"##...v...##",
+		"##.......##",
+		"###.....###",
+		"#####.#####",
+		"###########",
+	}
+
+	ghosts := find_ghosts(grid)
+	got := move_ghosts_until_gone(grid, ghosts, 10000)
+	want := 50000
+
+	if got != want {
+		t.Errorf("got %d, wanted %d", got, want)
+	}
+}
