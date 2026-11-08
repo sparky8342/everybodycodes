@@ -129,15 +129,6 @@ func jump(grid []string, ghosts []*Ghost, collision_limit int, rounds int, state
 	}
 	rounds += round_diff * repeats
 
-	i := 0
-	for i < len(ghosts) {
-		if ghosts[i].collisions >= collision_limit {
-			ghosts = append(ghosts[:i], ghosts[i+1:]...)
-		} else {
-			i++
-		}
-	}
-
 	return ghosts, rounds
 }
 
