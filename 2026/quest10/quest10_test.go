@@ -44,7 +44,7 @@ func Test2(t *testing.T) {
 	}
 
 	ghosts := find_ghosts(grid)
-	got := move_ghosts_until_gone(grid, ghosts, 10)
+	got := move_ghosts_until_gone(grid, ghosts, 10, 0)
 	want := 53
 
 	if got != want {
@@ -68,8 +68,44 @@ func Test3(t *testing.T) {
 	}
 
 	ghosts := find_ghosts(grid)
-	got := move_ghosts_until_gone(grid, ghosts, 10000)
+	got := move_ghosts_until_gone(grid, ghosts, 10000, 0)
 	want := 50000
+
+	if got != want {
+		t.Errorf("got %d, wanted %d", got, want)
+	}
+}
+
+func Test4(t *testing.T) {
+	grid := []string{
+		"#######################",
+		"###########.###########",
+		"#######.^>.^.<^.#######",
+		"#####..<.>.v^>>^^<#####",
+		"####..v<^v.>.>v..^.####",
+		"###.................###",
+		"###.................###",
+		"##.......<...<.<....>##",
+		"##...v....>....v.v<.^##",
+		"##........###........##",
+		"##v......#####.......##",
+		"#.<......#####......>.#",
+		"##.......#####.......##",
+		"##........###........##",
+		"##...................##",
+		"##...................##",
+		"###.................###",
+		"###.................###",
+		"####...............####",
+		"#####.............#####",
+		"#######....v....#######",
+		"###########.###########",
+		"#######################",
+	}
+
+	ghosts := find_ghosts(grid)
+	got := move_ghosts_until_gone(grid, ghosts, 1000000000000, 0)
+	want := 13314695352588
 
 	if got != want {
 		t.Errorf("got %d, wanted %d", got, want)
