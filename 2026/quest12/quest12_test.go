@@ -1,0 +1,23 @@
+package quest12
+
+import (
+	"testing"
+)
+
+func Test1(t *testing.T) {
+	grid := [][]byte{
+		[]byte("........#."),
+		[]byte(".##......."),
+		[]byte(".##..####."),
+		[]byte(".##..####."),
+		[]byte(".....####."),
+		[]byte(".###......"),
+	}
+
+	got := spell_count(grid)
+	want := 7
+
+	if got != want {
+		t.Errorf("got %d, wanted %d", got, want)
+	}
+}
