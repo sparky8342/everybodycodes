@@ -17,7 +17,7 @@ type QueueEntry struct {
 	steps int
 }
 
-func parse_data(data []string) []Portal {
+func parse_data(data []string, neighbours int) []Portal {
 	max_portal, err := strconv.Atoi(strings.Split(data[0], " ")[1])
 	if err != nil {
 		panic(err)
@@ -28,12 +28,23 @@ func parse_data(data []string) []Portal {
 	for i := 1; i <= max_portal; i++ {
 		portals[i] = Portal{id: i}
 	}
-	portals[1].connections = []int{max_portal, 2}
-	for i := 2; i < max_portal; i++ {
-		portals[i].connections = []int{i - 1, i + 1}
-	}
-	portals[max_portal].connections = []int{max_portal - 1, 1}
 
+	for i := 1; i <= max_portal; i++ {
+		for j := i - neighbours; j <= i+neighbours; j++ {
+			if j < 1 {
+				portals[i].connections = append(portals[i].connections, j+max_portal)
+			} else if j > max_portal {
+				portals[i].connections = append(portals[i].connections, j-max_portal)
+			} else {
+				portals[i].connections = append(portals[i].connections, j)
+			}
+		}
+	}
+
+	return portals
+}
+
+func add_shortcuts(portals []Portal, data []string) {
 	for _, line := range data[2:] {
 		parts := strings.Split(line, " ")
 		from, err := strconv.Atoi(parts[0])
@@ -47,27 +58,39 @@ func parse_data(data []string) []Portal {
 		portals[from].connections = append(portals[from].connections, to)
 		portals[to].connections = append(portals[to].connections, from)
 	}
-
-	return portals
 }
 
-func basic_strain(portals []Portal) int {
-	l := len(portals)
-	n := l / 2
-	strain := n
-	if l%2 == 0 {
-		strain += n
-	}
-	for n > 0 {
-		n--
-		strain += n * 2
-	}
-	return strain * (l - 1)
+func resonance(data []string, neighbours int) int {
+	portals := parse_data(data, neighbours)
+	basic_strain := get_strain(portals)
+	add_shortcuts(portals, data)
+	strain := get_strain(portals)
+	return basic_strain - strain
 }
 
-func resonance(portals []Portal) int {
-	basic_strain := basic_strain(portals)
+func resonance_extra_connection(data []string, neighbours int) int {
+	portals := parse_data(data, neighbours)
+	basic_strain := get_strain(portals)
+	add_shortcuts(portals, data)
 
+	min := 999999
+	for i := 1; i < len(portals)-1; i++ {
+		for j := i + 1; j < len(portals); j++ {
+			portals[i].connections = append(portals[i].connections, j)
+			portals[j].connections = append(portals[j].connections, i)
+			strain := get_strain(portals)
+			if strain < min {
+				min = strain
+			}
+			portals[i].connections = portals[i].connections[:len(portals[i].connections)-1]
+			portals[j].connections = portals[j].connections[:len(portals[j].connections)-1]
+		}
+	}
+
+	return basic_strain - min
+}
+
+func get_strain(portals []Portal) int {
 	strain := 0
 	for i := 1; i < len(portals); i++ {
 		queue := []QueueEntry{QueueEntry{id: i, steps: 0}}
@@ -86,19 +109,18 @@ func resonance(portals []Portal) int {
 			}
 		}
 	}
-
-	return basic_strain - strain
+	return strain
 }
 
 func Run() {
 	loader.Event, loader.Quest, loader.Part = "2026", 11, 1
 
 	data := loader.GetStrings()
-	portals := parse_data(data)
-	part1 := resonance(portals)
+	part1 := resonance(data, 1)
 
 	loader.Part = 2
-	part2 := -1
+	data = loader.GetStrings()
+	part2 := resonance_extra_connection(data, 3)
 
 	loader.Part = 3
 	part3 := -1
