@@ -173,25 +173,46 @@ func resonance_with_crystals(data []string, neighbours int) int {
 }
 
 func get_strain(portals []Portal) int {
-	strain := 0
-	for i := 1; i < len(portals); i++ {
-		queue := []QueueEntry{QueueEntry{id: i, steps: 0}}
-		visited := map[int]struct{}{i: struct{}{}}
-		for len(queue) > 0 {
-			qe := queue[0]
-			queue = queue[1:]
+	l := len(portals)
 
-			strain += qe.steps
+	dist := make([][]int, l)
+	for i := range dist {
+		dist[i] = make([]int, l)
+	}
 
-			for _, connection := range portals[qe.id].connections {
-				if _, ok := visited[connection]; !ok {
-					queue = append(queue, QueueEntry{id: connection, steps: qe.steps + 1})
-					visited[connection] = struct{}{}
+	for i := 1; i < l; i++ {
+		for j := 1; j < l; j++ {
+			if i == j {
+				dist[i][j] = 0
+				continue
+			}
+			dist[i][j] = 99999
+			for _, conn := range portals[i].connections {
+				if conn == j {
+					dist[i][j] = 1
+					break
 				}
 			}
 		}
 	}
-	return strain
+
+	for k := 1; k < l; k++ {
+		for i := 1; i < l; i++ {
+			for j := 1; j < l; j++ {
+				if dist[i][j] > dist[i][k]+dist[k][j] {
+					dist[i][j] = dist[i][k] + dist[k][j]
+				}
+			}
+		}
+	}
+
+	total := 0
+	for i := 0; i < l; i++ {
+		for j := 0; j < l; j++ {
+			total += dist[i][j]
+		}
+	}
+	return total
 }
 
 func Run() {
