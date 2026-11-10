@@ -17,6 +17,47 @@ type QueueEntry struct {
 	steps int
 }
 
+var combos [][]int
+
+func get_combos(taken map[int]struct{}, nums []int, combos *[][]int) {
+	if len(nums) == 8 {
+		*combos = append(*combos, nums)
+		return
+	}
+	if len(nums)%2 == 0 {
+		var smallest int
+		for i := 0; i < 8; i++ {
+			if _, ok := taken[i]; !ok {
+				smallest = i
+				break
+			}
+		}
+		cpy := make([]int, len(nums))
+		copy(cpy, nums)
+		cpy = append(cpy, smallest)
+		taken[smallest] = struct{}{}
+		get_combos(taken, cpy, combos)
+		delete(taken, smallest)
+	} else {
+		for i := 1; i < 8; i++ {
+			if _, ok := taken[i]; !ok {
+				cpy := make([]int, len(nums))
+				copy(cpy, nums)
+				cpy = append(cpy, i)
+				taken[i] = struct{}{}
+				get_combos(taken, cpy, combos)
+				delete(taken, i)
+			}
+		}
+	}
+}
+
+func init() {
+	combos = [][]int{}
+	taken := map[int]struct{}{0: struct{}{}}
+	get_combos(taken, []int{0}, &combos)
+}
+
 func parse_data(data []string, neighbours int) []Portal {
 	max_portal, err := strconv.Atoi(strings.Split(data[0], " ")[1])
 	if err != nil {
@@ -31,7 +72,9 @@ func parse_data(data []string, neighbours int) []Portal {
 
 	for i := 1; i <= max_portal; i++ {
 		for j := i - neighbours; j <= i+neighbours; j++ {
-			if j < 1 {
+			if j == i {
+				continue
+			} else if j < 1 {
 				portals[i].connections = append(portals[i].connections, j+max_portal)
 			} else if j > max_portal {
 				portals[i].connections = append(portals[i].connections, j-max_portal)
@@ -73,7 +116,7 @@ func resonance_extra_connection(data []string, neighbours int) int {
 	basic_strain := get_strain(portals)
 	add_shortcuts(portals, data)
 
-	min := 999999
+	min := basic_strain
 	for i := 1; i < len(portals)-1; i++ {
 		for j := i + 1; j < len(portals); j++ {
 			portals[i].connections = append(portals[i].connections, j)
@@ -84,6 +127,45 @@ func resonance_extra_connection(data []string, neighbours int) int {
 			}
 			portals[i].connections = portals[i].connections[:len(portals[i].connections)-1]
 			portals[j].connections = portals[j].connections[:len(portals[j].connections)-1]
+		}
+	}
+
+	return basic_strain - min
+}
+
+func resonance_with_crystals(data []string, neighbours int) int {
+	portals := parse_data(data, neighbours)
+	basic_strain := get_strain(portals)
+	add_shortcuts(portals, data)
+
+	min := basic_strain
+	interval := len(portals) / 8
+
+	for start := 1; start < len(portals); start++ {
+		new_portals := make([]int, 8)
+		for i := 0; i < 8; i++ {
+			new_portals[i] = start + interval*i
+			if new_portals[i] >= len(portals) {
+				new_portals[i] -= len(portals) - 1
+			}
+		}
+
+		for _, combo := range combos {
+			for j := 0; j < 8; j += 2 {
+				from := new_portals[combo[j]]
+				to := new_portals[combo[j+1]]
+				portals[from].connections = append(portals[from].connections, to)
+				portals[to].connections = append(portals[to].connections, from)
+			}
+
+			strain := get_strain(portals)
+			if strain < min {
+				min = strain
+			}
+			for j := 0; j < 8; j++ {
+				id := new_portals[j]
+				portals[id].connections = portals[id].connections[:len(portals[id].connections)-1]
+			}
 		}
 	}
 
@@ -123,7 +205,8 @@ func Run() {
 	part2 := resonance_extra_connection(data, 3)
 
 	loader.Part = 3
-	part3 := -1
+	data = loader.GetStrings()
+	part3 := resonance_with_crystals(data, 3)
 
 	fmt.Printf("%d %d %d\n", part1, part2, part3)
 }
