@@ -6,17 +6,6 @@ import (
 	"math"
 )
 
-type Pos struct {
-	x      int
-	y      int
-	border int
-}
-
-type Connection struct {
-	a Pos
-	b Pos
-}
-
 func bindings_needed(window []string) int {
 	height := len(window)
 	width := len(window[0])
@@ -41,74 +30,67 @@ func minimum_bindings_needed(window []string) int {
 	height := len(window)
 	width := len(window[0])
 
-	border_shapes := map[byte][]Pos{}
-	connections := map[[2]byte]int{}
-	shape_connections := map[byte]map[byte]struct{}{}
+	num := 1
+	shape_ids := map[byte]int{}
+	for y := 0; y < height; y++ {
+		for x := 0; x < width; x++ {
+			id := window[y][x]
+			if _, ok := shape_ids[id]; !ok {
+				shape_ids[id] = num
+				num++
+			}
+		}
+	}
+	l := len(shape_ids) + 1
+
+	connections := make([][]int, l)
+	for i := 0; i < l; i++ {
+		connections[i] = make([]int, l)
+		for j := 0; j < l; j++ {
+			connections[i][j] = 0
+		}
+	}
 
 	for y := 0; y < height; y++ {
 		for x := 0; x < width; x++ {
 			shape_id := window[y][x]
-			if _, ok := shape_connections[shape_id]; !ok {
-				shape_connections[shape_id] = map[byte]struct{}{}
-			}
 
-			pos := Pos{x: x, y: y}
+			border := 0
 			if x == 0 || x == width-1 {
-				pos.border++
+				border++
 			}
 			if y == 0 || y == height-1 {
-				pos.border++
+				border++
 			}
-			if pos.border > 0 {
-				border_shapes[shape_id] = append(border_shapes[shape_id], pos)
+			if border > 0 {
+				connections[0][shape_ids[shape_id]] += border
+				connections[shape_ids[shape_id]][0] += border
 			}
 
 			if x > 0 && window[y][x] != window[y][x-1] {
-				name := [2]byte{window[y][x], window[y][x-1]}
-				if name[0] > name[1] {
-					name[0], name[1] = name[1], name[0]
-				}
-				shape_connections[name[0]][name[1]] = struct{}{}
-				shape_connections[name[1]][name[0]] = struct{}{}
-				connections[name]++
-				connections[[2]byte{name[1], name[0]}]++
+				a := shape_ids[window[y][x]]
+				b := shape_ids[window[y][x-1]]
+				connections[a][b]++
+				connections[b][a]++
 			}
 			if y > 0 && window[y][x] != window[y-1][x] {
-				name := [2]byte{window[y][x], window[y-1][x]}
-				if name[0] > name[1] {
-					name[0], name[1] = name[1], name[0]
-				}
-				shape_connections[name[0]][name[1]] = struct{}{}
-				shape_connections[name[1]][name[0]] = struct{}{}
-				connections[name]++
-				connections[[2]byte{name[1], name[0]}]++
-
+				a := shape_ids[window[y][x]]
+				b := shape_ids[window[y-1][x]]
+				connections[a][b]++
+				connections[b][a]++
 			}
 		}
 	}
 
-	smallest := minimum_spanning_tree(border_shapes, shape_connections, connections)
-
-	return smallest
+	return minimum_spanning_tree(connections)
 }
 
-func minimum_spanning_tree(border_shapes map[byte][]Pos, shape_connections map[byte]map[byte]struct{}, connections map[[2]byte]int) int {
-	shape_nums := map[byte]int{}
-	num_shapes := map[int]byte{}
-	// 0 is outside
-	num := 1
-	for shape_id := range shape_connections {
-		shape_nums[shape_id] = num
-		num_shapes[num] = shape_id
-		num++
-	}
-
-	// Prim's algorithm
+func minimum_spanning_tree(connections [][]int) int {
 	vertices := []int{0}
 
 	available := map[int]struct{}{}
-	for shape_id := range shape_connections {
-		available[shape_nums[shape_id]] = struct{}{}
+	for i := 1; i < len(connections); i++ {
+		available[i] = struct{}{}
 	}
 
 	total := 0
@@ -118,35 +100,12 @@ func minimum_spanning_tree(border_shapes map[byte][]Pos, shape_connections map[b
 		closest := 0
 		for _, vertex := range vertices {
 			for vertex2 := range available {
-				if vertex == 0 || vertex2 == 0 {
-					var id int
-					if vertex == 0 {
-						id = vertex2
-					} else if vertex2 == 0 {
-						id = vertex
-					}
-					if blocks, ok := border_shapes[num_shapes[id]]; ok {
-						dist := 0
-						for _, block := range blocks {
-							dist += block.border
-						}
-						if dist < min {
-							min = dist
-							closest = vertex2
-						}
-					}
+				if connections[vertex][vertex2] == 0 {
 					continue
 				}
-
-				name := [2]byte{num_shapes[vertex], num_shapes[vertex2]}
-				if name[0] > name[1] {
-					name[0], name[1] = name[1], name[0]
-				}
-				if dist, ok := connections[name]; ok {
-					if dist < min {
-						min = dist
-						closest = vertex2
-					}
+				if connections[vertex][vertex2] < min {
+					min = connections[vertex][vertex2]
+					closest = vertex2
 				}
 			}
 		}
