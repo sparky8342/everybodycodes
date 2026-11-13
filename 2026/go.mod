@@ -34,3 +34,5 @@ require quest13 v1.0.0
 replace quest13 v1.0.0 => ./quest13/
 require quest14 v1.0.0
 replace quest14 v1.0.0 => ./quest14/
+require quest15 v1.0.0
+replace quest15 v1.0.0 => ./quest15/
