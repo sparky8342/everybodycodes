@@ -141,7 +141,7 @@ func resonance_with_crystals(data []string, neighbours int) int {
 	min := basic_strain
 	interval := len(portals) / 8
 
-	for start := 1; start < len(portals); start++ {
+	for start := 1; start < 8; start++ {
 		new_portals := make([]int, 8)
 		for i := 0; i < 8; i++ {
 			new_portals[i] = start + interval*i
