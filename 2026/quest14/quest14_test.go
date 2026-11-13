@@ -59,3 +59,42 @@ func Test3(t *testing.T) {
 		t.Errorf("got %d, wanted %d", got, want)
 	}
 }
+
+func Test4(t *testing.T) {
+	window := []string{
+		"AAAEEEFFFF",
+		"AADDDDDGFF",
+		"BACDDIGGFF",
+		"BABBIIIGGH",
+		"BBBBIIIIHH",
+	}
+
+	got := minimum_bindings_with_charges_needed(window)
+	want := 0
+
+	if got != want {
+		t.Errorf("got %d, wanted %d", got, want)
+	}
+}
+
+func Test5(t *testing.T) {
+	window := []string{
+		"IIIIIILOHHHHHHHHGGGGGQSRRRRKKK",
+		"IIIIIILOOHHHHHHGGXGGGQSRRRRKKK",
+		"PPPPILLLOOOODDHBGGGGGQSSRRRKKK",
+		"PPZPLLLLFFOODDBBBBGGQQQSSRKKKK",
+		"PPPPLLLLFFFONDDDBBMGGQQSSKKJJJ",
+		"PPPCCCCCCFFONNDDMMMGQQQSSSKJJJ",
+		"PCCCCCCCCFFNNDDDDMAAQQQSSSKKJJ",
+		"PPCCECCCFFNNNNDADMAATQTTSSSJJJ",
+		"PPEEEEECCFFNNAAAMMATTTTTSTSSSJ",
+		"PPEEEEEEEFFNNNAAAAAATTTTTTSSJJ",
+	}
+
+	got := minimum_bindings_with_charges_needed(window)
+	want := 21
+
+	if got != want {
+		t.Errorf("got %d, wanted %d", got, want)
+	}
+}

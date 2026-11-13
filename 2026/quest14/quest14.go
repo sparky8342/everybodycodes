@@ -26,7 +26,7 @@ func bindings_needed(window []string) int {
 	return bindings + 1
 }
 
-func minimum_bindings_needed(window []string) int {
+func get_connections(window []string) [][]int {
 	height := len(window)
 	width := len(window[0])
 
@@ -82,7 +82,15 @@ func minimum_bindings_needed(window []string) int {
 		}
 	}
 
-	return minimum_spanning_tree(connections)
+	for i := 0; i < l; i++ {
+		for j := 0; j < l; j++ {
+			if connections[i][j] == 0 {
+				connections[i][j] = 99999
+			}
+		}
+	}
+
+	return connections
 }
 
 func minimum_spanning_tree(connections [][]int) int {
@@ -100,9 +108,6 @@ func minimum_spanning_tree(connections [][]int) int {
 		closest := 0
 		for _, vertex := range vertices {
 			for vertex2 := range available {
-				if connections[vertex][vertex2] == 0 {
-					continue
-				}
 				if connections[vertex][vertex2] < min {
 					min = connections[vertex][vertex2]
 					closest = vertex2
@@ -117,6 +122,51 @@ func minimum_spanning_tree(connections [][]int) int {
 	return total
 }
 
+func minimum_bindings_needed(window []string) int {
+	connections := get_connections(window)
+	return minimum_spanning_tree(connections)
+}
+
+func copy_connections(connections [][]int) [][]int {
+	cpy := make([][]int, len(connections))
+	for i := range cpy {
+		cpy[i] = make([]int, len(connections))
+		copy(cpy[i], connections[i])
+	}
+	return cpy
+}
+
+func minimum_bindings_with_charges_needed(window []string) int {
+	best := 99999
+	connections := get_connections(window)
+
+	for i := 1; i < len(connections); i++ {
+		for j := i + 1; j < len(connections); j++ {
+			cpy := copy_connections(connections)
+			for k := 0; k < len(connections); k++ {
+				if cpy[i][k] < 99999 {
+					cpy[i][k] = 0
+				}
+				if cpy[j][k] < 99999 {
+					cpy[j][k] = 0
+				}
+				if cpy[k][i] < 99999 {
+					cpy[k][i] = 0
+				}
+				if cpy[k][j] < 99999 {
+					cpy[k][j] = 0
+				}
+			}
+			distance := minimum_spanning_tree(cpy)
+			if distance < best {
+				best = distance
+			}
+		}
+	}
+
+	return best
+}
+
 func Run() {
 	loader.Event, loader.Quest, loader.Part = "2026", 14, 1
 
@@ -128,7 +178,8 @@ func Run() {
 	part2 := minimum_bindings_needed(window)
 
 	loader.Part = 3
-	part3 := -1
+	window = loader.GetStrings()
+	part3 := minimum_bindings_with_charges_needed(window)
 
 	fmt.Printf("%d %d %d\n", part1, part2, part3)
 }
