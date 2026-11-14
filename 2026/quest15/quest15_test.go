@@ -77,7 +77,7 @@ func Test3(t *testing.T) {
 		"#####################################################",
 	}
 
-	got := find_shortest_path_with_multiple_sulphur(grid, 202620262026)
+	got := find_shortest_path_with_multiple_sulphur2(grid, 202620262026)
 	want := 540320698784
 
 	if got != want {
