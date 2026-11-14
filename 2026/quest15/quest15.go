@@ -67,7 +67,7 @@ func find_shortest_path(grid []string) int {
 	}
 
 	queue := []QueueEntry{{pos: start}}
-	visited := map[[3]int]struct{}{}
+	visited := map[[5]int]struct{}{{start.x, start.y, 1, 0, 0}: struct{}{}}
 
 	for len(queue) > 0 {
 		qe := queue[0]
@@ -87,13 +87,14 @@ func find_shortest_path(grid []string) int {
 				continue
 			}
 			if grid[new_pos.y][new_pos.x] != '#' {
-				if _, ok := visited[[3]int{new_pos.x, new_pos.y, qe.sulphur_found}]; !ok {
-					new_qe := QueueEntry{pos: new_pos, dir: dir, sulphur_found: qe.sulphur_found, steps: qe.steps + 1}
-					if grid[new_pos.y][new_pos.x] == '@' {
-						new_qe.sulphur_found |= (1 << sulphur[new_pos])
-					}
+				new_sulphur := qe.sulphur_found
+				if grid[new_pos.y][new_pos.x] == '@' {
+					new_sulphur |= (1 << sulphur[new_pos])
+				}
+				if _, ok := visited[[5]int{new_pos.x, new_pos.y, dir.dx, dir.dy, new_sulphur}]; !ok {
+					new_qe := QueueEntry{pos: new_pos, dir: dir, sulphur_found: new_sulphur, steps: qe.steps + 1}
 					queue = append(queue, new_qe)
-					visited[[3]int{new_pos.x, new_pos.y, new_qe.sulphur_found}] = struct{}{}
+					visited[[5]int{new_pos.x, new_pos.y, dir.dx, dir.dy, new_sulphur}] = struct{}{}
 				}
 			}
 		}
