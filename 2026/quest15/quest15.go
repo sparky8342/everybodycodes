@@ -1,7 +1,6 @@
 package quest15
 
 import (
-	"container/heap"
 	"fmt"
 	"loader"
 )
@@ -22,48 +21,6 @@ type QueueEntry struct {
 	sulphur_found int
 	steps         int
 	prev          *QueueEntry
-}
-
-var target int
-
-type PriorityQueue []*QueueEntry
-
-func (pq PriorityQueue) Len() int { return len(pq) }
-
-func (pq PriorityQueue) Less(i, j int) bool {
-	if pq[i].sulphur_found < target-1000 || pq[j].sulphur_found < target-1000 {
-		if pq[i].sulphur_found == pq[j].sulphur_found {
-			return pq[i].steps < pq[j].steps
-		} else {
-			return pq[i].sulphur_found > pq[j].sulphur_found
-		}
-	} else {
-		return pq[i].steps < pq[j].steps
-	}
-
-	//return float64(pq[i].sulphur_found) / float64(pq[i].steps) > float64(pq[j].sulphur_found) / float64(pq[j].steps)
-
-	//return pq[i].sulphur_found > pq[j].sulphur_found
-
-	//return pq[i].steps < pq[j].steps
-}
-
-func (pq PriorityQueue) Swap(i, j int) {
-	pq[i], pq[j] = pq[j], pq[i]
-}
-
-func (pq *PriorityQueue) Push(x interface{}) {
-	item := x.(*QueueEntry)
-	*pq = append(*pq, item)
-}
-
-func (pq *PriorityQueue) Pop() interface{} {
-	old := *pq
-	n := len(old)
-	item := old[n-1]
-	old[n-1] = nil // avoid memory leak
-	*pq = old[0 : n-1]
-	return item
 }
 
 var width, height int
@@ -145,53 +102,6 @@ func find_shortest_path(grid []string) int {
 	return -1
 }
 
-func find_shortest_path_with_multiple_sulphur(grid []string, target_sulphur int) int {
-	height = len(grid)
-	width = len(grid[0])
-
-	target = target_sulphur
-
-	start, end, _ := find_poi(grid)
-
-	queue := make(PriorityQueue, 1)
-	queue[0] = &QueueEntry{pos: start}
-	heap.Init(&queue)
-
-	visited := map[Pos]int{}
-
-	for len(queue) > 0 {
-		qe := heap.Pop(&queue).(*QueueEntry)
-
-		pos := qe.pos
-		if pos == end && qe.sulphur_found >= target_sulphur {
-			return qe.steps
-		}
-
-		for _, dir := range dirs {
-			if dir.dx == qe.dir.dx*-1 && dir.dy == qe.dir.dy*-1 {
-				continue
-			}
-			new_pos := Pos{pos.x + dir.dx, pos.y + dir.dy}
-			if new_pos.x < 0 || new_pos.x == width || new_pos.y < 0 || new_pos.y == height {
-				continue
-			}
-			if grid[new_pos.y][new_pos.x] != '#' {
-				val, ok := visited[new_pos]
-				if !ok || val < qe.sulphur_found || grid[new_pos.y][new_pos.x] == '@' {
-					new_qe := QueueEntry{pos: new_pos, dir: dir, sulphur_found: qe.sulphur_found, steps: qe.steps + 1}
-					if grid[new_pos.y][new_pos.x] == '@' {
-						new_qe.sulphur_found++
-					}
-					heap.Push(&queue, &new_qe)
-					visited[new_pos] = new_qe.sulphur_found
-				}
-			}
-		}
-	}
-
-	return -1
-}
-
 func bfs_cycle(grid []string, start Pos) (int, int) {
 	queue := []QueueEntry{{pos: start}}
 
@@ -225,11 +135,9 @@ func bfs_cycle(grid []string, start Pos) (int, int) {
 	return -1, -1
 }
 
-func find_shortest_path_with_multiple_sulphur2(grid []string, target_sulphur int) int {
+func find_shortest_path_with_multiple_sulphur(grid []string, target_sulphur int) int {
 	height = len(grid)
 	width = len(grid[0])
-
-	target = target_sulphur
 
 	start, end, _ := find_poi(grid)
 
@@ -242,7 +150,7 @@ func find_shortest_path_with_multiple_sulphur2(grid []string, target_sulphur int
 
 		pos := qe.pos
 
-		if pos == end && qe.sulphur_found >= target {
+		if pos == end && qe.sulphur_found >= target_sulphur {
 			return qe.steps
 		}
 
@@ -342,7 +250,7 @@ func Run() {
 
 	loader.Part = 2
 	grid = loader.GetStrings()
-	part2 := find_shortest_path_with_multiple_sulphur2(grid, 2026)
+	part2 := find_shortest_path_with_multiple_sulphur(grid, 2026)
 
 	loader.Part = 3
 	grid = loader.GetStrings()
