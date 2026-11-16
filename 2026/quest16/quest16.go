@@ -5,10 +5,15 @@ import (
 	"loader"
 )
 
-func sort_tablets(tablets_str string) int {
-	tablets := []byte(tablets_str)
+func sort_tablets(tablets_str string, duplicate int) (int, int) {
+	tablets := []byte{}
+	for i := 1; i <= duplicate; i++ {
+		tablets = append(tablets, []byte(tablets_str)...)
+	}
 
 	flips := 0
+	tablets_moved := 0
+
 outer:
 	for i := 0; i < len(tablets)-1; i++ {
 		colour := tablets[i]
@@ -29,22 +34,27 @@ outer:
 				tablets[p1], tablets[p2] = tablets[p2], tablets[p1]
 				p1++
 				p2--
+				tablets_moved += 2
+			}
+			if p1 == p2 {
+				tablets_moved++
 			}
 			flips++
 		}
 	}
 
-	return flips
+	return flips, tablets_moved
 }
 
 func Run() {
 	loader.Event, loader.Quest, loader.Part = "2026", 16, 1
 
 	tablets := loader.GetStrings()[0]
-	part1 := sort_tablets(tablets)
+	part1, _ := sort_tablets(tablets, 1)
 
 	loader.Part = 2
-	part2 := -1
+	tablets = loader.GetStrings()[0]
+	_, part2 := sort_tablets(tablets, 10)
 
 	loader.Part = 3
 	part3 := -1

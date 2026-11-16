@@ -7,7 +7,7 @@ import (
 func Test1(t *testing.T) {
 	tablets := "RRGGBBGRRGGBBG"
 
-	got := sort_tablets(tablets)
+	got, _ := sort_tablets(tablets, 1)
 	want := 3
 
 	if got != want {
@@ -18,8 +18,19 @@ func Test1(t *testing.T) {
 func Test2(t *testing.T) {
 	tablets := "BBRGGRRGBBRGGBRGBBRRBRRRBGGRRRBGBGGBBRGGRRGBBRGGBRGBBRRBRRRBGGRRRBGBGG"
 
-	got := sort_tablets(tablets)
+	got, _ := sort_tablets(tablets, 1)
 	want := 26
+
+	if got != want {
+		t.Errorf("got %d, wanted %d", got, want)
+	}
+}
+
+func Test3(t *testing.T) {
+	tablets := "RRYGYBYG"
+
+	_, got := sort_tablets(tablets, 10)
+	want := 1053
 
 	if got != want {
 		t.Errorf("got %d, wanted %d", got, want)
