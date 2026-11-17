@@ -14,33 +14,39 @@ func sort_tablets(tablets_str string, duplicate int) (int, int) {
 	flips := 0
 	tablets_moved := 0
 
-outer:
-	for i := 0; i < len(tablets)-1; i++ {
-		colour := tablets[i]
-		p1 := i + 1
-		for tablets[p1] == colour {
-			p1++
-			if p1 == len(tablets) {
-				continue outer
-			}
-		}
-		p2 := len(tablets) - 1
-		for tablets[p2] != colour {
-			p2--
-		}
+	for len(tablets) > 0 {
+		start := 0
+		end := len(tablets) - 1
+		colour := tablets[0]
 
-		if p1 < p2 {
-			for p1 < p2 {
-				tablets[p1], tablets[p2] = tablets[p2], tablets[p1]
-				p1++
-				p2--
-				tablets_moved += 2
+		next := []byte{}
+		for start <= end {
+			for start <= end && tablets[start] == colour {
+				start++
 			}
-			if p1 == p2 {
-				tablets_moved++
+			for start <= end && tablets[end] != colour {
+				next = append(next, tablets[end])
+				end--
 			}
-			flips++
+			tablets_moved += end - start + 1
+			if start <= end {
+				flips++
+			}
+
+			for start <= end && tablets[end] == colour {
+				end--
+			}
+			for start <= end && tablets[start] != colour {
+				next = append(next, tablets[start])
+				start++
+			}
+			tablets_moved += end - start + 1
+			if start <= end {
+				flips++
+			}
+
 		}
+		tablets = next
 	}
 
 	return flips, tablets_moved
@@ -57,7 +63,8 @@ func Run() {
 	_, part2 := sort_tablets(tablets, 10)
 
 	loader.Part = 3
-	part3 := -1
+	tablets = loader.GetStrings()[0]
+	_, part3 := sort_tablets(tablets, 100)
 
 	fmt.Printf("%d %d %d\n", part1, part2, part3)
 }

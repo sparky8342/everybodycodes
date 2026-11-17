@@ -36,3 +36,14 @@ func Test3(t *testing.T) {
 		t.Errorf("got %d, wanted %d", got, want)
 	}
 }
+
+func Test4(t *testing.T) {
+	tablets := "RRYGGYBBYG"
+
+	_, got := sort_tablets(tablets, 100)
+	want := 135154
+
+	if got != want {
+		t.Errorf("got %d, wanted %d", got, want)
+	}
+}
