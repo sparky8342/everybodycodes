@@ -76,16 +76,13 @@ func shortest_path(grid []string) int {
 func find_connected_edges(path map[Edge]struct{}, edges map[Edge]struct{}) bool {
 	found := false
 	for edge := range path {
-		possible := []Edge{}
 		for edge2 := range edges {
 			if edge.a == edge2.a || edge.a == edge2.b || edge.b == edge2.a || edge.b == edge2.b {
-				possible = append(possible, edge2)
+				path[edge2] = struct{}{}
+				delete(edges, edge2)
+				found = true
+				break
 			}
-		}
-		if len(possible) > 0 {
-			path[possible[0]] = struct{}{}
-			delete(edges, possible[0])
-			found = true
 		}
 	}
 	return found
