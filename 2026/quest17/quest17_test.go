@@ -32,8 +32,26 @@ func Test2(t *testing.T) {
 		"###.##.#.##",
 	}
 
-	got := edge_distance(grid)
+	got, _ := edge_distance(grid)
 	want := 94
+
+	if got != want {
+		t.Errorf("got %d, wanted %d", got, want)
+	}
+}
+
+func Test3(t *testing.T) {
+	grid := []string{
+		"####.######",
+		"#.#.##..#..",
+		"##.##.##..#",
+		"#.#.###.###",
+		"#.###.###.#",
+		"###.##.#.##",
+	}
+
+	_, got := edge_distance(grid)
+	want := 31
 
 	if got != want {
 		t.Errorf("got %d, wanted %d", got, want)

@@ -21,7 +21,10 @@ type Dir struct {
 	dy int
 }
 
-var height, width int
+type Edge struct {
+	a Pos
+	b Pos
+}
 
 var dirs [4]Dir
 
@@ -34,41 +37,9 @@ func init() {
 	}
 }
 
-func edge_distance(grid []string) int {
-	height = len(grid)
-	width = len(grid[0])
-
-	distance := 0
-
-	for y := 0; y < height; y++ {
-		for x := 0; x < width; x++ {
-			if grid[y][x] == '#' {
-				if x == 0 || x == width-1 {
-					distance++
-				}
-				if y == 0 || y == height-1 {
-					distance++
-				}
-			}
-			if x > 0 {
-				if grid[y][x] != grid[y][x-1] {
-					distance++
-				}
-			}
-			if y > 0 {
-				if grid[y][x] != grid[y-1][x] {
-					distance++
-				}
-			}
-		}
-	}
-
-	return distance
-}
-
 func shortest_path(grid []string) int {
-	height = len(grid)
-	width = len(grid[0])
+	height := len(grid)
+	width := len(grid[0])
 
 	start := Pos{}
 	end := Pos{x: width - 1, y: height - 1}
@@ -102,6 +73,125 @@ func shortest_path(grid []string) int {
 	return -1
 }
 
+func find_connected_edges(path map[Edge]struct{}, edges map[Edge]struct{}, single bool) bool {
+	found := false
+	for edge := range path {
+		possible := []Edge{}
+		for edge2 := range edges {
+			if edge.a == edge2.a || edge.a == edge2.b || edge.b == edge2.a || edge.b == edge2.b {
+				possible = append(possible, edge2)
+			}
+		}
+		if single && len(possible) == 1 {
+			path[possible[0]] = struct{}{}
+			delete(edges, possible[0])
+			found = true
+		} else if !single && len(possible) > 0 {
+			path[possible[0]] = struct{}{}
+			delete(edges, possible[0])
+			return true
+		}
+	}
+	return found
+}
+
+func edge_distance(grid []string) (int, int) {
+	height := len(grid)
+	width := len(grid[0])
+
+	distance := 0
+
+	edges := map[Edge]struct{}{}
+
+	for y := 0; y < height; y++ {
+		for x := 0; x < width; x++ {
+			if grid[y][x] == '#' {
+				if x == 0 {
+					distance++
+					a := Pos{x: x, y: y}
+					b := Pos{x: x, y: y + 1}
+					edges[Edge{a: a, b: b}] = struct{}{}
+				} else if x == width-1 {
+					distance++
+					a := Pos{x: x + 1, y: y}
+					b := Pos{x: x + 1, y: y + 1}
+					edges[Edge{a: a, b: b}] = struct{}{}
+				}
+
+				if y == 0 {
+					distance++
+					a := Pos{x: x, y: y}
+					b := Pos{x: x + 1, y: y}
+					edges[Edge{a: a, b: b}] = struct{}{}
+				} else if y == height-1 {
+					distance++
+					a := Pos{x: x, y: y + 1}
+					b := Pos{x: x + 1, y: y + 1}
+					edges[Edge{a: a, b: b}] = struct{}{}
+				}
+			}
+			if x > 0 {
+				if grid[y][x] != grid[y][x-1] {
+					distance++
+					a := Pos{x: x, y: y}
+					b := Pos{x: x, y: y + 1}
+					edges[Edge{a: a, b: b}] = struct{}{}
+				}
+			}
+			if y > 0 {
+				if grid[y][x] != grid[y-1][x] {
+					distance++
+					a := Pos{x: x, y: y}
+					b := Pos{x: x + 1, y: y}
+					edges[Edge{a: a, b: b}] = struct{}{}
+				}
+			}
+		}
+	}
+
+	top_path := map[Edge]struct{}{}
+	left_path := map[Edge]struct{}{}
+
+	top_start := Edge{a: Pos{x: 0, y: 0}, b: Pos{x: 1, y: 0}}
+	top_end := Edge{a: Pos{x: width, y: height - 1}, b: Pos{x: width, y: height}}
+	left_start := Edge{a: Pos{x: 0, y: 0}, b: Pos{x: 0, y: 1}}
+	left_end := Edge{a: Pos{x: width - 1, y: height}, b: Pos{x: width, y: height}}
+
+	top_path[top_start] = struct{}{}
+	delete(edges, top_start)
+	top_path[top_end] = struct{}{}
+	delete(edges, top_end)
+
+	left_path[left_start] = struct{}{}
+	delete(edges, left_start)
+	left_path[left_end] = struct{}{}
+	delete(edges, left_end)
+
+	for {
+		t := find_connected_edges(top_path, edges, true)
+		l := find_connected_edges(left_path, edges, true)
+		if !t && !l {
+			break
+		}
+	}
+	for {
+		t := find_connected_edges(top_path, edges, false)
+		l := find_connected_edges(left_path, edges, false)
+		if !t && !l {
+			break
+		}
+	}
+
+	var path_length int
+	if len(top_path) < len(left_path) {
+		path_length = len(top_path)
+	} else {
+		path_length = len(left_path)
+	}
+
+	return distance, path_length
+}
+
 func Run() {
 	loader.Event, loader.Quest, loader.Part = "2026", 17, 1
 
@@ -110,10 +200,11 @@ func Run() {
 
 	loader.Part = 2
 	grid = loader.GetStrings()
-	part2 := edge_distance(grid)
+	part2, _ := edge_distance(grid)
 
 	loader.Part = 3
-	part3 := -1
+	grid = loader.GetStrings()
+	_, part3 := edge_distance(grid)
 
 	fmt.Printf("%d %d %d\n", part1, part2, part3)
 }
