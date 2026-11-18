@@ -13,12 +13,15 @@ type Pos struct {
 type Entry struct {
 	pos      Pos
 	distance int
+	prev     *Entry
 }
 
 type Dir struct {
 	dx int
 	dy int
 }
+
+var height, width int
 
 var dirs [4]Dir
 
@@ -31,9 +34,41 @@ func init() {
 	}
 }
 
+func edge_distance(grid []string) int {
+	height = len(grid)
+	width = len(grid[0])
+
+	distance := 0
+
+	for y := 0; y < height; y++ {
+		for x := 0; x < width; x++ {
+			if grid[y][x] == '#' {
+				if x == 0 || x == width-1 {
+					distance++
+				}
+				if y == 0 || y == height-1 {
+					distance++
+				}
+			}
+			if x > 0 {
+				if grid[y][x] != grid[y][x-1] {
+					distance++
+				}
+			}
+			if y > 0 {
+				if grid[y][x] != grid[y-1][x] {
+					distance++
+				}
+			}
+		}
+	}
+
+	return distance
+}
+
 func shortest_path(grid []string) int {
-	height := len(grid)
-	width := len(grid[0])
+	height = len(grid)
+	width = len(grid[0])
 
 	start := Pos{}
 	end := Pos{x: width - 1, y: height - 1}
@@ -74,7 +109,8 @@ func Run() {
 	part1 := shortest_path(grid)
 
 	loader.Part = 2
-	part2 := -1
+	grid = loader.GetStrings()
+	part2 := edge_distance(grid)
 
 	loader.Part = 3
 	part3 := -1
