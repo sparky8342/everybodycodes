@@ -82,14 +82,10 @@ func find_connected_edges(path map[Edge]struct{}, edges map[Edge]struct{}, singl
 				possible = append(possible, edge2)
 			}
 		}
-		if single && len(possible) == 1 {
+		if (single && len(possible) == 1) || (!single && len(possible) > 0) {
 			path[possible[0]] = struct{}{}
 			delete(edges, possible[0])
 			found = true
-		} else if !single && len(possible) > 0 {
-			path[possible[0]] = struct{}{}
-			delete(edges, possible[0])
-			return true
 		}
 	}
 	return found
