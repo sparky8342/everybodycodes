@@ -44,3 +44,5 @@ require quest17 v1.0.0
 replace quest17 v1.0.0 => ./quest17/
 require quest18 v1.0.0
 replace quest18 v1.0.0 => ./quest18/
+require quest19 v1.0.0
+replace quest19 v1.0.0 => ./quest19/
