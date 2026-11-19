@@ -1,5 +1,7 @@
 module everybodycodes_runner
 
+go 1.22.2 
+
 require loader v1.0.0
 replace loader v1.0.0 => ../loader
 
@@ -40,3 +42,5 @@ require quest16 v1.0.0
 replace quest16 v1.0.0 => ./quest16/
 require quest17 v1.0.0
 replace quest17 v1.0.0 => ./quest17/
+require quest18 v1.0.0
+replace quest18 v1.0.0 => ./quest18/
