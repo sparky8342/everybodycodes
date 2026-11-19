@@ -56,7 +56,19 @@ func material_needed(data []string) int {
 		if y > max_y {
 			max_y = y
 		}
+
+		width := 1
+		if len(parts) == 3 {
+			width, err = strconv.Atoi(strings.Split(parts[2], "=")[1])
+			if err != nil {
+				panic(err)
+			}
+		}
+
 		stacks = append(stacks, Stack{x: x, y: y})
+		if width > 1 {
+			stacks = append(stacks, Stack{x: x + width - 1, y: y})
+		}
 	}
 
 	material := 0
@@ -85,10 +97,12 @@ func Run() {
 	part1 := material_needed(data)
 
 	loader.Part = 2
-	part2 := -1
+	data = loader.GetStrings()
+	part2 := material_needed(data)
 
 	loader.Part = 3
-	part3 := -1
+	data = loader.GetStrings()
+	part3 := material_needed(data)
 
 	fmt.Printf("%d %d %d\n", part1, part2, part3)
 }
