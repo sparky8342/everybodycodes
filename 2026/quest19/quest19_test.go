@@ -51,3 +51,53 @@ func Test2(t *testing.T) {
 		t.Errorf("got %d, wanted %d", got, want)
 	}
 }
+
+func Test3(t *testing.T) {
+	data := []string{
+		"CCMM",
+		"YYKK",
+	}
+
+	got := double_combinations(data)
+	want := 18
+
+	if got != want {
+		t.Errorf("got %d, wanted %d", got, want)
+	}
+}
+
+func Test4(t *testing.T) {
+	data := []string{
+		"CCCMMM",
+		"CCMMYY",
+		"CCCYKK",
+		"CMMYYK",
+	}
+
+	got := double_combinations(data)
+	want := 343
+
+	if got != want {
+		t.Errorf("got %d, wanted %d", got, want)
+	}
+}
+
+func Test5(t *testing.T) {
+	data := []string{
+		"CCCCYMMM",
+		"CCMMMYYY",
+		"CCCYYYMM",
+		"MMCCCYYY",
+		"YYYMMMCC",
+		"CCYYMMKK",
+		"MMYYCCKK",
+		"YYYCCMMM",
+	}
+
+	got := double_combinations(data)
+	want := 8000
+
+	if got != want {
+		t.Errorf("got %d, wanted %d", got, want)
+	}
+}

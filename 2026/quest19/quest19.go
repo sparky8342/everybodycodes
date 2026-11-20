@@ -112,6 +112,39 @@ func combinations(grid1 [][]byte, grid2 [][]byte) int {
 	return max
 }
 
+func double_combinations(data []string) int {
+	height := len(data)
+	width := len(data[0])
+
+	K := 0
+	for y := 0; y < height; y++ {
+		for x := 0; x < width; x++ {
+			if data[y][x] == 'K' {
+				K++
+			}
+		}
+	}
+
+	no_colours := height*width - K
+
+	// 2 colours
+	a := no_colours / 2
+	b := no_colours - a
+	max := a * b * K
+
+	// 3 colours
+	a = no_colours / 3
+	no_colours -= a
+	b = no_colours / 2
+	c := no_colours - b
+	ans := a * b * c
+	if ans > max {
+		max = ans
+	}
+
+	return max
+}
+
 func Run() {
 	loader.Event, loader.Quest, loader.Part = "2026", 19, 1
 
@@ -125,7 +158,8 @@ func Run() {
 	part2 := combinations(grid1, grid2)
 
 	loader.Part = 3
-	part3 := -1
+	data = loader.GetStrings()
+	part3 := double_combinations(data)
 
 	fmt.Printf("%d %d %d\n", part1, part2, part3)
 }
