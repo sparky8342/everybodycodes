@@ -21,22 +21,32 @@ func init() {
 		'7': 3,
 		'8': 7,
 		'9': 6,
+		'A': 6,
 		'+': 2,
 		'-': 1,
 		'=': 2,
 	}
 }
 
-func equation_valid(line string) bool {
+func equation_segments(line string, base int) int {
+	segments := 0
+
 	parts := strings.Split(line, " ")
 	nums := [4]int{}
 	for i := 0; i <= 6; i += 2 {
-		n, err := strconv.Atoi(parts[i])
+		n, err := strconv.ParseInt(parts[i], base, 64)
 		if err != nil {
 			panic(err)
 		}
-		nums[i/2] = n
+		nums[i/2] = int(n)
+		for j := 0; j < len(parts[i]); j++ {
+			segments += no_segments[parts[i][j]]
+		}
 	}
+	fmt.Println(nums)
+	segments += no_segments[parts[1][0]]
+	segments += no_segments[parts[3][0]]
+	segments += no_segments[parts[5][0]]
 
 	var left, right int
 	if parts[1] == "+" {
@@ -50,34 +60,34 @@ func equation_valid(line string) bool {
 		right = nums[2] - nums[3]
 	}
 
-	return left == right
+	if left == right {
+		fmt.Println(segments)
+		return segments
+	} else {
+		return 0
+	}
 }
 
-func count_segments(data []string) int {
+func count_segments(data []string, base int) string {
 	count := 0
 	for _, line := range data {
-		if equation_valid(line) {
-			for i := 0; i < len(line); i++ {
-				if line[i] != ' ' {
-					count += no_segments[line[i]]
-				}
-			}
-		}
+		count += equation_segments(line, base)
 	}
-	return count
+	return strconv.FormatInt(int64(count), base)
 }
 
 func Run() {
 	loader.Event, loader.Quest, loader.Part = "2026", 20, 1
 
 	data := loader.GetStrings()
-	part1 := count_segments(data)
+	part1 := count_segments(data, 10)
 
 	loader.Part = 2
-	part2 := -1
+	data = loader.GetStrings()
+	part2 := count_segments(data, 11)
 
 	loader.Part = 3
 	part3 := -1
 
-	fmt.Printf("%d %d %d\n", part1, part2, part3)
+	fmt.Printf("%s %s %d\n", part1, part2, part3)
 }
