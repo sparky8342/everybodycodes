@@ -8,14 +8,8 @@ import (
 )
 
 type Equation struct {
-	n1       int
-	op1      byte
-	n2       int
-	n3       int
-	op2      byte
-	n4       int
+	eq       []byte
 	segments int
-	valid    bool
 }
 
 var no_segments map[byte]int
@@ -39,12 +33,13 @@ func init() {
 		'+': 2,
 		'-': 1,
 		'=': 2,
+		' ': 0,
 	}
 
 	remove = map[byte][]byte{
 		'6': []byte{'5'},
 		'7': []byte{'1'},
-		'8': []byte{'9'},
+		'8': []byte{'0', '6', '9', 'A'},
 		'9': []byte{'3', '5'},
 		'+': []byte{'-'},
 	}
@@ -62,16 +57,25 @@ func init() {
 	add = map[byte][]byte{
 		'0': []byte{'8'},
 		'1': []byte{'7'},
+		'3': []byte{'9'},
 		'5': []byte{'6', '9'},
 		'6': []byte{'8'},
 		'9': []byte{'8'},
+		'A': []byte{'8'},
+		'-': []byte{'+'},
 	}
 }
 
-func parse_line(line string, base int) Equation {
+func parse_line(line string) Equation {
 	segments := 0
+	for i := 0; i < len(line); i++ {
+		segments += no_segments[line[i]]
+	}
+	return Equation{eq: []byte(line), segments: segments}
+}
 
-	parts := strings.Split(line, " ")
+func (e Equation) valid(base int) bool {
+	parts := strings.Split(string(e.eq), " ")
 	nums := [4]int{}
 	for i := 0; i <= 6; i += 2 {
 		n, err := strconv.ParseInt(parts[i], base, 64)
@@ -79,14 +83,7 @@ func parse_line(line string, base int) Equation {
 			panic(err)
 		}
 		nums[i/2] = int(n)
-		for j := 0; j < len(parts[i]); j++ {
-			segments += no_segments[parts[i][j]]
-		}
 	}
-	segments += no_segments[parts[1][0]]
-	segments += no_segments[parts[3][0]]
-	segments += no_segments[parts[5][0]]
-
 	var left, right int
 	if parts[1] == "+" {
 		left = nums[0] + nums[1]
@@ -98,29 +95,70 @@ func parse_line(line string, base int) Equation {
 	} else if parts[5] == "-" {
 		right = nums[2] - nums[3]
 	}
-
-	valid := false
-	if left == right {
-		valid = true
-	}
-
-	return Equation{
-		n1:       nums[0],
-		op1:      parts[1][0],
-		n2:       nums[1],
-		n3:       nums[2],
-		op2:      parts[5][0],
-		n4:       nums[3],
-		segments: segments,
-		valid:    valid,
-	}
+	return left == right
 }
 
 func count_segments(data []string, base int) string {
 	count := 0
 	for _, line := range data {
-		equation := parse_line(line, base)
-		if equation.valid {
+		equation := parse_line(line)
+		if equation.valid(base) {
+			count += equation.segments
+		}
+	}
+	return strconv.FormatInt(int64(count), base)
+}
+
+func (e Equation) balance(base int) bool {
+	// change
+	for i := 0; i < len(e.eq); i++ {
+		d := e.eq[i]
+
+		if val, ok := change[d]; ok {
+			for _, new_d := range val {
+				e.eq[i] = new_d
+				if e.valid(base) {
+					return true
+				}
+			}
+		}
+
+		e.eq[i] = d
+	}
+
+	// remove and add
+	for i := 0; i < len(e.eq); i++ {
+		for j := 0; j < len(e.eq); j++ {
+			if i == j {
+				continue
+			}
+
+			d1 := e.eq[i]
+			d2 := e.eq[j]
+
+			for _, r := range remove[d1] {
+				e.eq[i] = r
+				for _, a := range add[d2] {
+					e.eq[j] = a
+					if e.valid(base) {
+						return true
+					}
+				}
+			}
+
+			e.eq[i] = d1
+			e.eq[j] = d2
+		}
+	}
+
+	return false
+}
+
+func count_segments_balance(data []string, base int) string {
+	count := 0
+	for _, line := range data {
+		equation := parse_line(line)
+		if equation.valid(base) || equation.balance(base) {
 			count += equation.segments
 		}
 	}
@@ -138,7 +176,8 @@ func Run() {
 	part2 := count_segments(data, 11)
 
 	loader.Part = 3
-	part3 := -1
+	data = loader.GetStrings()
+	part3 := count_segments_balance(data, 11)
 
-	fmt.Printf("%s %s %d\n", part1, part2, part3)
+	fmt.Printf("%s %s %s\n", part1, part2, part3)
 }
