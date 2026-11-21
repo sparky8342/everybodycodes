@@ -7,7 +7,21 @@ import (
 	"strings"
 )
 
+type Equation struct {
+	n1       int
+	op1      byte
+	n2       int
+	n3       int
+	op2      byte
+	n4       int
+	segments int
+	valid    bool
+}
+
 var no_segments map[byte]int
+var remove map[byte][]byte
+var change map[byte][]byte
+var add map[byte][]byte
 
 func init() {
 	no_segments = map[byte]int{
@@ -26,9 +40,35 @@ func init() {
 		'-': 1,
 		'=': 2,
 	}
+
+	remove = map[byte][]byte{
+		'6': []byte{'5'},
+		'7': []byte{'1'},
+		'8': []byte{'9'},
+		'9': []byte{'3', '5'},
+		'+': []byte{'-'},
+	}
+
+	change = map[byte][]byte{
+		'0': []byte{'6', '9', 'A'},
+		'2': []byte{'3'},
+		'3': []byte{'2', '5'},
+		'5': []byte{'3'},
+		'6': []byte{'0', '9', 'A'},
+		'9': []byte{'0', '6', 'A'},
+		'A': []byte{'0', '6', '9'},
+	}
+
+	add = map[byte][]byte{
+		'0': []byte{'8'},
+		'1': []byte{'7'},
+		'5': []byte{'6', '9'},
+		'6': []byte{'8'},
+		'9': []byte{'8'},
+	}
 }
 
-func equation_segments(line string, base int) int {
+func parse_line(line string, base int) Equation {
 	segments := 0
 
 	parts := strings.Split(line, " ")
@@ -43,7 +83,6 @@ func equation_segments(line string, base int) int {
 			segments += no_segments[parts[i][j]]
 		}
 	}
-	fmt.Println(nums)
 	segments += no_segments[parts[1][0]]
 	segments += no_segments[parts[3][0]]
 	segments += no_segments[parts[5][0]]
@@ -60,18 +99,30 @@ func equation_segments(line string, base int) int {
 		right = nums[2] - nums[3]
 	}
 
+	valid := false
 	if left == right {
-		fmt.Println(segments)
-		return segments
-	} else {
-		return 0
+		valid = true
+	}
+
+	return Equation{
+		n1:       nums[0],
+		op1:      parts[1][0],
+		n2:       nums[1],
+		n3:       nums[2],
+		op2:      parts[5][0],
+		n4:       nums[3],
+		segments: segments,
+		valid:    valid,
 	}
 }
 
 func count_segments(data []string, base int) string {
 	count := 0
 	for _, line := range data {
-		count += equation_segments(line, base)
+		equation := parse_line(line, base)
+		if equation.valid {
+			count += equation.segments
+		}
 	}
 	return strconv.FormatInt(int64(count), base)
 }
